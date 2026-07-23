@@ -1,0 +1,672 @@
+\section{高级数据结构：参数、调用与改造}
+
+本节紧跟前面的基础模板。先看每个接口传什么，再看哪些不变量不能动，最后看如何替换维护信息或转移。
+
+\subsection{高阶前缀和与多阶差分}
+
+看到``每次给区间加一个一次/二次多项式，最后问点值或前缀''时，普通差分不够。若对差分数组再差分，区间加常数会变成两个端点；加一次函数需要更高阶差分或维护多个系数。
+
+最实用的现场做法是先把更新写成基函数，再分别维护系数的差分。比如区间 \passthrough{\lstinline![l,r]!} 加 \passthrough{\lstinline!a*i+b!}，维护两个差分数组 \passthrough{\lstinline!da, db!}：
+
+\begin{lstlisting}[language={C++}]
+vector<long long> da(n + 2), db(n + 2);
+void range_add_linear(int l, int r, long long a, long long b) {
+    da[l] += a; da[r + 1] -= a;
+    db[l] += b; db[r + 1] -= b;
+}
+long long point_value(int i) {
+    static long long ca = 0, cb = 0;
+    // 按 i 从小到大扫描时更新 ca += da[i], cb += db[i]
+    return ca * i + cb;
+}
+\end{lstlisting}
+
+若询问的是区间和，则要再维护系数的前缀贡献，或者直接使用带懒标记的线段树。不要在考场临时猜公式：先写出单点贡献 \passthrough{\lstinline!a*i+b!}，再求 \passthrough{\lstinline!l..r!} 的和 \passthrough{\lstinline!a*(l+r)*(r-l+1)/2+b*(r-l+1)!}，检查端点和取模。
+
+
+\subsection{多懒标记与仿射标记线段树}
+
+区间操作同时有``乘法''和``加法''时，标记不是两个互相独立的数，而是函数：
+
+\[x\mapsto ax+b.\]
+
+先执行旧标记 \passthrough{\lstinline!(a\_1,b\_1)!}，再执行新标记 \passthrough{\lstinline!(a\_2,b\_2)!}，合成结果为：
+
+\[a=a_2a_1,\qquad b=a_2b_1+b_2.\]
+
+\begin{lstlisting}[language={C++}]
+struct Tag {
+    // 一个懒标记表示：把区间内每个 x 变成 mul * x + add。
+    // 初始值必须是恒等变换 x -> x，而不是 0。
+    long long mul = 1;
+    long long add = 0;
+};
+struct Node {
+    long long sum = 0; // 当前区间的和，已经包含本节点自己的 tag。
+    Tag tag;           // 尚未下传给儿子的变换。
+};
+void apply(int p, int l, int r, long long mul, long long add) {
+    // 先更新“区间答案”：区间和乘 mul，再额外加 add * 区间长度。
+    tr[p].sum = (tr[p].sum * mul + add * (r - l + 1)) % MOD;
+
+    // 原来的标记是 f(x)=old_mul*x+old_add，
+    // 新操作是 g(x)=mul*x+add，实际顺序是 g(f(x))。
+    // 合成后：mul'=mul*old_mul，add'=mul*old_add+add。
+    tr[p].tag.mul = tr[p].tag.mul * mul % MOD;
+    tr[p].tag.add = (tr[p].tag.add * mul + add) % MOD;
+}
+void push(int p, int l, int r) {
+    // 叶子没有儿子，标记留在自己这里即可。
+    if (l == r) return;
+    int mid = (l + r) >> 1;
+    auto [m, a] = tr[p].tag;
+
+    // 只有非恒等标记才需要下传。
+    if (m != 1 || a != 0) {
+        apply(p << 1, l, mid, m, a);
+        apply(p << 1 | 1, mid + 1, r, m, a);
+
+        // 父亲的变换已经交给两个儿子，父亲恢复为恒等变换。
+        tr[p].tag = {1, 0};
+    }
+}
+\end{lstlisting}
+
+例题可用\href{https://www.luogu.com.cn/problem/P3373}{P3373 模板线段树 2}：题目有区间乘、区间加、区间和。题目中的``乘法操作''调用 \passthrough{\lstinline!apply(..., k, 0)!}，``加法操作''调用 \passthrough{\lstinline!apply(..., 1, k)!}。最容易错的是标记合成顺序，以及 \passthrough{\lstinline!add!} 作用在整个区间长度上。
+
+\subsubsection{测试样例：仿射标记的合成顺序}
+
+下面采用 P3373 风格：\passthrough{\lstinline!1 l r k!} 表示乘法，\passthrough{\lstinline!2 l r k!} 表示加法，\passthrough{\lstinline!3 l r!} 表示区间和；每组第一行是 \passthrough{\lstinline!n m MOD!}，随后是数组和 \passthrough{\lstinline!m!} 个操作。
+
+\begin{lstlisting}
+输入
+4
+1 4 100
+5
+3 1 1
+1 1 1 3
+2 1 1 4
+3 1 1
+3 5 1000000007
+1 2 3
+2 1 2 5
+3 1 3
+1 2 3 2
+3 2 2
+2 4 1000
+1 1
+1 1 1 2
+2 1 1 3
+1 1 1 4
+3 1 1
+3 3 1000
+100 200 300
+1 1 3 2
+2 2 3 900
+3 1 3
+
+输出
+5
+19
+16
+14
+20
+1000
+0
+\end{lstlisting}
+
+第三组必须按 \passthrough{\lstinline!((x*2)+3)*4!} 计算，结果为 \passthrough{\lstinline!20!}；如果把标记合成顺序写反，或者把加法只加一次而不是乘区间长度，边界组和第三组都会暴露问题。
+
+
+\subsection{线段树上二分}
+
+当每个节点维护一个可合并的``容量/最大值/最小值''，并且可以判断``左子树是否存在答案''，就可以在线段树上二分，复杂度 \(O(\log n)\)。
+
+\begin{lstlisting}[language={C++}]
+int first_at_least(int p, int l, int r, long long x) {
+    if (tr[p].mx < x) return -1;
+    if (l == r) return l;
+    push(p, l, r);
+    int mid = (l + r) >> 1;
+    int ans = first_at_least(p << 1, l, mid, x);
+    if (ans != -1) return ans;
+    return first_at_least(p << 1 | 1, mid + 1, r, x);
+}
+\end{lstlisting}
+
+如果要找``第一个前缀和至少为 \passthrough{\lstinline!k!}''，节点维护区间和且所有值非负；如果存在负数，不能用前缀和单调性，必须换树套树、平衡树或题目特定结构。例题可练\href{https://www.luogu.com.cn/problem/P3372}{P3372 模板线段树 1}的改造版：每次单点加、询问第一个达到阈值的位置。
+
+
+\subsection{莫队、带修改莫队与回滚莫队}
+
+莫队适用于离线区间询问：移动 \passthrough{\lstinline!L/R!} 一格的代价很小，答案可以增量维护。普通莫队排序 \passthrough{\lstinline!(l/block, r)!}；带修改时再加时间 \passthrough{\lstinline!t!}，状态是 \passthrough{\lstinline!(L,R,T)!}。
+
+\begin{lstlisting}[language={C++}]
+// t 是时间维：这个询问发生以前，数组已经执行了多少次修改。
+struct Query { int l, r, t, id; };
+
+// oldv/newv 必须在读入时保存；处理询问时不能再从当前数组猜 oldv。
+struct Change { int pos, oldv, newv; };
+
+// 当前窗口是 [L,R]，当前已经应用到第 T 次修改。
+// 初始设置为 L=1,R=0，表示窗口为空。
+int L = 1, R = 0, T = 0;
+
+// 这两个函数是“题目答案维护器”，不是莫队本身。
+// 例如统计不同颜色：add 时 freq[a[p]] 从 0 变 1 就 ++answer，
+// del 时从 1 变 0 就 --answer；统计频率平方和则要先减旧贡献再加新贡献。
+void add_pos(int p) { /* 把 a[p] 加入当前答案 */ }
+void del_pos(int p) { /* 从当前答案删除 a[p] */ }
+
+void apply_change(const Change& c, bool forward) {
+    // forward=true：把 oldv 改成 newv；false：撤销为 oldv。
+    int v = forward ? c.newv : c.oldv;
+
+    // 只有修改点位于当前区间时，它才会影响答案。
+    // 顺序必须是“删除旧值 -> 改数组 -> 加入新值”。
+    if (L <= c.pos && c.pos <= R) del_pos(c.pos);
+    a[c.pos] = v;
+    if (L <= c.pos && c.pos <= R) add_pos(c.pos);
+}
+
+// 典型的带修改莫队处理流程：
+// 1. 先按 (l 所在块, r 所在块, t) 排序；
+// 2. 把当前 L/R/T 一格一格移动到询问要求的位置；
+// 3. 每次移动都调用同一套 add/del/apply_change，答案逻辑无需重复编写。
+void process_query(Query q) {
+    while (T < q.t) apply_change(changes[++T], true);
+    while (T > q.t) apply_change(changes[T--], false);
+    while (L > q.l) add_pos(--L);
+    while (R < q.r) add_pos(++R);
+    while (L < q.l) del_pos(L++);
+    while (R > q.r) del_pos(R--);
+    answer[q.id] = current_answer;
+}
+\end{lstlisting}
+
+例题：\href{https://www.luogu.com.cn/problem/P1903}{P1903 数颜色}。操作 \passthrough{\lstinline!R P C!} 是修改，\passthrough{\lstinline!Q L R!} 是询问。读入时给每个询问记录``它之前发生了多少个修改''作为 \passthrough{\lstinline!t!}；处理某个询问前先移动 \passthrough{\lstinline!T!}，修改覆盖当前区间时要先删除旧值再加入新值。若只会加不支持删除，普通莫队不适用；若要求在线，也不能直接套莫队。
+
+\subsubsection{测试样例：带修改莫队的区间、时间双向移动}
+
+下面采用 P1903 的输入格式，每组第一行是 \passthrough{\lstinline!n m!}，数组后是 \passthrough{\lstinline!Q l r!} 或 \passthrough{\lstinline!R p c!}；查询输出区间内不同颜色数。
+
+\begin{lstlisting}
+输入
+2
+1 4
+5
+Q 1 1
+R 1 7
+Q 1 1
+Q 1 1
+5 7
+1 2 1 3 2
+Q 1 5
+R 2 3
+Q 1 3
+R 1 2
+Q 1 2
+Q 2 5
+Q 1 5
+
+输出
+1
+1
+1
+3
+2
+2
+3
+3
+\end{lstlisting}
+
+第一组检查修改点正好在当前区间内且同一查询重复；第二组要求时间前进到 \passthrough{\lstinline!2!}，并且查询区间来回变化。最容易抄错的是没有按``删除旧值、修改数组、加入新值''的顺序处理修改。
+
+回滚莫队适合``左端点块内、右端点可移动，修改只需撤销''的场景。核心是保存操作日志，不要真的把整个数组复制一份；每次离开一个块时回滚到块开始的快照。
+
+
+\subsection{三维偏序的 CDQ 分治与动态规划优化}
+
+CDQ 解决的不是``任意三维查询''，而是一个维度分治、另一个维度排序、剩余维度用树状数组/线段树合并。经典三维偏序：统计满足 \passthrough{\lstinline!x\_j<=x\_i, y\_j<=y\_i, z\_j<=z\_i!} 的点数。
+
+\begin{lstlisting}[language={C++}]
+// 这里给的是“统计三维偏序”的可改造骨架：
+// 对每个点 i，统计有多少个点 j 满足 xj<=xi、yj<=yi、zj<=zi。
+// 调用前：按 (x,y,z) 排序、把完全相同的点合并，z 压缩成 1..Z。
+struct Point {
+    int x, y, z;
+    int cnt = 1;       // 完全相同点的个数；合并重复点后使用。
+    long long ans = 0; // 不含自己这一组的答案。
+};
+
+struct Fenwick {
+    vector<int> t;
+    Fenwick(int n): t(n + 1) {}
+
+    // 在压缩坐标 x 上加入 v 个点。
+    void add(int x, int v) {
+        for (; x < (int)t.size(); x += x & -x) t[x] += v;
+    }
+
+    // 返回 z<=x 的点数。
+    int sum(int x) const {
+        int res = 0;
+        for (; x > 0; x -= x & -x) res += t[x];
+        return res;
+    }
+};
+
+Fenwick bit(MAX_Z);
+
+void cdq(vector<Point>& a, int l, int r) {
+    // a 的“分治下标”仍然按 x 分组；递归返回时区间内部会按 y 有序。
+    if (l == r) return;
+    int m = (l + r) >> 1;
+
+    // 先完成左半内部和右半内部的贡献。
+    cdq(a, l, m);
+    cdq(a, m + 1, r);
+
+    // 此时 a[l..m]、a[m+1..r] 各自已经按 y 排序。
+    // 左半只能贡献给右半，不能把右半反过来影响左半。
+    int i = l;
+    for (int j = m + 1; j <= r; ++j) {
+        while (i <= m && a[i].y <= a[j].y) {
+            // BIT 的下标是 z；加入左半中同时满足 x、y 限制的点。
+            bit.add(a[i].z, a[i].cnt);
+            ++i;
+        }
+        // BIT 前缀和再筛选 z<=a[j].z，得到三维都不超过当前点的数量。
+        a[j].ans += bit.sum(a[j].z);
+    }
+
+    // 必须撤销本次加入，否则别的分治区间会错误继承左半贡献。
+    for (int k = l; k < i; ++k) bit.add(a[k].z, -a[k].cnt);
+
+    // 合并为按 y 有序，供父层用双指针处理第二维。
+    inplace_merge(a.begin() + l, a.begin() + m + 1,
+                  a.begin() + r + 1,
+                  [](const Point& A, const Point& B) {
+                      return A.y < B.y;
+                  });
+}
+\end{lstlisting}
+
+使用时先离散化 \passthrough{\lstinline!z!}，按 \passthrough{\lstinline!x!} 排序，把相同 \passthrough{\lstinline!(x,y,z)!} 合并并记录权值。例题：\href{https://www.luogu.com.cn/problem/P3810}{P3810 三维偏序}。题目中的每个点就是模板的 \passthrough{\lstinline!Point!}，查询``左下后方点数量''就是 \passthrough{\lstinline!bit.sum(z)!}；重复点必须先合并，否则会漏算相等坐标。
+
+\subsubsection{测试样例：三维偏序的相等坐标与重复点}
+
+下面约定每组输入 \passthrough{\lstinline!n!} 个点，输出每个点的``包含自身、满足 \passthrough{\lstinline!x\_j<=x\_i,y\_j<=y\_i,z\_j<=z\_i!} 的点数''，顺序按输入编号输出。
+
+\begin{lstlisting}
+输入
+3
+1
+1 1 1
+4
+1 1 1
+2 2 2
+2 1 2
+1 2 1
+4
+1 1 1
+1 1 1
+1 1 1
+2 2 2
+
+输出
+1
+1 4 2 2
+3 3 3 4
+\end{lstlisting}
+
+第二组同时包含三个坐标方向上的相等关系；第三组专门检查完全相同点是否先合并并按 \passthrough{\lstinline!cnt!} 传播。若把比较条件写成严格小于，第二、三组都会错误。
+
+CDQ 优化 DP 的识别句式是``转移来自满足下标/坐标偏序的前面状态''，把 \passthrough{\lstinline!dp[j]!} 看成事件，在 CDQ 合并阶段把左半的贡献加入数据结构，更新右半。若转移只依赖一维单调队列，不要为了 CDQ 增加复杂度。
+
+
+\subsection{可持久化字典树（Persistent Trie）}
+
+当询问是``区间 \passthrough{\lstinline![l,r]!} 中与 \passthrough{\lstinline!x!} 异或最大/第 k 大''，前缀异或 Trie 的每个版本保存 \passthrough{\lstinline!1..i!} 的所有数。区间查询用版本 \passthrough{\lstinline!root[r]!} 减去 \passthrough{\lstinline!root[l-1]!} 的子树大小。
+
+\begin{lstlisting}[language={C++}]
+const int LOG = 30; // 如果 a[i] 可能达到 2^31 以上，要提高到 60。
+
+struct Node {
+    int ch[2]{}; // 当前二进制位选择 0/1 后的儿子节点编号。
+    int cnt = 0; // 该节点子树中数字的数量。
+} tr[MAXNODE];
+
+int tot = 0;       // 已经使用的节点数，0 号节点表示空树。
+int root[MAXN];    // root[i] 是前 i 个数构成的版本。
+
+int insert(int old, int bit, int x) {
+    // “持久化”的关键：复制旧根到新节点，只修改本次路径。
+    int now = ++tot;
+    tr[now] = tr[old];
+    ++tr[now].cnt;
+
+    // bit<0 表示所有二进制位都处理完了。
+    if (bit < 0) return now;
+
+    int b = (x >> bit) & 1;
+    // 旧版本的另一条分支仍然复用；当前分支递归创建新节点。
+    tr[now].ch[b] = insert(tr[old].ch[b], bit - 1, x);
+    return now;
+}
+
+int max_xor(int left_root, int right_root, int bit, int x) {
+    // 两个版本相减：root[r] 的数量 - root[l-1] 的数量，正好保留 [l,r]。
+    if (bit < 0) return 0;
+
+    // 为了让异或结果当前位为 1，优先走和 x 当前位相反的分支。
+    int want = ((x >> bit) & 1) ^ 1;
+    int a = tr[tr[right_root].ch[want]].cnt
+          - tr[tr[left_root].ch[want]].cnt;
+
+    if (a > 0) {
+        // 目标分支在区间中存在，贪心保留这一位的 1。
+        return (1 << bit) | max_xor(tr[left_root].ch[want],
+                                    tr[right_root].ch[want], bit - 1, x);
+    }
+
+    // 目标分支为空，只能走相同位；这一位贡献 0。
+    int same = want ^ 1;
+    return max_xor(tr[left_root].ch[same],
+                   tr[right_root].ch[same], bit - 1, x);
+}
+\end{lstlisting}
+
+调用时 \passthrough{\lstinline!root[i] = insert(root[i-1], LOG, a[i])!}，查询 \passthrough{\lstinline![l,r]!} 用 \passthrough{\lstinline!max\_xor(root[l-1], root[r], LOG, x)!}。注意节点数约为 \passthrough{\lstinline!n*(LOG+1)!}，不能只按 \passthrough{\lstinline!4*n!} 开。练习可从数据结构题单中的可持久化 Trie 开始，遇到``区间 + 异或最大''时不要用普通 Trie，因为普通 Trie 不能删除左端前缀。
+
+\subsubsection{测试样例：版本相减和区间端点}
+
+下面每组输入 \passthrough{\lstinline!n q!}、数组，随后每个查询为 \passthrough{\lstinline!l r x!}，输出区间 \passthrough{\lstinline![l,r]!} 中某个数与 \passthrough{\lstinline!x!} 的最大异或值。
+
+\begin{lstlisting}
+输入
+3
+1 2
+0
+1 1 0
+1 1 7
+4 4
+1 2 4 8
+1 4 0
+1 4 7
+2 3 3
+3 3 0
+3 2
+5 5 1
+1 2 1
+2 3 7
+
+输出
+0
+7
+8
+15
+7
+4
+4
+6
+\end{lstlisting}
+
+第一组检查单版本和零值；第二组检查 \passthrough{\lstinline![1,n]!}、内部区间和单点；第三组检查重复值以及 \passthrough{\lstinline!root[r]-root[l-1]!} 的左端点是否写错。
+
+
+\subsection{李超线段树：整条直线与线段插入}
+
+维护若干直线 \passthrough{\lstinline!y=kx+b!}，询问某个整数 \passthrough{\lstinline!x!} 的最大/最小值，且插入和询问在线时，用李超树。与凸包不同，直线可以任意交叉；每个节点只保存当前区间中在某些位置更优的直线。
+
+\begin{lstlisting}[language={C++}]
+struct Line {
+    long long k = 0;
+    long long b = -(1LL << 60); // 最大值模板的负无穷空直线。
+
+    // 题目数据若 k*x 可能超过 long long，要改成 __int128 比较。
+    long long get(long long x) const { return k * x + b; }
+};
+Line tree[4 * MAXX];
+
+void add_line(Line nw, int p, int l, int r) {
+    // 节点 p 负责整数横坐标 [l,r]，tree[p] 是当前候选直线。
+    int m = (l + r) >> 1;
+
+    // 比较新旧直线在左端点、中点的优劣。
+    bool lef = nw.get(l) > tree[p].get(l);
+    bool mid = nw.get(m) > tree[p].get(m);
+
+    // 中点处更优的直线必须留在当前节点；被换下来的直线只可能在某一侧更优。
+    if (mid) swap(nw, tree[p]);
+    if (l == r) return;
+
+    // 如果两条线在左端和中点的优劣不同，交点在左半，否则在右半。
+    if (lef != mid) add_line(nw, p << 1, l, m);
+    else add_line(nw, p << 1 | 1, m + 1, r);
+}
+long long query(int x, int p, int l, int r) {
+    // 答案必须比较沿根到 x 所在叶子的每一个节点保存的直线。
+    long long res = tree[p].get(x);
+    if (l == r) return res;
+    int m = (l + r) >> 1;
+    if (x <= m) return max(res, query(x, p << 1, l, m));
+    return max(res, query(x, p << 1 | 1, m + 1, r));
+}
+\end{lstlisting}
+
+插入``只在 \passthrough{\lstinline![ql,qr]!} 有效的线段''时，把 \passthrough{\lstinline!add\_line!} 外面再套区间递归，只在覆盖节点调用 \passthrough{\lstinline!add\_line!}。例题：\href{https://www.luogu.com.cn/problem/P4097}{P4097 李超线段树}：题目插入线段、询问横坐标 \passthrough{\lstinline!k!} 处最高的线段。坐标压缩不能随便做，因为线性函数的比较依赖真实横坐标；若题目横坐标本来是整数区间 \passthrough{\lstinline![1,39989]!}，直接按整数域开树即可。
+
+\subsubsection{测试样例：直线交叉、端点和空树}
+
+下面约定横坐标域为 \passthrough{\lstinline![1,X]!}；操作 \passthrough{\lstinline!1 k b!} 插入 \passthrough{\lstinline!y=kx+b!}，操作 \passthrough{\lstinline!2 x!} 查询最大值。空树查询的输出按题目改成对应的负无穷标记。
+
+\begin{lstlisting}
+输入
+3
+1 4
+1 2 1
+2 1
+1 -1 5
+2 1
+5 5
+1 1 0
+1 -1 10
+2 1
+2 5
+1 0 100
+2 3
+5 5
+1 2 0
+1 -2 10
+2 1
+2 5
+2 3
+
+输出
+3
+4
+9
+5
+100
+8
+10
+6
+\end{lstlisting}
+
+第二、三组必须在不同横坐标上选择不同的最优直线；如果只比较中点、不沿根到叶查询，或者把真实横坐标错误压成编号，通常会在这里出错。
+
+
+\subsection{区间最值势能线段树（Segment Tree Beats）}
+
+当题目同时出现``区间取 \passthrough{\lstinline!min(x,·)!}/区间取 \passthrough{\lstinline!max(x,·)!}''与区间和，普通懒标记无法把所有元素统一修改，因为只有大于 \passthrough{\lstinline!x!} 的元素会变。Beats 维护：最大值 \passthrough{\lstinline!mx1!}、次大值 \passthrough{\lstinline!mx2!}、最大值个数 \passthrough{\lstinline!cnt\_mx!}、区间和；若 \passthrough{\lstinline!mx2 < x < mx1!}，说明只有最大值会下降，可以整段打标记。
+
+\begin{lstlisting}[language={C++}]
+struct BeatNode {
+    long long sum; // 区间和。
+    long long mx1; // 区间最大值。
+    long long mx2; // 严格小于 mx1 的次大值；不存在时为 NEG。
+    int cnt;       // 最大值出现次数。
+};
+const long long NEG = -(1LL << 60);
+
+void push_chmin(int p, long long x) {
+    // 只有 x < mx1 时才有变化；调用者还必须保证 x > mx2。
+    // 这样区间内只有“最大值这一类”会被修改，才能整段打标记。
+    if (x >= tr[p].mx1) return;
+    tr[p].sum -= (tr[p].mx1 - x) * tr[p].cnt;
+    tr[p].mx1 = x;
+}
+void push_up(int p) {
+    // 合并两个儿子的 sum、最大值、次大值和最大值个数。
+    tr[p].sum = tr[p<<1].sum + tr[p<<1|1].sum;
+    tr[p].mx1 = max(tr[p<<1].mx1, tr[p<<1|1].mx1);
+    tr[p].cnt = 0;
+    tr[p].mx2 = NEG;
+    for (int q : {p << 1, p << 1 | 1}) {
+        if (tr[q].mx1 == tr[p].mx1) {
+            tr[p].cnt += tr[q].cnt;
+            tr[p].mx2 = max(tr[p].mx2, tr[q].mx2);
+        } else {
+            tr[p].mx2 = max(tr[p].mx2, tr[q].mx1);
+        }
+    }
+}
+void push_down(int p) {
+    // 父节点的 mx1 可能已经被压低，儿子仍保留更大的旧最大值。
+    // 把父亲的上界传给儿子，不能直接复制整个节点。
+    if (tr[p<<1].mx1 > tr[p].mx1) push_chmin(p<<1, tr[p].mx1);
+    if (tr[p<<1|1].mx1 > tr[p].mx1) push_chmin(p<<1|1, tr[p].mx1);
+}
+void range_chmin(int p, int l, int r, int ql, int qr, long long x) {
+    // 没交集，或当前最大值已经不超过 x：无需处理。
+    if (r < ql || qr < l || x >= tr[p].mx1) return;
+
+    // x 严格大于次大值时，只有最大值会下降，可以 O(1) 修改当前节点。
+    if (ql <= l && r <= qr && x > tr[p].mx2) {
+        push_chmin(p, x);
+        return;
+    }
+
+    // 否则区间内至少有两类值会被影响，必须下传后递归到儿子。
+    push_down(p); // 把父节点较小的 mx1 下传给孩子
+    int m = (l + r) >> 1;
+    range_chmin(p<<1, l, m, ql, qr, x);
+    range_chmin(p<<1|1, m+1, r, ql, qr, x);
+    push_up(p);
+}
+\end{lstlisting}
+
+完整题例：\href{https://www.luogu.com.cn/problem/P6242}{P6242 线段树 3}。如果还要区间取 \passthrough{\lstinline!max!}，对称维护最小值 \passthrough{\lstinline!mn1/mn2/cnt\_mn!}；如果要区间加，再额外维护 \passthrough{\lstinline!add!} 并在 \passthrough{\lstinline!push\_down!} 中先传加法。这个算法的均摊复杂度依赖势能，不能把 \passthrough{\lstinline!push\_chmin!} 的条件删掉后``递归到底''，否则会退化。
+
+\subsubsection{测试样例：区间取最小值的整段标记与递归分支}
+
+下面约定操作 \passthrough{\lstinline!1 l r x!} 是区间 \passthrough{\lstinline!chmin!}，操作 \passthrough{\lstinline!2 l r!} 查询区间和。
+
+\begin{lstlisting}
+输入
+3
+1 4
+5
+2 1 1
+1 1 1 5
+1 1 1 3
+2 1 1
+4 4
+1 3 3 7
+2 1 4
+1 1 4 5
+2 1 4
+1 2 3 2
+2 2 3
+5 5
+10 1 8 8 3
+1 1 5 8
+2 1 5
+1 1 5 5
+2 1 5
+1 2 4 4
+2 2 4
+
+输出
+5
+3
+14
+12
+4
+28
+19
+9
+\end{lstlisting}
+
+第二组的最大值有重复，第三组连续两次降低最大值后再对子区间降低，能同时检查 \passthrough{\lstinline!mx1/mx2/cnt!}、\passthrough{\lstinline!push\_down!} 和``\passthrough{\lstinline!x > mx2!} 才能整段修改''的条件。
+
+
+\subsection{可持久化并查集}
+
+题面出现``第 \passthrough{\lstinline!k!} 个版本中连不连通''\,``回到历史版本再合并''时，普通并查集不能回退。用可持久化线段树保存 \passthrough{\lstinline!fa!} 和秩/深度数组，每次只复制从根到叶子的 \(O(\log n)\) 个节点。
+
+\begin{lstlisting}[language={C++}]
+struct PNode { int l, r, val; } tr[MAXNODE];
+int tot;
+int build(int l, int r) {
+    // build 建立版本 0：每个位置的父亲初始是自己。
+    int p = ++tot;
+    if (l == r) tr[p].val = l;
+    else {
+        int m = (l + r) >> 1;
+        tr[p].l = build(l, m);
+        tr[p].r = build(m + 1, r);
+    }
+    return p;
+}
+int update(int old, int l, int r, int pos, int val) {
+    // 只复制从根到 pos 的路径；没有改动的子树直接复用 old 版本。
+    int p = ++tot; tr[p] = tr[old];
+    if (l == r) { tr[p].val = val; return p; }
+    int m = (l + r) >> 1;
+    if (pos <= m) tr[p].l = update(tr[old].l, l, m, pos, val);
+    else tr[p].r = update(tr[old].r, m + 1, r, pos, val);
+    return p;
+}
+int query(int p, int l, int r, int pos) {
+    // 按 pos 在持久化线段树中向下找到 fa[pos]。
+    if (l == r) return tr[p].val;
+    int m = (l + r) >> 1;
+    return pos <= m ? query(tr[p].l, l, m, pos)
+                    : query(tr[p].r, m + 1, r, pos);
+}
+int find_root(int root, int x) {
+    // 不能做路径压缩：那会修改旧版本；用递归沿父指针查根。
+    int f = query(root, 1, n, x);
+    return f == x ? x : find_root(root, f);
+}
+int merge_version(int root, int x, int y) {
+    // root 是“要从哪个历史版本继续操作”，不是固定写 root[n-1]。
+    x = find_root(root, x); y = find_root(root, y);
+    if (x == y) return root;
+    // 应按秩/按大小把较浅树挂到较深树上；秩也要持久化。
+    // 真实题目还要维护 rank/size 的第二棵持久化线段树。
+    return update(root, 1, n, x, y);
+}
+\end{lstlisting}
+
+\subsubsection{调用测试：历史版本不能被后续合并污染}
+
+下面不强行规定 P3402 的操作编号，直接按接口描述测试：版本 \passthrough{\lstinline!0!} 是三个孤立点。
+
+\begin{lstlisting}
+版本 1：从版本 0 合并 (1,2)
+版本 2：从版本 0 合并 (2,3)
+查询版本 1：connected(1,2) = true
+查询版本 1：connected(2,3) = false
+查询版本 2：connected(1,2) = false
+查询版本 2：connected(2,3) = true
+\end{lstlisting}
+
+如果版本一和版本二都变成同一棵并查集，说明更新时修改了旧版本节点；如果从版本二继续合并时版本一也改变，说明没有真正复制根到叶子的路径。
+
+例题：\href{https://www.luogu.com.cn/problem/P3402}{P3402 可持久化并查集}。每个版本 \passthrough{\lstinline!root[i]!} 从 \passthrough{\lstinline!root[i-1]!} 继承；操作 \passthrough{\lstinline!0!} 复制某版本，操作 \passthrough{\lstinline!1!} 合并，操作 \passthrough{\lstinline!2!} 查询连通性。上面为了突出结构只展示 \passthrough{\lstinline!fa!}，正式提交要再维护按秩合并的深度，否则最坏会退化；不做路径压缩是为了保持版本不被修改。
+
+
+

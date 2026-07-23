@@ -1,0 +1,684 @@
+\section{数学与组合计数：参数、调用与改造}
+
+本节紧跟前面的基础模板。先看每个接口传什么，再看哪些不变量不能动，最后看如何替换维护信息或转移。
+
+\subsection{高级容斥与倍数容斥}
+
+集合容斥是``至少一个条件满足''：
+
+\[|\cup A_i|=\sum|A_i|-\sum|A_i\cap A_j|+\cdots.\]
+
+当条件是``能被 \(d\) 整除''，交集对应 \passthrough{\lstinline!lcm!}；当条件是``所有因子贡献汇总''，常用莫比乌斯函数把``倍数和''反演为``恰好值''。
+
+小范围条件最多二十个时可以枚举子集：
+
+\begin{lstlisting}[language={C++}]
+long long bad = 0;
+for (int mask = 1; mask < (1 << m); ++mask) {
+    long long l = 1;
+    int bits = 0;
+    bool overflow = false;
+    for (int i = 0; i < m; ++i) if (mask >> i & 1) {
+        ++bits;
+        l = lcm_limit(l, a[i], n, overflow);
+    }
+    if (overflow || l > n) continue;
+    long long ways = n / l;
+    if (bits & 1) bad += ways;
+    else bad -= ways;
+}
+\end{lstlisting}
+
+\subsubsection{测试样例：容斥的重复覆盖和最小公倍数溢出分支}
+
+下面约定每组输入 \passthrough{\lstinline!n m!}，后面给出 \passthrough{\lstinline!m!} 个除数，输出 \passthrough{\lstinline!1..n!} 中不能被任何除数整除的数。
+
+\begin{lstlisting}
+输入
+4
+1 1
+2
+10 2
+2 3
+30 3
+2 3 5
+100 2
+4 6
+
+输出
+1
+3
+8
+67
+\end{lstlisting}
+
+第二、三组检查交集是否按 \passthrough{\lstinline!lcm!} 加回；第四组的交集是 \passthrough{\lstinline!lcm(4,6)=12!}，答案为 \passthrough{\lstinline!100-25-16+8=67!}，可以抓住把乘积当最小公倍数或符号写反的问题。
+
+例题映射：题目问 \passthrough{\lstinline!1..n!} 中不能被任何给定数整除的数，先求``至少被一个整除''的数量，再用 \passthrough{\lstinline!n-bad!}。若 \passthrough{\lstinline!m!} 很大，子集容斥不可用，检查数值范围后换莫比乌斯或筛法。
+
+
+\subsection{卢卡斯定理（Lucas Theorem）与组合数模质数}
+
+当模数 \passthrough{\lstinline!p!} 是质数、\passthrough{\lstinline!n,m!} 很大但 \passthrough{\lstinline!p!} 不大时：
+
+\[C(n,m)\equiv C(\lfloor n/p\rfloor,\lfloor m/p\rfloor)\cdot C(n\bmod p,m\bmod p)\pmod p.\]
+
+\begin{lstlisting}[language={C++}]
+long long mod_pow(long long a, long long e, long long p) {
+    long long r = 1 % p; // p=1 时返回 0，避免写死为 1。
+    for (; e; e >>= 1, a = a * a % p) {
+        // e 的最低位为 1，说明当前 a 是答案乘积的一部分。
+        if (e & 1) r = r * a % p;
+    }
+    return r;
+}
+long long Csmall(long long n, long long k, long long p,
+                 const vector<long long>& fac,
+                 const vector<long long>& ifac) {
+    // 这里 n、k 必须小于 p；Lucas 会把大数拆成 p 进制位后调用本函数。
+    if (k < 0 || k > n) return 0;
+
+    // C(n,k)=n!/(k!(n-k)!)，ifac 是阶乘逆元。
+    return fac[n] * ifac[k] % p * ifac[n-k] % p;
+}
+long long Lucas(long long n, long long k, long long p,
+                const vector<long long>& fac,
+                const vector<long long>& ifac) {
+    // 递归处理 n、k 的最低一位 p 进制数字。
+    if (k == 0) return 1;
+
+    // 当前位组合数乘上更高位的组合数；模 p 的进位不合法时 Csmall 返回 0。
+    return Csmall(n % p, k % p, p, fac, ifac)
+         * Lucas(n / p, k / p, p, fac, ifac) % p;
+}
+\end{lstlisting}
+
+\subsubsection{\texorpdfstring{测试样例：Lucas 的低位进位、\texttt{k=0} 和组合数为零}{测试样例：Lucas 的低位进位、k=0 和组合数为零}}
+
+每组输入 \passthrough{\lstinline!n m p!}，其中 \passthrough{\lstinline!p!} 是质数，输出 \passthrough{\lstinline!C(n,m) mod p!}。
+
+\begin{lstlisting}
+输入
+4
+0 0 2
+5 2 3
+7 1 5
+10 3 5
+
+输出
+1
+1
+2
+0
+\end{lstlisting}
+
+\passthrough{\lstinline!C(10,3)!} 在模 \passthrough{\lstinline!5!} 下因为五进制低位发生不合法进位而为 \passthrough{\lstinline!0!}；如果只计算 \passthrough{\lstinline!n\%p!} 和 \passthrough{\lstinline!m\%p!} 而不递归高位，最后一组会错误。
+
+例题：\href{https://www.luogu.com.cn/problem/P3807}{P3807 Lucas 定理}。预处理 \passthrough{\lstinline!fac[0..p-1]!} 和逆阶乘；每组输入 \passthrough{\lstinline!(n,m,p)!} 调 \passthrough{\lstinline!Lucas(n,m,p,fac,ifac)!}。注意这份模板默认 \passthrough{\lstinline!p!} 不大且是质数；模合数或 \passthrough{\lstinline!p!} 很大时要用 exLucas/质因数分解，不能盲套。
+
+
+\subsection{中国剩余定理与扩展中国剩余定理}
+
+要合并
+
+\[x\equiv a\pmod m,\qquad x\equiv b\pmod n,\]
+
+令 \passthrough{\lstinline!x=a+m*t!}，得到 \passthrough{\lstinline!m*t ≡ b-a (mod n)!}。只有 \passthrough{\lstinline!gcd(m,n)!} 整除 \passthrough{\lstinline!b-a!} 时有解；用扩展欧几里得求 \passthrough{\lstinline!m/g!} 的逆元。
+
+\begin{lstlisting}[language={C++}]
+long long exgcd(long long a, long long b,
+                long long& x, long long& y) {
+    // 返回 gcd(a,b)，同时求出 a*x+b*y=g。
+    if (!b) { x = 1; y = 0; return a; }
+    long long x1, y1;
+    long long g = exgcd(b, a % b, x1, y1);
+    // 由 b*x1+(a%b)*y1=g 反推 a*y1+b*(x1-a/b*y1)=g。
+    x = y1;
+    y = x1 - (a / b) * y1;
+    return g;
+}
+bool merge(long long& a, long long& m,
+           long long b, long long n) {
+    // 旧方程：x ≡ a (mod m)；新方程：x ≡ b (mod n)。
+    // 合并后仍用 a,m 表示一个最小非负解和新的最小公倍数模数。
+    long long x, y;
+    long long g = exgcd(m, n, x, y);
+    long long d = b - a;
+    // 两同余式相容的充要条件：gcd(m,n) | (b-a)。
+    if (d % g) return false;
+    // 令 x=a+m*t，得到 (m/g)*t ≡ (b-a)/g (mod n/g)。
+    // exgcd 返回的 x 正是 m/g 在模 n/g 意义下的逆元。
+    __int128 t = (__int128)(d / g) * x;
+    long long mod = n / g;
+    t %= mod;
+    if (t < 0) t += mod;
+    // 中间乘法可能超过 long long，所以 na/nm 使用 __int128。
+    __int128 na = (__int128)a + (__int128)m * t;
+    __int128 nm = (__int128)m / g * n;
+    a = (long long)(na % nm);
+    if (a < 0) a += (long long)nm;
+    m = (long long)nm;
+    return true;
+}
+\end{lstlisting}
+
+\subsubsection{测试样例：扩展中国剩余定理的互质、非互质和无解}
+
+下面每组先输入方程数量 \passthrough{\lstinline!k!}，随后输入 \passthrough{\lstinline!b mod!}，表示 \passthrough{\lstinline!x ≡ b (mod mod)!}；输出最小非负解，无解输出 \passthrough{\lstinline!No!}。
+
+\begin{lstlisting}
+输入
+4
+1
+3 5
+2
+2 3
+3 5
+2
+1 4
+5 6
+2
+0 2
+1 4
+
+输出
+3
+8
+5
+No
+\end{lstlisting}
+
+第三组模数不互质但相容，答案是 \passthrough{\lstinline!5!}；第四组 \passthrough{\lstinline!x!} 必须同时为偶数和模 \passthrough{\lstinline!4!} 余 \passthrough{\lstinline!1!}，无解。连续多组还要检查合并后的 \passthrough{\lstinline!a,m!} 是否在下一组重新初始化为 \passthrough{\lstinline!0,1!}。
+
+例题：\href{https://www.luogu.com.cn/problem/P4777}{P4777 扩展中国剩余定理}。初始化 \passthrough{\lstinline!a=0,m=1!}，依次读入每组 \passthrough{\lstinline!x ≡ b (mod mod)!}，调用 \passthrough{\lstinline!merge(a,m,b,mod)!}，最后输出最小非负 \passthrough{\lstinline!a!}。本题明确提醒中间乘法可能溢出，\passthrough{\lstinline!\_\_int128!} 不能省；若题目保证有解也仍然建议保留无解判断。
+
+
+\subsection{高斯消元、秩、解空间与行列式}
+
+高斯消元的现场顺序：选主元 → 交换到当前行 → 消去其他行/下面的行 → 判断矛盾或自由元。模意义下每次除以主元要乘逆元；普通实数消元则要用 \passthrough{\lstinline!long double!} 并带 \passthrough{\lstinline!eps!}。
+
+\begin{lstlisting}[language={C++}]
+int gauss_mod(vector<vector<long long>> a, long long mod) {
+    // a 是系数矩阵；如果是增广矩阵，最后一列还要单独解释为常数项。
+    // 这里采用 Gauss-Jordan 消元：每个主元列都会把其他行一起消成 0。
+    int n = a.size(), m = a[0].size(), row = 0;
+    for (int col = 0; col < m && row < n; ++col) {
+        int p = row; // 在当前列寻找主元行。
+        for (int i = row; i < n; ++i)
+            if (a[i][col] > a[p][col]) p = i;
+        // 没有非零主元，说明这一列是自由列，换下一列。
+        if (a[p][col] == 0) continue;
+        swap(a[p], a[row]);
+        // 模意义下的除法必须乘逆元；这里默认 mod 是质数。
+        long long inv = mod_pow(a[row][col], mod - 2, mod);
+        for (int j = col; j < m; ++j) a[row][j] = a[row][j] * inv % mod;
+        for (int i = 0; i < n; ++i) if (i != row) {
+            long long k = a[i][col];
+            // 用当前主元行消掉其它行的这一列。
+            for (int j = col; j < m; ++j)
+                a[i][j] = (a[i][j] - k * a[row][j]) % mod;
+        }
+        ++row;
+    }
+    return row; // 秩；增广矩阵要额外判断矛盾行
+}
+\end{lstlisting}
+
+行列式在消元时记录交换次数，答案乘所有主元；若模数不是质数，不能用费马逆元，可用整数版消元或先保证主元可逆。矩阵树定理则是构造拉普拉斯矩阵，删去任意一行一列，求余下行列式。
+
+\subsubsection{测试样例：模高斯消元的零秩、满秩和相关行}
+
+下面约定每组输入 \passthrough{\lstinline!n m!} 和一个 \passthrough{\lstinline!n*m!} 的系数矩阵，输出模意义下的秩；模数固定为 \passthrough{\lstinline!7!}。
+
+\begin{lstlisting}
+输入
+4
+1 1
+0
+1 1
+1
+2 2
+1 0
+0 1
+2 3
+1 2 3
+2 4 6
+
+输出
+0
+1
+2
+1
+\end{lstlisting}
+
+第一组检查没有主元时不能强行增加秩；最后一组两行线性相关，能抓住没有取模、主元交换和消元方向错误。若把它接到增广矩阵上，还要另外加入``系数全零但常数非零''的无解行。
+
+例题：\href{https://www.luogu.com.cn/problem/P6178}{P6178 Matrix-Tree 定理}。无向图中 \passthrough{\lstinline!L[i][i]!} 加边数，\passthrough{\lstinline!L[i][j]!} 减边数；删掉最后一行和最后一列后求模行列式。不要把邻接矩阵直接拿来求行列式，也不要把有向图和无向图的拉普拉斯构造混用。
+
+
+\subsection{莫比乌斯反演}
+
+若题目给出
+
+\[F(n)=\sum_{d\mid n} f(d),\]
+
+则
+
+\[f(n)=\sum_{d\mid n}\mu(d)F(n/d).\]
+
+竞赛中常见等价形式是``统计 gcd 恰好为 \passthrough{\lstinline!d!}''：先统计所有 gcd 是 \passthrough{\lstinline!d!} 的倍数，再从大到小用 \passthrough{\lstinline!f[d] -= f[k]!} 反演。
+
+\begin{lstlisting}[language={C++}]
+vector<int> mu, primes;
+vector<char> is_comp;
+void linear_sieve_mu(int n) {
+    // mu[1]=1；mu[p]=-1；有平方因子时 mu=0；不同质因子乘积时符号交替。
+    mu.assign(n + 1, 0);
+    is_comp.assign(n + 1, false);
+    mu[1] = 1;
+    for (int i = 2; i <= n; ++i) {
+        // i 没被标记说明是质数。
+        if (!is_comp[i]) primes.push_back(i), mu[i] = -1;
+        for (int p : primes) {
+            if (1LL * i * p > n) break;
+            is_comp[i * p] = true;
+            if (i % p == 0) {
+                // p 已经在 i 中出现，再乘一次就有平方因子。
+                mu[i * p] = 0;
+                break;
+            }
+            // p 与 i 互质：mu(i*p)=-mu(i)。
+            mu[i * p] = -mu[i];
+        }
+    }
+}
+\end{lstlisting}
+
+\subsubsection{测试样例：莫比乌斯函数的平方因子和多测重建}
+
+下面约定每组输入 \passthrough{\lstinline!n!}，输出 \passthrough{\lstinline!mu[1..n]!}。
+
+\begin{lstlisting}
+输入
+3
+1
+5
+10
+
+输出
+1
+1 -1 -1 0 -1
+1 -1 -1 0 -1 1 -1 0 0 1
+\end{lstlisting}
+
+\passthrough{\lstinline!mu(4)=0!} 和 \passthrough{\lstinline!mu(8)=0!} 是平方因子分支；连续调用时 \passthrough{\lstinline!primes!} 必须清空，否则线性筛的全局状态会残留。若后续用它统计互质对，还要单独测试全相同数组和全为质数的数组。
+
+例如统计数对 \passthrough{\lstinline!(i,j)!} 的 gcd 恰为 \passthrough{\lstinline!1!}：先用频率数组求 \passthrough{\lstinline!cnt[d] =!} 两数都是 \passthrough{\lstinline!d!} 的倍数的对数，再从大到小令 \passthrough{\lstinline!exact[d]=cnt[d]-sum(exact[2d],exact[3d],...)!}；也可按 \(mu\) 直接加权。看到``所有倍数/恰好 gcd/互质对''就优先想反演。
+
+
+\subsection{原根、Baby-step Giant-step 离散对数与扩展算法}
+
+离散对数题的目标是求最小 \passthrough{\lstinline!x!} 使 \passthrough{\lstinline!a\^x ≡ b (mod p)!}。当模数是质数且 \passthrough{\lstinline!a!} 可逆，用 Baby-step Giant-step：设 \passthrough{\lstinline!m=ceil(sqrt(p))!}，枚举 \passthrough{\lstinline!a\^j!} 存表，再枚举 \passthrough{\lstinline!b*a\^\{-im\}!} 查表，复杂度 \(O(\sqrt p)\)。
+
+\begin{lstlisting}[language={C++}]
+long long bsgs(long long a, long long b, long long mod) {
+    // 求最小非负 x，使 a^x = b (mod mod)。
+    // 基础版要求 gcd(a,mod)=1；下面用费马小定理求逆元，
+    // 因而最安全的使用场景是 mod 为质数且 a!=0。
+    a %= mod; b %= mod;
+    long long m = sqrtl(mod) + 1;
+    unordered_map<long long, long long> baby;
+    long long cur = 1;
+    // Baby step：保存 a^j -> j，j=0..m-1。
+    for (long long j = 0; j < m; ++j) {
+        // 保留最小 j，保证找到的是更小的答案。
+        baby.emplace(cur, j);
+        cur = (__int128)cur * a % mod;
+    }
+    // Giant step 每次乘 a^{-m}，所以第 i 次对应 b*a^{-im}。
+    long long factor = mod_pow(mod_pow(a, m, mod), mod - 2, mod);
+    cur = b;
+    for (long long i = 0; i <= m; ++i) {
+        auto it = baby.find(cur);
+        if (it != baby.end()) {
+            // cur=a^j 时，b*a^{-im}=a^j，即 x=i*m+j。
+            return i * m + it->second;
+        }
+        cur = (__int128)cur * factor % mod;
+    }
+    return -1;
+}
+\end{lstlisting}
+
+\subsubsection{测试样例：离散对数的零次幂、最小解和无解}
+
+下面每组输入 \passthrough{\lstinline!a b p!}，输出最小非负 \passthrough{\lstinline!x!} 使 \passthrough{\lstinline!a\^x ≡ b (mod p)!}；这里的基础 BSGS 只使用质数模数且 \passthrough{\lstinline!a!} 可逆。
+
+\begin{lstlisting}
+输入
+4
+2 1 5
+2 3 5
+3 1 7
+2 3 7
+
+输出
+0
+3
+0
+-1
+\end{lstlisting}
+
+第一、三组检查 \passthrough{\lstinline!x=0!} 不能被漏掉；最后一组 \passthrough{\lstinline!3!} 不在 \passthrough{\lstinline!2!} 的幂循环中，必须输出 \passthrough{\lstinline!-1!}。如果把扩展 BSGS 也接入，再另加 \passthrough{\lstinline"gcd(a,p) != 1"} 的样例，不能把基础模板直接套过去。
+
+原根判定先分解 \passthrough{\lstinline!phi(mod)!} 的质因子，候选 \passthrough{\lstinline!g!} 满足 \passthrough{\lstinline"g\^(phi/q) != 1"} 对所有质因子 \passthrough{\lstinline!q!} 成立。若 \passthrough{\lstinline"gcd(a,mod)!=1"}，普通 BSGS 不能直接用，需要扩展 BSGS 先剥离 gcd。练习可用\href{https://www.luogu.com.cn/training/216}{原根/离散对数专题}中的对应题目；题目若要求模 \(10^9\) 级，先确认是否为质数，不能看见``指数很大''就自动套 BSGS。
+
+
+\subsection{生成函数、数论变换、Burnside 引理与 Pólya 计数定理}
+
+普通生成函数把数列 \passthrough{\lstinline!a\_n!} 写成 \passthrough{\lstinline!A(x)=sum a\_n x\^n!}。卷积就是多项式乘法：
+
+\begin{lstlisting}[language={C++}]
+vector<long long> multiply(const vector<long long>& a,
+                           const vector<long long>& b) {
+    // a[i] / b[j] 分别是 x^i / x^j 的系数，卷积后下标一定是 i+j。
+    vector<long long> c(a.size() + b.size() - 1);
+    for (int i = 0; i < (int)a.size(); ++i)
+        for (int j = 0; j < (int)b.size(); ++j)
+            // 先乘后加；每次取模避免系数过大。
+            c[i + j] = (c[i + j] + a[i] * b[j]) % MOD;
+    return c;
+}
+\end{lstlisting}
+
+\subsubsection{测试样例：卷积下标、单位多项式和重复系数}
+
+下面约定输入两段系数，输出普通卷积结果。
+
+\begin{lstlisting}
+输入
+3
+1
+1
+1
+2
+1 1
+2
+1 1
+1 2 3
+2
+4 5
+
+输出
+1
+1 2 1
+4 13 22 15
+\end{lstlisting}
+
+第一组检查单位元；第二组检查中间系数累加；第三组检查卷积长度是 \passthrough{\lstinline!a.size()+b.size()-1!}，不能把下标写成 \passthrough{\lstinline!i+j+1!}。
+
+当次数达到 \passthrough{\lstinline!1e5!}，把 \passthrough{\lstinline!multiply!} 换成 NTT；模板题是\href{https://www.luogu.com.cn/problem/P3803}{P3803 多项式乘法}。生成函数题的调用重点是先确定``指数代表什么''：物品数量、总和还是选取个数；卷积下标错一位会导致整个答案错。
+
+Burnside 计算群作用下的不同染色数：
+
+\[A=\frac1{|G|}\sum_{g\in G} k^{\text{cycles}(g)}.\]
+
+\begin{lstlisting}[language={C++}]
+long long burnside(const vector<vector<int>>& perm,
+                   long long colors, long long mod) {
+    long long sum = 0;
+    for (auto& p : perm) {
+        // p[i] 表示置换把位置 i 送到 p[i]。
+        vector<char> vis(p.size());
+        int cycles = 0;
+        for (int i = 0; i < (int)p.size(); ++i) if (!vis[i]) {
+            ++cycles;
+            // 沿置换反复跳转，走一圈就是一个循环。
+            for (int u = i; !vis[u]; u = p[u]) vis[u] = 1;
+        }
+        // 一个置换固定的染色要求同一循环内颜色相同，故有 colors^cycles 种。
+        sum = (sum + mod_pow(colors, cycles, mod)) % mod;
+    }
+    // Burnside：不动点总数除以群大小；这里默认 mod 与群大小互质。
+    return sum * mod_pow(perm.size(), mod - 2, mod) % mod;
+}
+\end{lstlisting}
+
+\subsubsection{测试样例：Burnside 的单位群、交换群和旋转群}
+
+下面用置换数组直接调用 \passthrough{\lstinline!burnside!}，颜色数取 \passthrough{\lstinline!2!}，模数取 \passthrough{\lstinline!1000000007!}。
+
+\begin{lstlisting}
+置换组一
+perm = {{0}}
+应输出：2
+
+置换组二
+perm = {{0,1}, {1,0}}
+应输出：3
+
+置换组三
+perm = {{0,1,2}, {1,2,0}, {2,0,1}}
+应输出：4
+\end{lstlisting}
+
+三组分别对应一个位置、长度二的交换、长度三的旋转；如果循环数统计错，结果会分别偏离 \passthrough{\lstinline!2、3、4!}。多测调用时还要确认 \passthrough{\lstinline!vis!} 是每个置换重新创建，而不是沿用上一次。
+
+Pólya 是把大量具体置换按循环类型分组并求和。若旋转/翻转群很小，直接枚举置换最稳；若有 \passthrough{\lstinline!n!} 边正多边形，旋转的循环数是 \passthrough{\lstinline!gcd(n,i)!}，翻转要分奇偶单独数循环。先把``允许的等价变换''写清楚，不要把颜色置换也默认算进群。
+
+
+\subsection{二次剩余}
+
+题目问 \passthrough{\lstinline!x\^2 ≡ n (mod p)!} 且 \passthrough{\lstinline!p!} 为奇质数时，先用欧拉判别：\passthrough{\lstinline!n\^((p-1)/2) == 1!} 才可能有解；\passthrough{\lstinline!n=0!} 单独处理。Tonelli-Shanks 在 \(O(\log^2 p)\) 内求平方根。
+
+\begin{lstlisting}[language={C++}]
+long long tonelli_shanks(long long n, long long p) {
+    // 返回一个 r，使 r^2=n (mod p)；无解返回 -1。
+    // 使用前确认 p 是奇素数；p=2 要单独写分支。
+    n %= p;
+    if (n == 0) return 0;
+
+    // 欧拉判别：非零二次剩余的 (p-1)/2 次幂必须为 1。
+    if (mod_pow(n, (p - 1) / 2, p) != 1) return -1;
+
+    // p%4==3 时有直接公式，优先走短分支。
+    if (p % 4 == 3) return mod_pow(n, (p + 1) / 4, p);
+
+    // 把 p-1 写成 q*2^s，其中 q 为奇数。
+    long long q = p - 1; int s = 0;
+    while ((q & 1) == 0) q >>= 1, ++s;
+
+    // 找一个二次非剩余 z，使 z^((p-1)/2)=-1。
+    long long z = 2;
+    while (mod_pow(z, (p - 1) / 2, p) != p - 1) ++z;
+    long long c = mod_pow(z, q, p);
+    long long x = mod_pow(n, (q + 1) / 2, p);
+    long long t = mod_pow(n, q, p);
+    int m = s;
+    while (t != 1) {
+        int i = 1; long long tt = t * t % p;
+        // 找最小 i，使 t^(2^i)=1；这一步保证下一轮 m 变小。
+        while (tt != 1) tt = tt * tt % p, ++i;
+
+        // 这里的指数是 2^(m-i-1)，不是 m-i-1。
+        // p 为 long long 时 m 很小，移位安全；若改用更大整数，
+        // 请改写为专门的幂指数计算，不能直接套 1LL 左移。
+        long long b = mod_pow(c, 1LL << (m - i - 1), p);
+        x = x * b % p;
+        t = t * b % p * b % p;
+        c = b * b % p; m = i;
+    }
+    return min(x, p - x);
+}
+\end{lstlisting}
+
+\subsubsection{测试样例：二次剩余的零、平方剩余、非剩余}
+
+下面每组输入 \passthrough{\lstinline!n p!}，输出模板规定的较小根；无根输出 \passthrough{\lstinline!-1!}。
+
+\begin{lstlisting}
+输入
+4
+0 7
+1 7
+2 7
+3 7
+
+输出
+0
+1
+3
+-1
+\end{lstlisting}
+
+\passthrough{\lstinline!2!} 在模 \passthrough{\lstinline!7!} 下的根是 \passthrough{\lstinline!3!} 和 \passthrough{\lstinline!4!}，模板若输出较小根应为 \passthrough{\lstinline!3!}；\passthrough{\lstinline!3!} 是非二次剩余，必须在 Tonelli--Shanks 主循环前返回 \passthrough{\lstinline!-1!}。若题目要求两个根，则分别输出 \passthrough{\lstinline!r!} 和 \passthrough{\lstinline!p-r!}，不要只输出一个根。
+
+例题：\href{https://www.luogu.com.cn/problem/P5491}{P5491 〖模板〗二次剩余}。输出两个根时输出 \passthrough{\lstinline!r!} 和 \passthrough{\lstinline!p-r!}，并按题目要求排序；没有根输出 \passthrough{\lstinline!-1!}。\passthrough{\lstinline!1LL << (m-i-1)!} 在指数大时可能溢出，实际模板应改成 \passthrough{\lstinline!mod\_pow(c, mod\_pow(2,m-i-1, p-1),p)!} 或用安全的幂次表示。
+
+
+\subsection{Prüfer 序列与矩阵树}
+
+Prüfer 序列把一棵 \passthrough{\lstinline!n!} 个点的标号树编码成长度 \passthrough{\lstinline!n-2!} 的序列。编码每次删除最小叶子并记录它的邻点；解码维护度数和最小叶子堆。最常用结论是：度数为 \passthrough{\lstinline!d\_i!} 的树的数量为
+
+\[\frac{(n-2)!}{\prod_i(d_i-1)!}.\]
+
+矩阵树定理的用法在上面的高斯小节已经给出：从图构造拉普拉斯矩阵，删一行一列求行列式。例题：\href{https://www.luogu.com.cn/problem/P6178}{P6178 Matrix-Tree 定理}；若题目给定度数序列求树数，直接用 Prüfer 度数公式，不要真的枚举树。
+
+
+\subsection{矩阵快速幂与线性递推}
+
+看到``初值固定、每项只依赖前几项、询问第 \(n\) 项且 \(n\) 很大''，把状态向量写成矩阵乘法。以 Fibonacci 为例：
+
+\[
+\begin{pmatrix}F_{i+1}\\F_i\end{pmatrix}
+=
+\begin{pmatrix}1&1\\1&0\end{pmatrix}
+\begin{pmatrix}F_i\\F_{i-1}\end{pmatrix}.
+\]
+
+\begin{lstlisting}[language={C++}]
+struct Mat {
+    long long a[2][2]{}; // a[i][j]：第 i 个新状态对第 j 个旧状态的系数。
+};
+Mat operator*(const Mat& A, const Mat& B) {
+    Mat C{}; // 矩阵乘法是累加，必须从全零矩阵开始。
+    for (int i = 0; i < 2; ++i)
+        for (int k = 0; k < 2; ++k)
+            for (int j = 0; j < 2; ++j)
+                // C=A*B；对列向量来说先应用 B，再应用 A。
+                C.a[i][j] = (C.a[i][j] + A.a[i][k] * B.a[k][j]) % MOD;
+    return C;
+}
+Mat mpow(Mat a, long long e) {
+    // r 是单位矩阵，代表“不做任何转移”。
+    Mat r{{{1, 0}, {0, 1}}};
+    for (; e; e >>= 1, a = a * a)
+        // 当前二进制位为 1，就把这一段转移乘进答案。
+        if (e & 1) r = r * a;
+    return r;
+}
+long long fibonacci(long long n) {
+    // F_0=0 单独处理；n>=1 时 base^(n-1) 的左上角就是 F_n。
+    if (n == 0) return 0;
+    Mat base{{{1, 1}, {1, 0}}};
+    return (mpow(base, n - 1).a[0][0]) % MOD;
+}
+\end{lstlisting}
+
+\subsubsection{测试样例：矩阵快速幂的零次幂、初值和普通项}
+
+下面直接调用 Fibonacci 示例，输出 \passthrough{\lstinline!F\_n!}，其中 \passthrough{\lstinline!F\_0=0,F\_1=1!}。
+
+\begin{lstlisting}
+输入
+5
+0
+1
+2
+10
+20
+
+输出
+0
+1
+1
+55
+6765
+\end{lstlisting}
+
+第一组检查 \passthrough{\lstinline!n=0!} 的特判；\passthrough{\lstinline!n=1!} 检查幂指数为零时单位矩阵不能写成零矩阵；\passthrough{\lstinline!n=20!} 检查快速幂多次平方和乘法顺序。
+
+例题：\href{https://www.luogu.com.cn/problem/P1939}{P1939 矩阵加速（数列）}。先把题目的递推式写成``新状态由旧状态线性组合''，矩阵第一行就是递推系数；不要看到数列就默认 Fibonacci，初值和下标要按题目重新代入。矩阵乘法有方向，\passthrough{\lstinline!left * right!} 表示先做右边转移、再做左边转移。
+
+
+\subsection{高斯消元求实数方程组}
+
+如果题目要求概率、坐标或实数解，增广矩阵每一行是一条方程。选绝对值最大的主元可以减少误差；没有主元的行是自由变量，最后要区分唯一解、无解和多解。
+
+\begin{lstlisting}[language={C++}]
+int gauss_real(vector<vector<long double>> a,
+               vector<long double>& ans) {
+    // a[i][0..m-1] 是系数，a[i][m] 是常数项；这里默认方程数=未知数数。
+    // 返回 0=无解，1=唯一解，2=多解。
+    int n = a.size(), m = n, row = 0;
+    for (int col = 0; col < m && row < n; ++col) {
+        int p = row;
+        for (int i = row + 1; i < n; ++i)
+            if (fabsl(a[i][col]) > fabsl(a[p][col])) p = i;
+        // 选绝对值最大的主元可以减小浮点误差。
+        if (fabsl(a[p][col]) < 1e-12L) continue;
+        swap(a[p], a[row]);
+        for (int i = 0; i < n; ++i) if (i != row) {
+            long double k = a[i][col] / a[row][col];
+            // Gauss-Jordan：把主元列在所有其它行都消成 0。
+            for (int j = col; j <= m; ++j)
+                a[i][j] -= k * a[row][j];
+        }
+        ++row;
+    }
+    for (int i = row; i < n; ++i) {
+        bool all_zero = true;
+        for (int j = 0; j < m; ++j)
+            all_zero &= fabsl(a[i][j]) < 1e-12L;
+        // 0=0 是多解的一部分；0=c(c!=0) 是矛盾，直接无解。
+        if (all_zero && fabsl(a[i][m]) > 1e-12L) return 0; // 无解
+    }
+    // 主元个数小于未知数个数，存在自由变量。
+    if (row < m) return 2; // 多解；题目若保证唯一可忽略
+    ans.assign(m, 0);
+    for (int i = 0; i < n; ++i) {
+        int pivot = 0;
+        while (pivot < m && fabsl(a[i][pivot]) < 1e-12L) ++pivot;
+        if (pivot < m) ans[pivot] = a[i][m] / a[i][pivot];
+    }
+    return 1; // 唯一解
+}
+\end{lstlisting}
+
+\subsubsection{测试样例：实数高斯消元的唯一解、无解和多解}
+
+每组输入两个未知数的两个方程，输出解的类型；唯一解时再输出 \passthrough{\lstinline!x,y!}。
+
+\begin{lstlisting}
+测试一
+x+y=2
+x-y=0
+应为：唯一解，x=1,y=1
+
+测试二
+x+y=1
+2x+2y=3
+应为：无解
+
+测试三
+x+y=2
+2x+2y=4
+应为：多解
+\end{lstlisting}
+
+第二组检查``系数全零但常数非零''的矛盾行，第三组检查秩小于未知数个数。不能只测试唯一解，否则 \passthrough{\lstinline!row<m!} 和无解判断很容易被抄掉。
+
+例题：\href{https://www.luogu.com.cn/problem/P3389}{P3389 高斯消元法}。输入的是 \passthrough{\lstinline!n!} 个方程和 \passthrough{\lstinline!n!} 个未知数，读入 \passthrough{\lstinline!a[i][0..n]!} 后直接调用；输出保留题目要求的小数位。模意义下则把除法换成逆元，且只能在主元与模数互质时做。
+
+
+

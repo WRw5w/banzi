@@ -1,0 +1,288 @@
+\section{动态规划进阶：参数、调用与改造}
+
+本节紧跟前面的基础模板。先看每个接口传什么，再看哪些不变量不能动，最后看如何替换维护信息或转移。
+
+\subsection{复杂数位动态规划与自动机数位动态规划}
+
+数位 DP 处理 \passthrough{\lstinline!0..N!} 中满足数字条件的数。状态通常是 \passthrough{\lstinline!(pos,tight,started,extra)!}；上下界用 \passthrough{\lstinline!count(R)-count(L-1)!}。若有``不能出现某模式/相邻数字限制''，把 \passthrough{\lstinline!extra!} 换成自动机节点。
+
+\begin{lstlisting}[language={C++}]
+long long memo[20][2][2][STATE];
+long long dfs(int pos, bool tight, bool started, int st) {
+    // pos：正在处理第 pos 位；tight：前缀是否仍等于上界；
+    // started：是否已经出现过非前导零；st：额外限制的自动机状态。
+    if (pos == len) return valid(st, started);
+    // 只有 tight=false 的状态可以复用；tight=true 还依赖上界前缀。
+    if (!tight && memo[pos][started][0][st] != -1)
+        return memo[pos][started][0][st];
+    long long res = 0;
+    int up = tight ? digit[pos] : 9;
+    for (int d = 0; d <= up; ++d) {
+        // 前导零通常不应触发“数字出现/相邻数字”等条件。
+        bool ns = started || d != 0;
+        // 尚未开始时是否把 0 送入自动机，必须按题意决定；这里留在起点 0。
+        int nst = ns ? go[st][d] : 0;
+        if (ns && nst == forbidden) continue;
+        // 注意必须与真实上界位 digit[pos] 比较，不能写成 d==up。
+        res += dfs(pos + 1, tight && d == digit[pos], ns, nst);
+    }
+    if (!tight) memo[pos][started][0][st] = res;
+    return res;
+}
+\end{lstlisting}
+
+\subsubsection{测试样例：数位 DP 的前导零和上下界差分}
+
+这里固定 \passthrough{\lstinline!valid!} 为``数字十进制表示中不出现数字 \passthrough{\lstinline!4!}''，并把 \passthrough{\lstinline!0!} 计入合法数。每组输入 \passthrough{\lstinline!L R!}，输出 \passthrough{\lstinline![L,R]!} 中合法整数个数。
+
+\begin{lstlisting}
+输入
+4
+0 0
+0 4
+0 10
+0 99
+
+输出
+1
+4
+10
+81
+\end{lstlisting}
+
+\passthrough{\lstinline![0,4]!} 的合法数是 \passthrough{\lstinline!0,1,2,3!}；\passthrough{\lstinline![0,99]!} 的答案是 \passthrough{\lstinline!9*9=81!}。如果把前导零当成真实数字 \passthrough{\lstinline!4!} 的相邻字符，或者把 \passthrough{\lstinline!tight \&\& d == digit[pos]!} 错写成 \passthrough{\lstinline!d == up!}，这些边界会出错。
+
+这里 \passthrough{\lstinline!up!} 只表示当前位允许枚举到哪里；tight 更新必须比较真实上界位 \passthrough{\lstinline!digit[pos]!}。练习：\href{https://www.luogu.com.cn/problem/P2602}{P2602 数字计数}；若题目问每位出现次数，把返回值从一个数改为``方案数 + 各位贡献''的结构体。
+
+
+\subsection{所有子集和动态规划、轮廓线动态规划与状态压缩}
+
+SOS DP 用来计算所有子集/超集的和：
+
+\begin{lstlisting}[language={C++}]
+for (int bit = 0; bit < K; ++bit)
+    for (int mask = 0; mask < (1 << K); ++mask)
+        if (mask >> bit & 1)
+            // 把“去掉 bit 后的子集”贡献给当前 mask。
+            // 处理完这一层后，f[mask] 已包含所有只在低 bit 位不同的子集。
+            f[mask] += f[mask ^ (1 << bit)];
+\end{lstlisting}
+
+\subsubsection{测试样例：SOS 动态规划的子集和方向}
+
+下面约定 \passthrough{\lstinline!K=2!}，初始 \passthrough{\lstinline!f[mask]!} 是恰好等于 \passthrough{\lstinline!mask!} 的权值，输出所有子集和 \passthrough{\lstinline!sum[sub]!}。
+
+\begin{lstlisting}
+输入
+2
+1
+5 7
+2
+1 2 3 4
+
+输出
+5 12
+1 3 4 10
+\end{lstlisting}
+
+第二组中 \passthrough{\lstinline!sum[3]!} 必须是 \passthrough{\lstinline!1+2+3+4=10!}；如果把 \passthrough{\lstinline!mask \^ (1<<bit)!} 写成加上不存在的超集，或循环顺序和转移方向不匹配，会在 \passthrough{\lstinline!sum[1]!}、\passthrough{\lstinline!sum[2]!} 同时出错。
+
+若网格宽度 \passthrough{\lstinline!m<=10/12!}，每一列的填法只影响相邻列，维护 \passthrough{\lstinline!dp[col][mask]!}；这就是轮廓线 DP。先预处理从 \passthrough{\lstinline!mask!} 到 \passthrough{\lstinline!next\_mask!} 的合法转移，再做列 DP。棋盘放置题可练\href{https://www.luogu.com.cn/problem/P2704}{P2704 炮兵阵地}。状态中相邻两行都可能影响当前行时，不能只保留一行。
+
+
+\subsection{单调队列、斜率优化与李超树优化动态规划}
+
+若转移有 \passthrough{\lstinline!dp[i] = min(dp[j] + w(j,i))!}，且 \passthrough{\lstinline!j!} 的优劣具有区间单调性，先尝试单调队列；若整理后是直线最值，才上凸包/李超树。
+
+\begin{lstlisting}[language={C++}]
+deque<int> q;
+for (int i = 0; i < n; ++i) {
+    // 过期候选先删除；窗口条件由题目决定。
+    while (!q.empty() && q.front() < i - window) q.pop_front();
+
+    // 队首是当前窗口中最优候选，value(j,i) 是题目转移代价。
+    dp[i] = value(q.front(), i);
+
+    // 新候选 i 若在未来不可能优于队尾，就淘汰队尾。
+    // next_x 和 value 的单调性必须由题目转移证明，不能盲套。
+    while (!q.empty() && value(i, next_x(q.back()))
+                          <= value(q.back(), next_x(q.back()))) q.pop_back();
+    q.push_back(i);
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language={C++}]
+// 把 dp[i] 整理成“查询某条候选直线在 x[i] 处的最值”时使用。
+struct Line {
+    long long k, b;
+    long long value(long long x) const { return k * x + b; }
+};
+
+// 只有在斜率按单调顺序加入、查询 x 也按单调顺序时，
+// 才能用普通 deque；任意插入/任意查询请改用前面的李超线段树。
+deque<Line> hull;
+bool useless(const Line& a, const Line& b, const Line& c) {
+    // 交点顺序不再递增时，中间直线永远不会成为最优。
+    // 用 __int128 防止交叉相乘时溢出。
+    return (__int128)(b.b - a.b) * (b.k - c.k)
+         >= (__int128)(c.b - b.b) * (a.k - b.k);
+}
+
+void add_line(Line line) {
+    // 斜率顺序必须与 useless 的不等式方向一致；换成求最大值时通常要反号。
+    while (hull.size() >= 2 &&
+           useless(hull[hull.size() - 2], hull.back(), line))
+        hull.pop_back();
+    hull.push_back(line);
+}
+\end{lstlisting}
+
+\subsubsection{调用测试：斜率优化只能在顺序条件成立时使用}
+
+对下面三条直线做最小值查询：
+
+\begin{lstlisting}
+加入顺序：y=0，y=x，y=2x-1
+查询顺序：x=0,1,3
+应得到：0,0,1
+\end{lstlisting}
+
+再把查询顺序改成 \passthrough{\lstinline!x=3,0,1!}。如果模板仍然使用只支持单调查询的双端队列，必须重新检查题目是否真的满足单调性；不能把这组非单调调用当成普通凸包优化的合法输入。
+
+斜率优化的关键不是代码，而是把转移整理为 \passthrough{\lstinline!y = kx+b!}，并证明斜率和查询点单调；若斜率不单调或要在线插入，直接使用前面的李超线段树。例题：\href{https://www.luogu.com.cn/problem/P5785}{P5785 任务安排}；先把平方项展开，再判断是否能维护直线。
+
+
+\subsection{分治优化、四边形不等式、树形背包与 Steiner 树状压动态规划}
+
+\subsubsection{调用测试：分治优化的决策范围必须覆盖真实最优点}
+
+选一个可以暴力验证的代价：\passthrough{\lstinline!cost(j,i)=(prefix[i]-prefix[j])\^2!}，对 \passthrough{\lstinline!prefix=[0,1,3,6]!} 计算每一层的最优决策，并与 \passthrough{\lstinline!divide\_conquer\_dp!} 的结果逐项比较。重点不是某个固定答案，而是确认：
+
+\begin{lstlisting}
+测试一：optL=0,optR=i，结果应与完整枚举一致。
+测试二：把 optL/optR 缩到不包含真实最优 j 的范围，程序必须被判定为调用错误，不能把错误范围当成算法结论。
+\end{lstlisting}
+
+没有单调性证明时，不能因为测试一通过就直接把完整枚举范围缩成 \passthrough{\lstinline!optL..optR!}。
+
+分治优化要求最优决策点满足单调性：\passthrough{\lstinline!opt[l][r-1] <= opt[l][r]!}。模板递归 \passthrough{\lstinline!solve(L,R,optL,optR)!}，只在允许区间枚举决策点；没有证明时不能硬套。四边形不等式和决策单调性是证明工具，不是看到区间 DP 就默认成立。
+
+\begin{lstlisting}[language={C++}]
+// 典型形式：dp[layer][i] = min_j(dp[layer-1][j] + cost(j,i))。
+// optL/optR 是当前区间内“最优决策 j”可能出现的范围。
+void divide_conquer_dp(int L, int R, int optL, int optR) {
+    if (L > R) return;
+    int mid = (L + R) >> 1;
+    long long best = INF;
+    int best_j = -1;
+
+    // 没有单调性证明时不能把枚举范围缩成 optL..optR；
+    // 这份模板的正确性前提就是 opt[mid] 位于该范围内。
+    for (int j = optL; j <= min(optR, mid); ++j) {
+        long long cand = old_dp[j] + cost(j, mid);
+        if (cand < best) best = cand, best_j = j;
+    }
+    new_dp[mid] = best;
+
+    // 由 opt[l] <= opt[mid] <= opt[r]，左右区间可以分别缩小。
+    divide_conquer_dp(L, mid - 1, optL, best_j);
+    divide_conquer_dp(mid + 1, R, best_j, optR);
+}
+\end{lstlisting}
+
+树形背包的状态是``子树里选了 \passthrough{\lstinline!j!} 个''，合并子树时做背包卷积；先处理小子树，循环边界必须使用当前已合并大小。Steiner 树状压 DP 适用于关键点数 \passthrough{\lstinline!k<=10/15!} 的``连通所有关键点最小代价''：先对每个 \passthrough{\lstinline!mask!} 做子集合并，再以 Dijkstra 在图上松弛。若关键点数超过二十，通常要重新分析题意。
+
+\begin{lstlisting}[language={C++}]
+// Steiner 树状态：dp[mask][v] = 连接 mask 中关键点，并以 v 作为当前末端的最小代价。
+for (int mask = 1; mask < (1 << K); ++mask) {
+    // 把 mask 拆成两个非空子集，在同一个 v 汇合。
+    for (int sub = (mask - 1) & mask; sub; sub = (sub - 1) & mask) {
+        int other = mask ^ sub;
+        if (sub > other) continue; // 对称拆分只做一次，常数更小。
+        for (int v = 0; v < n; ++v)
+            dp[mask][v] = min(dp[mask][v],
+                              dp[sub][v] + dp[other][v]);
+    }
+
+    // 合并后，末端 v 还可以沿图上的边移动；
+    // 用 Dijkstra 在“固定 mask 的状态层”上继续松弛。
+    dijkstra_on_state(mask);
+}
+\end{lstlisting}
+
+动态 DP/矩阵线段树在本章 2.13 已给出调用思路；概率 DP 遇到自环时，把方程写成 \passthrough{\lstinline!f = p*f + rest!}，得到 \passthrough{\lstinline!f=rest/(1-p)!}；多个状态互相转移才需要高斯消元。不要在有自环时直接按拓扑序 DP。
+
+
+\subsection{动态动态规划与矩阵线段树}
+
+当树/序列上的一个点被修改后，答案仍然可以由局部状态转移合并，但普通 DP 不能重新算全局，就把每个位置的转移写成矩阵，线段树维护矩阵乘积。
+
+\begin{lstlisting}[language={C++}]
+struct Mat {
+    long long a[2][2]{}; // a[i][j]：第 i 个状态对第 j 个状态的线性系数。
+};
+Mat mul(Mat A, Mat B) {
+    Mat C{}; // 必须清零；矩阵乘法是累加，不是覆盖。
+    for (int i = 0; i < 2; ++i)
+        for (int k = 0; k < 2; ++k)
+            for (int j = 0; j < 2; ++j)
+                // C = A * B：先应用 B，再应用 A（按列向量约定）。
+                C.a[i][j] = (C.a[i][j] + A.a[i][k] * B.a[k][j]) % MOD;
+    return C;
+}
+
+Mat identity() {
+    Mat I{};
+    I.a[0][0] = I.a[1][1] = 1;
+    return I;
+}
+
+// 矩阵线段树的核心合并：左区间的转移先于右区间的转移。
+// 如果状态向量按行向量存储，合并顺序会反过来，必须从建模时保持一致。
+Mat merge_segment(Mat left, Mat right) {
+    return mul(right, left);
+}
+\end{lstlisting}
+
+现场映射方法：先在纸上写出``左边 DP 状态向右移动一格如何变成新状态''，把这一步写成矩阵；叶子存单点矩阵，线段树父节点存 \passthrough{\lstinline!left * right!}。矩阵乘法不可交换，区间方向不能写反。它是 C 级内容，不建议只看一遍标题就现场发明。
+
+
+\subsection{概率动态规划的自环方程}
+
+有自环的状态不能按拓扑序处理。例如从状态 \passthrough{\lstinline!i!} 以概率 \passthrough{\lstinline!p!} 留在 \passthrough{\lstinline!i!}，以概率 \passthrough{\lstinline!q!} 转到已知状态，期望满足：
+
+\[E_i=pE_i+qE_j+c\quad\Longrightarrow\quad E_i=\frac{qE_j+c}{1-p}.\]
+
+多个状态互相转移时，把每个状态写成一行：
+
+\[E_i-\sum_j p_{ij}E_j=c_i,\]
+
+然后用高斯消元。\passthrough{\lstinline!1-p!} 很小时误差会放大，题目若要求模意义下概率，要先确认所有分母可逆；题目若允许无限期望，要识别并输出题目规定的无穷值。
+
+\subsubsection{测试样例：概率自环的除法和无限期望}
+
+把``每次转移产生的固定代价''也写进方程，测试不能只测没有自环的普通转移：
+
+\begin{lstlisting}
+调用 1：E = 0.5 E + 1
+期望：E = 2
+
+调用 2：E = 0.5 E + 0.5 * 4 + 1
+期望：E = 6
+
+调用 3：E = 1.0 E + 1
+期望：不存在有限值；不能直接计算 (1-p) 的逆。
+
+调用 4：
+  E1 = 0.5 E1 + 0.5 E2 + 1
+  E2 = 0.25 E1 + 0.75 E2 + 2
+期望：先移项得到
+  0.5 E1 - 0.5 E2 = 1
+ -0.25 E1 + 0.25 E2 = 2，
+  两行线性相关但常数不相容，因此该系统无有限解。
+\end{lstlisting}
+
+前三组分别抓``漏除以 \passthrough{\lstinline!1-p!}''\,``把常数项放错侧''和``\passthrough{\lstinline!p=1!} 除零''。第四组抓高斯消元中的主元选择、无解判断与浮点误差。实际题目若保证期望存在，第四组应改成相容系统；测试代码本身仍应保留无解分支，避免模板在异常数据上产生假答案。
+
+
+

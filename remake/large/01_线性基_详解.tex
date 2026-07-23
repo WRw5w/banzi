@@ -1,0 +1,145 @@
+\section{线性基：参数、调用与改造}
+
+本节紧跟前面的基础模板。先看每个接口传什么，再看哪些不变量不能动，最后看如何替换维护信息或转移。
+
+\subsection{它解决什么问题}
+
+线性基处理的不是普通加法，而是异或意义下的线性空间。典型题面包括：
+
+\begin{itemize}
+\tightlist
+\item
+  从若干数中选子集，使异或和最大/最小；
+\item
+  判断一个数能否由给定数异或得到；
+\item
+  在线加入数，查询当前所有数能得到的最大异或值；
+\item
+  两个集合的异或空间是否相交，或求异或值的第 \(k\) 小。
+\end{itemize}
+
+把每个整数看成二进制向量。异或就是在 \(\mathbb F_2\) 上相加，所以每一位只有 \(0/1\)，消元时只需要``最高位主元''。若数据小于 \(2^{60}\)，开 \passthrough{\lstinline!LOG = 61!}；若题目给到 \(2^{100}\)，必须改用 \passthrough{\lstinline!bitset!} 或高精度实现。
+
+
+\subsection{可直接使用的模板}
+
+\begin{lstlisting}[language={C++}]
+template<int LOG = 61>
+struct LinearBasis {
+    using U = unsigned long long;
+    U p[LOG]{}; // p[i] 的最高位是 i
+
+    void clear() { memset(p, 0, sizeof(p)); }
+
+    void insert(U x) {
+        for (int i = LOG - 1; i >= 0; --i) {
+            if (((x >> i) & 1ULL) == 0) continue;
+            if (!p[i]) {
+                p[i] = x;
+                return;
+            }
+            x ^= p[i];
+        }
+    }
+
+    bool can(U x) const {
+        for (int i = LOG - 1; i >= 0; --i) {
+            if (!((x >> i) & 1ULL)) continue;
+            if (!p[i]) return false;
+            x ^= p[i];
+        }
+        return true;
+    }
+
+    U max_xor(U x = 0) const {
+        for (int i = LOG - 1; i >= 0; --i)
+            x = max(x, x ^ p[i]);
+        return x;
+    }
+};
+\end{lstlisting}
+
+\passthrough{\lstinline!insert!} 是异或版高斯消元；\passthrough{\lstinline!can!} 是消元判定；\passthrough{\lstinline!max\_xor!} 从高位到低位贪心，若异或后变大就保留。这个顺序不能反过来，否则低位的选择可能破坏高位最优性。
+
+
+\subsection{例题：P3812 线性基}
+
+题目：\href{https://www.luogu.com.cn/problem/P3812}{P3812 〖模板〗线性基}。题意是给出 \(n\) 个整数，选择任意子集，使它们的异或和最大。
+
+套用步骤：
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  每个输入数都代表一个可以选择或不选择的向量；
+\item
+  不需要记录``选了哪些数''，因为目标只依赖最终异或值；
+\item
+  逐个 \passthrough{\lstinline!insert(x)!}；
+\item
+  输入结束后输出 \passthrough{\lstinline!basis.max\_xor()!}。
+\end{enumerate}
+
+例如输入集合为 \passthrough{\lstinline!1, 5, 9, 4!}：插入后可以得到 \passthrough{\lstinline!1 \^ 4 \^ 8 = 13!}，模板从最高位开始尝试，得到最大值 \passthrough{\lstinline!13!}。完整调用如下：
+
+\begin{lstlisting}[language={C++}]
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n;
+    cin >> n;
+    LinearBasis<61> basis;
+    while (n--) {
+        unsigned long long x;
+        cin >> x;
+        basis.insert(x);
+    }
+    cout << basis.max_xor() << '\n';
+}
+\end{lstlisting}
+
+\subsubsection{\texorpdfstring{测试样例：线性基必须按 \texttt{void\ solve()} 包装}{测试样例：线性基必须按 void solve() 包装}}
+
+下面约定每组输入为 \passthrough{\lstinline!n!} 个非负整数，输出任意子集异或和的最大值；第一行是测试组数 \passthrough{\lstinline!T!}。前两组检查零向量、重复向量和多测重建，后两组检查独立主元以及高位贪心。
+
+\begin{lstlisting}
+输入
+4
+1
+0
+3
+5 5 5
+4
+1 2 4 8
+5
+8 7 3 10 5
+
+输出
+0
+5
+15
+15
+\end{lstlisting}
+
+如果第二组大于 \passthrough{\lstinline!5!}，通常是消元时把重复向量当成了新主元；如果第三、四组小于 \passthrough{\lstinline!15!}，优先检查插入方向和 \passthrough{\lstinline!max\_xor!} 是否从最高位向下贪心。
+
+练习升级：\href{https://www.luogu.com.cn/problem/P4301}{P4301 新 Nim 游戏}。它把``异或空间''放进博弈/删数语境中，看到``剩下的数不能异或出 \(0\)''时，应该想到线性基的秩和线性相关，而不是暴力枚举子集。
+
+
+\subsection{常见错误}
+
+\begin{itemize}
+\tightlist
+\item
+  把线性基当成普通的异或前缀；它维护的是一组向量，插入顺序不影响空间，但主元排列会影响某些``第 \(k\) 小''模板。
+\item
+  \passthrough{\lstinline!long long!} 的符号位参与比较时容易出错。纯非负数据优先使用 \passthrough{\lstinline!unsigned long long!}。
+\item
+  求最大值时要从高位到低位；求最小非零值时通常要先把基化成更适合贪心的形式。
+\item
+  线性基只能描述``每个数至多选一次''的异或组合；若某个数可以无限次使用，问题已经不是这个模板。
+\end{itemize}
+
+
+

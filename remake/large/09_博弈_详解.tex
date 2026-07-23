@@ -1,0 +1,504 @@
+\section{博弈论：参数、调用与改造}
+
+本节紧跟前面的基础模板。先看每个接口传什么，再看哪些不变量不能动，最后看如何替换维护信息或转移。
+
+\subsection{必胜态/必败态动态规划（Win/Lose Dynamic Programming）}
+
+定义 \passthrough{\lstinline!win[u]!}：轮到当前玩家在状态 \passthrough{\lstinline!u!} 操作时，当前玩家是否能赢。
+
+\[
+win(u)=\text{true}\quad\Longleftrightarrow\quad
+\exists v\in next(u),\; win(v)=\text{false}.
+\]
+
+没有合法操作的状态是必败态。对 DAG 从终点反推，复杂度是 \(O(V+E)\)。
+
+\begin{lstlisting}[language={C++}]
+// g[u]：从状态 u 可以一步走到的所有状态。
+// 这里假设状态图是 DAG；如果有环，不能直接用这份递归模板。
+vector<vector<int>> g;
+
+// win[u] 的三种取值：
+//   0  = 还没有计算；
+//   1  = 必胜态：轮到当前玩家时存在一步走到必败态；
+//  -1  = 必败态：所有合法走法都会把对手送入必胜态。
+vector<int8_t> win;
+
+int solve_win(int u) {
+    // 记忆化：同一个状态可能从很多地方到达，不能重复搜索。
+    if (win[u] != 0) return win[u];
+
+    // 先假设 u 是必败态。
+    // 如果后面找到一个必败后继，再把它改成必胜态并立即返回。
+    win[u] = -1;
+    for (int v : g[u]) {
+        // 如果能把对手送到必败态，当前状态就是必胜态。
+        if (solve_win(v) == -1)
+            return win[u] = 1;
+    }
+
+    // 没找到必败后继，说明所有走法都让对手赢；没有走法时也会走到这里。
+    return win[u];
+}
+\end{lstlisting}
+
+\subsubsection{测试样例：必胜态/必败态的多测和状态清空}
+
+这里规定每组输入为 \passthrough{\lstinline!n m s!}，接着输入 \passthrough{\lstinline!m!} 条有向边 \passthrough{\lstinline!u v!}，从状态 \passthrough{\lstinline!s!} 开始；没有合法操作输出 \passthrough{\lstinline!Lose!}，能走到必败状态输出 \passthrough{\lstinline!Win!}。图保证无环。
+
+\begin{lstlisting}
+输入
+4
+1 0 1
+2 1 1 2
+4 4 1  1 2  1 3  2 4  3 4
+5 5 1  1 2  1 3  2 4  3 4  4 5
+
+输出
+Lose
+Win
+Lose
+Win
+\end{lstlisting}
+
+第一组是终止态，第二组是一步必胜；第三组的两个后继都是必胜态，所以起点必败；第四组多加一层，检查结果是否按后继层数交替。四组连续运行还能检查 \passthrough{\lstinline!g!}、\passthrough{\lstinline!win!} 是否按当前 \passthrough{\lstinline!n!} 重新初始化。
+
+例题：\href{https://www.luogu.com.cn/problem/P2197}{P2197 〖模板〗Nim 游戏}。标准 Nim 的状态是所有堆大小组成的元组，直接写全状态会爆炸；理论告诉我们它等价于一个数 \passthrough{\lstinline!a[1] \^ ... \^ a[n]!}。当异或和为 \passthrough{\lstinline!0!} 时输出 \passthrough{\lstinline!No!}，否则输出 \passthrough{\lstinline!Yes!}。这道题的价值是练习``先识别状态压缩后的不变量''，不是练习 DFS。
+
+
+\subsection{有向无环图上的 Sprague--Grundy 函数与最小未出现值}
+
+单个无偏游戏状态的 Grundy 值为：
+
+\[sg(u)=mex\{sg(v)\mid u\to v\}.\]
+
+\passthrough{\lstinline!mex!} 是没有出现在集合中的最小非负整数。终止状态没有后继，因此 \passthrough{\lstinline!sg = 0!}。
+
+\begin{lstlisting}[language={C++}]
+// 计算 mex（minimum excluded value）：集合中没有出现的最小非负整数。
+// seen[x] == tag 表示“本次 mex 计算看到了 x”。
+// 每次只递增 tag，就不需要把整个 seen 数组清零，适合大量重复调用。
+int mex_by_stamp(const vector<int>& values, vector<int>& seen, int& tag) {
+    ++tag; // 开启一次全新的标记批次。
+    for (int x : values) {
+        // SG 值一定非负；超出 seen 范围的值不会影响较小 mex。
+        if (0 <= x && x < (int)seen.size()) seen[x] = tag;
+    }
+
+    int g = 0;
+    // 从 0 开始找第一个没有被本批次标记的数。
+    while (g < (int)seen.size() && seen[g] == tag) ++g;
+    return g;
+}
+
+// dag[u]：有向无环图中从 u 出发的一步转移。
+vector<vector<int>> dag;
+vector<int> sg;       // sg[u]：状态 u 的 Sprague-Grundy 值。
+vector<char> vis;     // 是否已经完成记忆化搜索。
+vector<int> mark;     // mex 的时间戳数组，大小要覆盖可能的 SG 值。
+int mark_tag = 0;
+
+int grundy(int u) {
+    // DAG 中递归一定会走向更靠后的状态；vis 防止重复计算。
+    if (vis[u]) return sg[u];
+    vis[u] = 1;
+
+    vector<int> values;
+    for (int v : dag[u]) {
+        // 先递归求所有后继状态的 SG 值。
+        values.push_back(grundy(v));
+    }
+
+    // 当前状态的 SG 值只由“所有一步可达状态的 SG 值”决定。
+    return sg[u] = mex_by_stamp(values, mark, mark_tag);
+}
+\end{lstlisting}
+
+在实际题目中，\passthrough{\lstinline!mark!} 至少开到``可能出现的最大 SG 值 + 1''。如果不确定，简单 \passthrough{\lstinline!sort + unique!} 的 \passthrough{\lstinline!mex!} 更安全。状态数很大时，不能把整个状态对象直接当数组下标，要用哈希记忆化。
+
+小例子：若 \passthrough{\lstinline!0!} 无后继，\passthrough{\lstinline!1 -> 0!}，\passthrough{\lstinline!2 -> 0,1!}，则 \passthrough{\lstinline!sg[0]=0!}，\passthrough{\lstinline!sg[1]=mex\{0\}=1!}，\passthrough{\lstinline!sg[2]=mex\{0,1\}=2!}。两个独立游戏的值为 \passthrough{\lstinline!sg[x] \^ sg[y]!}，不为 \passthrough{\lstinline!0!} 就是先手胜。
+
+\subsubsection{\texorpdfstring{测试样例：\texttt{mex} 的空集合、单后继和时间戳复用}{测试样例：mex 的空集合、单后继和时间戳复用}}
+
+这里规定每组输入为 \passthrough{\lstinline!N k moves...!}，输出 \passthrough{\lstinline!sg[N]!}。四组连续执行，专门检查 \passthrough{\lstinline!seen!} 的时间戳是否污染下一组。
+
+\begin{lstlisting}
+输入
+4
+0 1 1
+1 1 1
+4 2 1 2
+10 3 1 3 4
+
+输出
+0
+1
+1
+1
+\end{lstlisting}
+
+\passthrough{\lstinline!N=0!} 必须直接得到 \passthrough{\lstinline!0!}；取法 \passthrough{\lstinline!\{1,2\}!} 时序列从 \passthrough{\lstinline!0,1,2,0,1!} 开始，\passthrough{\lstinline!sg[4]=1!}。最后一组用于检查不能把上一组的 \passthrough{\lstinline!seen!} 标记当成当前组的结果。
+
+
+\subsection{多个独立子游戏为什么异或}
+
+若一次操作只能改变一个子游戏，而且各子游戏互不共享资源，那么整个局面是游戏和：
+
+\[SG(G_1+G_2+\cdots+G_k)=SG(G_1)\oplus SG(G_2)\oplus\cdots\oplus SG(G_k).\]
+
+``一堆石子''就是一个子游戏；``棋盘上多个互不相连、棋子不能跨组件移动的区域''也常常可以拆成多个子游戏。反例是：一次操作必须同时选择两堆，或某个操作会改变另一堆的合法操作，此时不能异或。
+
+
+\subsection{普通 Nim：不只判断，还要恢复必胜操作}
+
+令 \passthrough{\lstinline!all = a[0] \^ ... \^ a[n-1]!}。若 \passthrough{\lstinline"all != 0"}，找到最高位 \passthrough{\lstinline!b!}，它在 \passthrough{\lstinline!all!} 中为 \passthrough{\lstinline!1!}。必然存在某个堆 \passthrough{\lstinline!a[i]!} 的第 \passthrough{\lstinline!b!} 位为 \passthrough{\lstinline!1!}。令
+
+\[target=a[i]\oplus all,\]
+
+则 \passthrough{\lstinline!target < a[i]!}，把这堆从 \passthrough{\lstinline!a[i]!} 减到 \passthrough{\lstinline!target!}，新异或和就为 \passthrough{\lstinline!0!}。
+
+\begin{lstlisting}[language={C++}]
+// 返回要操作的堆下标和操作后的大小；无必胜操作返回 {-1,-1}
+pair<int, unsigned long long>
+nim_move(const vector<unsigned long long>& a) {
+    // all 是整个 Nim 局面的 SG 值，也就是所有堆大小的异或和。
+    unsigned long long all = 0;
+    for (auto x : a) all ^= x;
+
+    // 异或和为 0 的局面是必败态，不存在一步必胜操作。
+    if (all == 0) return {-1, 0};
+
+    for (int i = 0; i < (int)a.size(); ++i) {
+        // 只改变第 i 堆后，希望新异或和变成 0，目标大小必须是 a[i]^all。
+        unsigned long long target = a[i] ^ all;
+
+        // 合法操作要求只能减少石子；这个判断同时保证目标确实更小。
+        if (target < a[i]) return {i, target};
+    }
+
+    return {-1, 0}; // 理论上不会到这里
+}
+\end{lstlisting}
+
+演示：\passthrough{\lstinline![3, 4, 5]!} 的异或为 \passthrough{\lstinline!2!}。对 \passthrough{\lstinline!3!}：\passthrough{\lstinline!3 \^ 2 = 1 < 3!}，所以把第一堆从 \passthrough{\lstinline!3!} 变成 \passthrough{\lstinline!1!}；新局面 \passthrough{\lstinline![1,4,5]!} 的异或为 \passthrough{\lstinline!0!}。如果题目要求输出``取走多少''，输出 \passthrough{\lstinline!a[i]-target!}，不要输出 \passthrough{\lstinline!target!}。
+
+\subsubsection{测试样例：普通 Nim 必胜操作恢复}
+
+下面约定输出为``从 \passthrough{\lstinline!1!} 开始编号的堆下标、修改后的堆大小''；没有必胜操作输出 \passthrough{\lstinline!0 0!}。
+
+\begin{lstlisting}
+输入
+4
+1
+0
+2
+1 1
+3
+3 4 5
+4
+1 2 4 8
+
+输出
+0 0
+0 0
+1 1
+4 7
+\end{lstlisting}
+
+前两组是异或和为 \passthrough{\lstinline!0!} 的必败态；第三组检查示例中的 \passthrough{\lstinline!3 -> 1!}；第四组检查最高位选择，不能只输出目标值而不输出堆下标。
+
+
+\subsection{Bash、反常 Nim 与阶梯 Nim}
+
+\textbf{Bash 游戏。} 单堆有 \passthrough{\lstinline!n!} 个石子，每次取 \passthrough{\lstinline!1..k!} 个，必败态是 \passthrough{\lstinline!n \% (k+1) == 0!}。原因是长度为 \passthrough{\lstinline!k+1!} 的每一轮，后手可以补到 \passthrough{\lstinline!k+1!}。
+
+\begin{lstlisting}[language={C++}]
+bool bash_win(long long n, long long k) {
+    return n % (k + 1) != 0;
+}
+\end{lstlisting}
+
+\textbf{反常 Nim。} 最后一步的人输。若所有非空堆都为 \passthrough{\lstinline!1!}，轮流拿走一堆，堆数为偶数时先手胜；只要存在大于 \passthrough{\lstinline!1!} 的堆，结论仍然看普通 Nim 的异或和。
+
+\begin{lstlisting}[language={C++}]
+bool misere_nim_win(const vector<int>& a) {
+    // 反常 Nim 只有在“所有非空堆大小都是 1”时与普通 Nim 不同。
+    bool all_one = true;
+    int x = 0;       // 普通 Nim 的异或和。
+    int cnt = 0;     // 非空堆数量。
+    for (int v : a) {
+        if (v != 1) all_one = false;
+        if (v) ++cnt;
+        x ^= v;
+    }
+
+    // 每次只能拿走一整堆 1，最后拿的人输：
+    // 非空堆为偶数时，先手可以把奇数局面留给后手。
+    if (all_one) return cnt % 2 == 0;
+
+    // 只要有一堆大于 1，就回到普通 Nim 的异或判定。
+    return x != 0;
+}
+\end{lstlisting}
+
+\textbf{阶梯 Nim 的约定。} 位置 \passthrough{\lstinline!0!} 是地面，石子在 \passthrough{\lstinline!i>=1!} 的台阶上；每次从台阶 \passthrough{\lstinline!i!} 向 \passthrough{\lstinline!i-1!} 移任意正数，移到地面的石子不再参与游戏。此时只异或奇数编号台阶：
+
+\begin{lstlisting}[language={C++}]
+bool staircase_nim_win(const vector<long long>& a) {
+    long long x = 0; // 阶梯 Nim 化成的等价 Nim 异或和。
+    // 按“0 是地面、石子从 i 移到 i-1”的约定，只异或奇数层。
+    for (int i = 1; i < (int)a.size(); i += 2) x ^= a[i];
+    return x != 0;
+}
+\end{lstlisting}
+
+演示 \passthrough{\lstinline!a[0..5] = [0,3,1,4,2,5]!}：奇数台阶为 \passthrough{\lstinline!3,4,5!}，异或是 \passthrough{\lstinline!2!}。按普通 Nim 规则把台阶 \passthrough{\lstinline!1!} 的 \passthrough{\lstinline!3!} 变为 \passthrough{\lstinline!1!}，即移 \passthrough{\lstinline!2!} 个到地面，奇数台阶异或变为 \passthrough{\lstinline!0!}。题目若把``底层''编号成 \passthrough{\lstinline!1!}，先把下标约定翻译清楚再套公式；阶梯 Nim 最常见的错就是奇偶方向弄反。
+
+\subsubsection{测试样例：Bash、反常 Nim、阶梯 Nim 的分界}
+
+三段函数分别测试。输出 \passthrough{\lstinline!Win/Lose!}，不能把三种游戏共用同一个公式。
+
+\begin{lstlisting}
+Bash 输入
+4
+0 3
+1 1
+4 3
+5 3
+
+Bash 输出
+Lose
+Win
+Lose
+Win
+
+反常 Nim 输入
+4
+1 1
+2 1 1
+1 2
+2 2 2
+
+反常 Nim 输出
+Lose
+Win
+Win
+Lose
+
+阶梯 Nim 输入
+4
+2 0 0
+2 0 1
+4 0 2 1 2
+5 0 3 0 4 1
+
+阶梯 Nim 输出
+Lose
+Win
+Lose
+Win
+\end{lstlisting}
+
+反常 Nim 的前两组专门检查``所有非空堆都是 \passthrough{\lstinline!1!}''的特殊分支；阶梯 Nim 的第三组两个奇数层异或为零，能抓住奇偶层写反的问题。
+
+
+\subsection{Sprague--Grundy 函数打表、周期与大范围取石子}
+
+固定取法集合 \passthrough{\lstinline!moves!} 时，先求：
+
+\begin{lstlisting}[language={C++}]
+vector<int> subtraction_sg(int N, const vector<int>& moves) {
+    // sg[x]：还剩 x 个石子时的 SG 值；sg[0] = 0（不能操作）。
+    vector<int> sg(N + 1);
+    // 一次状态最多有 moves.size() 个后继，所以 mex 不会大于 moves.size()。
+    vector<int> seen(moves.size() + 5);
+    for (int x = 1; x <= N; ++x) {
+        // 用 x 作为时间戳：本轮标记只写 seen，不需要清空数组。
+        int tag = x;
+        for (int take : moves) {
+            // 只有拿得走时，x-take 才是合法后继。
+            if (take <= x && sg[x - take] < (int)seen.size())
+                seen[sg[x - take]] = tag;
+        }
+
+        int g = 0;
+        while (g < (int)seen.size() && seen[g] == tag) ++g;
+        sg[x] = g;
+    }
+    return sg;
+}
+\end{lstlisting}
+
+发现周期不能只看``最后几个数像了''。可靠流程是：先打到足够大 \passthrough{\lstinline!N!}，枚举候选周期 \passthrough{\lstinline!p!}，检查一段连续窗口是否满足 \passthrough{\lstinline!sg[i] == sg[i-p]!}，再用更大的窗口或数学证明确认。模板如下：
+
+\begin{lstlisting}[language={C++}]
+int find_period(const vector<int>& sg, int min_start = 0,
+                int min_len = 30) {
+    int n = (int)sg.size();
+
+    // p 是候选周期。至少需要两段长度为 p 的数据进行比较。
+    for (int p = 1; p * 2 < n; ++p) {
+        // st 是周期开始位置；不要默认周期从 0 开始，很多题有前导非周期段。
+        for (int st = min_start; st + 2 * p + min_len <= n; ++st) {
+            bool ok = true;
+
+            // 检查从 st+p 开始的所有位置是否与 p 前的位置相同。
+            for (int i = st + p; i < n; ++i)
+                if (sg[i] != sg[i - p]) { ok = false; break; }
+            if (ok) return p;
+        }
+    }
+    return -1;
+}
+\end{lstlisting}
+
+若题目给 \passthrough{\lstinline!n <= 10\^18!}，打表只是猜周期；必须确认周期确实适用于题目的完整取法，并把前导非周期段单独处理：\passthrough{\lstinline!n < start!} 查表，否则查 \passthrough{\lstinline!start + (n-start)\%period!}。
+
+\subsubsection{测试样例：周期不能只看一小段}
+
+取法集合为 \passthrough{\lstinline!\{1,2\}!} 时，\passthrough{\lstinline!sg!} 从 \passthrough{\lstinline!0!} 开始按 \passthrough{\lstinline!0,1,2!} 周期重复。先打表到 \passthrough{\lstinline!N=20!}，再调用 \passthrough{\lstinline!find\_period!}，应得到周期 \passthrough{\lstinline!3!}。
+
+\begin{lstlisting}
+调用输入
+N = 20, moves = {1, 2}
+
+应得到
+sg[0..8] = 0 1 2 0 1 2 0 1 2
+find_period(sg) = 3
+\end{lstlisting}
+
+如果只比较最后几个值，容易把前导段误当周期；如果 \passthrough{\lstinline!find\_period!} 返回 \passthrough{\lstinline!1!} 或 \passthrough{\lstinline!2!}，优先检查检查窗口和周期起点。
+
+
+\subsection{图游戏建模、状压博弈和记忆化}
+
+``棋子在图上移动，不能走到某些点''通常是图游戏。若图无环，节点本身就是状态；若有多个棋子，只有当棋子之间完全不影响时才拆成 SG 异或。
+
+当 \passthrough{\lstinline!n <= 20!}，状态压缩通常是 \passthrough{\lstinline!mask!}：位为 \passthrough{\lstinline!1!} 表示未用/仍在场，转移枚举一个合法位置并清位。
+
+\begin{lstlisting}[language={C++}]
+int n;
+unordered_map<int, char> memo;
+
+bool dfs_mask(int mask) {
+    // mask 的每一位代表一个“仍然可用”的对象。
+    // 如果状态还有 last、资源数等信息，必须一并编码进 key。
+    auto it = memo.find(mask);
+    if (it != memo.end()) return it->second;
+
+    for (int i = 0; i < n; ++i) {
+        // 第 i 位为 0，说明对象 i 已经被使用，不能再次选择。
+        if (!(mask >> i & 1)) continue;
+
+        // legal 由题目定义，例如不能与上一次选择相邻、不能违反图边限制等。
+        if (!legal(mask, i)) continue;
+
+        // 只要存在一个后继是必败态，当前状态就是必胜态。
+        if (!dfs_mask(mask ^ (1 << i)))
+            return memo[mask] = 1;
+    }
+
+    // 没有任何一步能把对手送入必败态。
+    return memo[mask] = 0;
+}
+\end{lstlisting}
+
+如果状态中还有 \passthrough{\lstinline!last!}、资源数 \passthrough{\lstinline!r!} 或轮到谁，就把它们一起放进 key，例如 \passthrough{\lstinline!key = (mask << 5) | last!}；不能只哈希 \passthrough{\lstinline!mask!} 而丢掉会影响后续转移的信息。状态压缩博弈的练习可从\href{https://www.luogu.com.cn/training/11251}{洛谷博弈题单}里的 Nim 变体开始，再做带图/带限制的题。
+
+\subsubsection{\texorpdfstring{调用测试：先固定 \texttt{legal}，再测试记忆化}{调用测试：先固定 legal，再测试记忆化}}
+
+原代码中的 \passthrough{\lstinline!legal(mask,i)!} 是题目相关接口，不能凭空编一个题目输入。这里先用最小调用测试：规定任何仍在 \passthrough{\lstinline!mask!} 中的元素都合法，每次只能拿走一个元素；因此剩余元素个数为奇数时先手胜。
+
+\begin{lstlisting}
+调用输入（n=3）
+mask = 0, 1, 3, 7
+
+应得到
+Lose
+Win
+Lose
+Win
+\end{lstlisting}
+
+四次调用之间必须清空 \passthrough{\lstinline!memo!} 或重新建立测试状态。正式题目若还有 \passthrough{\lstinline!last!}、资源数或当前玩家，必须把它们加入状态后再重新设计样例；只测试 \passthrough{\lstinline!mask!} 不能证明完整状态压缩正确。
+
+
+\subsection{极大极小搜索（Minimax）与 Alpha-Beta 剪枝}
+
+Minimax 适用于：双方目标相反、操作可能不同、不能拆成独立子游戏，且状态树能在给定深度内搜索。\passthrough{\lstinline!evaluate!} 必须站在固定一方视角，例如``对先手越大越好''；轮到另一方时取 \passthrough{\lstinline!min!}。
+
+\begin{lstlisting}[language={C++}]
+int alpha_beta(State& s, int depth, int alpha, int beta, bool maxing) {
+    // State：完整局面；depth：还允许搜索多少层；
+    // alpha：极大方当前至少能保证的分数；
+    // beta：极小方当前至多允许极大方得到的分数。
+    // evaluate 必须始终从同一方（例如先手）视角返回分数。
+    if (depth == 0 || terminal(s)) return evaluate(s);
+
+    // 好着法优先搜索会更早提高 alpha / 降低 beta，剪枝效果更好。
+    auto moves = ordered_moves(s); // 吃子、将军等好着法先搜
+    if (maxing) {
+        int value = INT_MIN;
+        for (Move mv : moves) {
+            // apply 和 undo 必须严格成对；否则后续分支会读到被污染的棋盘。
+            apply(s, mv);
+            value = max(value, alpha_beta(s, depth - 1,
+                                          alpha, beta, false));
+            undo(s, mv);
+
+            // 极大方已经知道至少能得到 value，因此 alpha 可以上调。
+            alpha = max(alpha, value);
+
+            // beta <= alpha 时，极小方不会允许进入这个分支，后面的着法无需搜索。
+            if (alpha >= beta) break;
+        }
+        return value;
+    }
+    int value = INT_MAX;
+    for (Move mv : moves) {
+        apply(s, mv);
+        value = min(value, alpha_beta(s, depth - 1,
+                                      alpha, beta, true));
+        undo(s, mv);
+
+        // 极小方希望分数更小，因此 beta 只能向下收紧。
+        beta = min(beta, value);
+        if (alpha >= beta) break;
+    }
+    return value;
+}
+\end{lstlisting}
+
+例题式映射：井字棋中 \passthrough{\lstinline!State!} 是 \passthrough{\lstinline!3x3!} 棋盘加当前玩家，\passthrough{\lstinline!Move!} 是空格编号，\passthrough{\lstinline!apply/undo!} 落子/撤销，\passthrough{\lstinline!terminal!} 检查三连或棋盘已满，\passthrough{\lstinline!evaluate!} 对胜负返回 \passthrough{\lstinline!+100/-100/0!}。如果题目要求输出具体第一步，外层枚举每个 \passthrough{\lstinline!Move!}，对每个子局面调用 Alpha-Beta，保存得分最高的那一步。深度搜索不到终局时，必须用启发式评估，并给将要赢的状态加深度奖励，否则可能``宁愿晚赢''。
+
+\begin{quote}
+调用测试说明：Alpha-Beta 代码中的 \passthrough{\lstinline!State!}、\passthrough{\lstinline!Move!}、\passthrough{\lstinline!apply!}、\passthrough{\lstinline!undo!}、\passthrough{\lstinline!terminal!} 和 \passthrough{\lstinline!evaluate!} 都没有固定定义，不能伪造统一的输入输出。实际接入井字棋时，至少手测三个局面：当前已经三连的终止局面、一步可以获胜的局面、必须先堵住对手的局面；并逐一检查每个分支的 \passthrough{\lstinline!apply/undo!} 后棋盘是否恢复。
+\end{quote}
+
+
+\subsection{状态去重、哈希与有环博弈}
+
+棋类搜索中同一局面可能由不同顺序到达。可以把规范化后的状态放入置换表：
+
+\begin{lstlisting}[language={C++}]
+struct StateHash {
+    size_t operator()(const State& s) const {
+        size_t h = 0;
+        for (int x : s.board)
+            h = h * 1000003ULL + (unsigned)x + 1;
+        h = h * 2 + s.turn;
+        return h;
+    }
+};
+
+unordered_map<State, int, StateHash> table;
+\end{lstlisting}
+
+若图上有环，普通 DFS 的``访问过就返回''是不对的，因为``正在递归路径上''和``已经确定为必胜/必败''不是一回事。无平局、且题目保证最终会结束时可用三色 DFS；允许双方无限循环时，要单独定义平局的收益，不能强行套 Win/Lose。
+
+\begin{quote}
+调用测试说明：\passthrough{\lstinline!StateHash!} 的样例必须和具体 \passthrough{\lstinline!State!} 一起写。至少构造两个``棋盘内容相同但轮到不同玩家''的状态，确认哈希表键不同；再用两个不同走法到达的同一规范局面，确认查表命中同一个状态。不能只打印哈希值判断正确，因为哈希相等不是状态相等。
+\end{quote}
+
+
+

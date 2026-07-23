@@ -1,0 +1,482 @@
+\section{模运算与快速幂}\label{ux6a21ux8fd0ux7b97ux4e0eux5febux901fux5e42}
+
+对质数/任意模数都成立：\passthrough{\lstinline!(a+b)\%p!}、\passthrough{\lstinline!(a-b+p)\%p!}、\passthrough{\lstinline!a*b\%p!}。除法不能直接取模，必须证明逆元存在。
+
+\begin{lstlisting}[language={C++}]
+long long qpow(long long a, long long e, long long mod) {
+    a %= mod; long long r = 1 % mod;
+    while (e) {
+        if (e & 1) r = (__int128)r * a % mod;
+        a = (__int128)a * a % mod; e >>= 1;
+    }
+    return r;
+}
+\end{lstlisting}
+
+\section{最大公约数、扩展欧几里得与同余}\label{ux6700ux5927ux516cux7ea6ux6570ux6269ux5c55ux6b27ux51e0ux91ccux5f97ux4e0eux540cux4f59}
+
+\begin{lstlisting}[language={C++}]
+long long exgcd(long long a, long long b, long long &x, long long &y) {
+    if (!b) { x = 1; y = 0; return a; }
+    long long x1, y1, g = exgcd(b, a % b, x1, y1);
+    x = y1; y = x1 - (a / b) * y1; return g;
+}
+\end{lstlisting}
+
+解 \passthrough{\lstinline!ax ≡ b (mod m)!}：令 \passthrough{\lstinline!g=gcd(a,m)!}，若 \passthrough{\lstinline"b\%g!=0"} 无解；否则约去 \passthrough{\lstinline!g!}，用扩展欧几里得求一个解，通解模 \passthrough{\lstinline!m/g!}。
+
+中国剩余定理（互质模数）：\passthrough{\lstinline!x = Σ ai * Mi * inv(Mi mod mi) mod M!}。非互质模数用``合并两个同余方程''：检查差值能否被 \passthrough{\lstinline!gcd!} 整除，再扩展欧几里得求增量。
+
+\section{质数与筛法}\label{ux8d28ux6570ux4e0eux7b5bux6cd5}
+
+\subsection{试除与质因数分解}\label{ux8bd5ux9664ux4e0eux8d28ux56e0ux6570ux5206ux89e3}
+
+试除到 \passthrough{\lstinline!i*i<=n!}，每次除尽；单个 \passthrough{\lstinline!n≤1e12!} 适用。若只需判质数，复杂度 \passthrough{\lstinline!O(√n)!}。
+
+\begin{lstlisting}[language={C++}]
+vector<pair<long long, int>> factor(long long n) {
+    vector<pair<long long, int>> res;
+    for (long long p = 2; p * p <= n; ++p) {
+        if (n % p) continue;
+        int e = 0;
+        while (n % p == 0) n /= p, ++e;
+        res.push_back({p, e});
+    }
+    if (n > 1) res.push_back({n, 1});
+    return res;
+}
+\end{lstlisting}
+
+\subsection{埃氏筛与线性筛}\label{ux57c3ux6c0fux7b5bux4e0eux7ebfux6027ux7b5b}
+
+埃氏筛复杂度 \passthrough{\lstinline!O(n log log n)!}；线性筛保证每个合数只被最小质因子筛一次，复杂度 \passthrough{\lstinline!O(n)!}，可同时求 \passthrough{\lstinline!phi!}、莫比乌斯等积性函数。
+
+\begin{lstlisting}[language={C++}]
+vector<int> primes, lp(N), phi(N);
+phi[1] = 1;
+for (int i = 2; i < N; ++i) {
+    if (!lp[i]) lp[i] = i, primes.push_back(i), phi[i] = i - 1;
+    for (int p : primes) {
+        if (p > lp[i] || 1LL * i * p >= N) break;
+        lp[i * p] = p;
+        if (p == lp[i]) phi[i * p] = phi[i] * p;
+        else phi[i * p] = phi[i] * (p - 1);
+    }
+}
+\end{lstlisting}
+
+\subsection{约数枚举与整除分块}\label{ux7ea6ux6570ux679aux4e3eux4e0eux6574ux9664ux5206ux5757}
+
+枚举约数成对出现，\passthrough{\lstinline!O(√n)!}。对 \passthrough{\lstinline!floor(n/i)!} 的求和，商相同的 \passthrough{\lstinline!i!} 区间为 \passthrough{\lstinline![i, n/(n/i)]!}，可在 \passthrough{\lstinline!O(√n)!} 个块内完成（数论分块）。
+
+\begin{lstlisting}[language={C++}]
+for (long long l = 1, r; l <= n; l = r + 1) {
+    long long quotient = n / l;
+    r = n / quotient;
+    // [l, r] 内 n / i 都等于 quotient
+    answer += (r - l + 1) * quotient;
+}
+\end{lstlisting}
+
+\section{欧拉函数、莫比乌斯与积性函数}\label{ux6b27ux62c9ux51fdux6570ux83abux6bd4ux4e4cux65afux4e0eux79efux6027ux51fdux6570}
+
+\passthrough{\lstinline!φ(n)=n∏(1-1/p)!}。求单点先分解；求前缀用线性筛。
+
+莫比乌斯函数：\passthrough{\lstinline!μ(1)=1!}，含平方因子为 0，否则质因数个数奇偶决定 ±1。常见反演：若 \passthrough{\lstinline!f(n)=Σ\_\{d|n\}g(d)!}，则 \passthrough{\lstinline!g(n)=Σ\_\{d|n\} μ(d)f(n/d)!}。
+
+\begin{lstlisting}[language={C++}]
+vector<int> primes, lp(N), phi(N), mu(N);
+phi[1] = mu[1] = 1;
+for (int i = 2; i < N; ++i) {
+    if (!lp[i]) lp[i] = i, primes.push_back(i), phi[i] = i - 1, mu[i] = -1;
+    for (int p : primes) {
+        if (1LL * i * p >= N) break;
+        lp[i * p] = p;
+        if (p == lp[i]) {
+            phi[i * p] = phi[i] * p;
+            mu[i * p] = 0;
+            break;
+        }
+        phi[i * p] = phi[i] * (p - 1);
+        mu[i * p] = -mu[i];
+    }
+}
+\end{lstlisting}
+
+\section{组合数与阶乘（Binomial Coefficients）}\label{ux7ec4ux5408ux6570ux4e0eux9636ux4e58}
+
+\subsection{\texorpdfstring{质数模且 \texttt{n} 不大}{质数模且 n 不大}}\label{ux8d28ux6570ux6a21ux4e14-n-ux4e0dux5927}
+
+预处理 \passthrough{\lstinline!fac[i]!}、\passthrough{\lstinline!ifac[i]!}，\passthrough{\lstinline!C(n,k)=fac[n]ifac[k]ifac[n-k]!}，预处理 \passthrough{\lstinline!O(N)!}，查询 \passthrough{\lstinline!O(1)!}。
+
+\begin{lstlisting}[language={C++}]
+const long long MOD = 998244353;
+vector<long long> fac(N), ifac(N);
+fac[0] = 1;
+for (int i = 1; i < N; ++i) fac[i] = fac[i - 1] * i % MOD;
+ifac[N - 1] = qpow(fac[N - 1], MOD - 2, MOD);
+for (int i = N - 1; i; --i) ifac[i - 1] = ifac[i] * i % MOD;
+auto C = [&](int n, int k) -> long long {
+    if (k < 0 || k > n) return 0;
+    return fac[n] * ifac[k] % MOD * ifac[n - k] % MOD;
+};
+\end{lstlisting}
+
+\subsection{卢卡斯定理（Lucas Theorem）}\label{ux5362ux5361ux65afux5b9aux7406}
+
+质数 \passthrough{\lstinline!p!} 下：\passthrough{\lstinline!C(n,k) ≡ ∏ C(n\_i,k\_i) (mod p)!}，其中 \passthrough{\lstinline!n\_i,k\_i!} 是 \passthrough{\lstinline!p!} 进制位。适用于 \passthrough{\lstinline!n!} 很大、\passthrough{\lstinline!p!} 较小。
+
+\begin{lstlisting}[language={C++}]
+long long Csmall(long long n, long long k, long long p) {
+    if (k < 0 || k > n) return 0;
+    long long ans = 1;
+    for (long long i = 1; i <= k; ++i) {
+        ans = ans * (n - i + 1) % p;
+        ans = ans * qpow(i, p - 2, p) % p;
+    }
+    return ans;
+}
+long long lucas(long long n, long long k, long long p) {
+    if (!k) return 1;
+    return Csmall(n % p, k % p, p) * lucas(n / p, k / p, p) % p;
+}
+\end{lstlisting}
+
+\subsection{非质数模}\label{ux975eux8d28ux6570ux6a21}
+
+分解模数的质数幂，计算每个质数幂下的阶乘（跳过 \passthrough{\lstinline!p!} 因子），再用 CRT 合并。实现复杂且容易错，只有题目明确需要时使用。
+
+\begin{lstlisting}[language={C++}]
+// 合并 x = a1 (mod m1), x = a2 (mod m2)，允许模数不互质
+bool merge_congruence(long long a1, long long m1,
+                      long long a2, long long m2,
+                      long long &a, long long &m) {
+    long long x, y, g = exgcd(m1, m2, x, y);
+    long long d = a2 - a1;
+    if (d % g) return false;
+    long long mod = m2 / g;
+    long long t = (__int128)(d / g) * x % mod;
+    if (t < 0) t += mod;
+    m = m1 / g * m2;
+    a = (a1 + (__int128)m1 * t) % m;
+    if (a < 0) a += m;
+    return true;
+}
+\end{lstlisting}
+
+\section{矩阵快速幂与线性递推（Matrix Exponentiation and Linear Recurrence）}\label{ux77e9ux9635ux4e0eux7ebfux6027ux9012ux63a8}
+
+线性递推 \passthrough{\lstinline!f(n)=c1 f(n-1)+...+ck f(n-k)!} 可转为 \passthrough{\lstinline!k×k!} 矩阵快速幂，复杂度 \passthrough{\lstinline!O(k³ log n)!}；Fibonacci 为 \passthrough{\lstinline!2×2!}。矩阵乘法注意模乘溢出。
+
+\begin{lstlisting}[language={C++}]
+struct Mat {
+    int n; vector<vector<long long>> a;
+    Mat(int n, bool ident = false): n(n), a(n, vector<long long>(n)) {
+        if (ident) for (int i = 0; i < n; ++i) a[i][i] = 1;
+    }
+};
+Mat operator*(const Mat& A, const Mat& B) {
+    Mat C(A.n);
+    for (int i = 0; i < A.n; ++i)
+        for (int k = 0; k < A.n; ++k) if (A.a[i][k])
+            for (int j = 0; j < A.n; ++j)
+                C.a[i][j] = (C.a[i][j] + (__int128)A.a[i][k] * B.a[k][j]) % MOD;
+    return C;
+}
+Mat mpow(Mat a, long long e) {
+    Mat r(a.n, true);
+    while (e) { if (e & 1) r = r * a; a = a * a; e >>= 1; }
+    return r;
+}
+\end{lstlisting}
+
+\section{容斥与组合计数}\label{ux5bb9ux65a5ux4e0eux7ec4ux5408ux8ba1ux6570}
+
+全集计数减去至少一个坏条件。\passthrough{\lstinline!n≤20!} 时枚举子集：
+
+\passthrough{\lstinline!ans = Σ (-1)\^\{|S|\} count(同时满足 S 中条件)!}。
+
+条件独立/按质因子分解时可用容斥；条件数量大时优先找补集、莫比乌斯反演或 DP。
+
+\begin{lstlisting}[language={C++}]
+long long ans = 0;
+for (int mask = 0; mask < (1 << m); ++mask) {
+    int bits = __builtin_popcount((unsigned)mask);
+    long long ways = count_satisfying(mask); // 同时满足 mask 中条件
+    ans += (bits & 1) ? -ways : ways;
+}
+\end{lstlisting}
+
+\section{概率与期望}\label{ux6982ux7387ux4e0eux671fux671b}
+
+\begin{itemize}
+\tightlist
+\item
+  期望线性：\passthrough{\lstinline!E[X+Y]=E[X]+E[Y]!}，即使不独立也成立。
+\item
+  终止状态递推：\passthrough{\lstinline!E[state]=1+Σ p\_i E[next\_i]!}；若有自环移项并检查系数非零。
+\item
+  取模概率需要模逆；分母与模数不互质时不能直接除。
+\end{itemize}
+
+\begin{lstlisting}[language={C++}]
+double expected_dag(int u) {
+    if (vis[u]) return E[u];
+    vis[u] = true;
+    E[u] = 1.0; // 走一步
+    for (auto [v, p] : transitions[u]) E[u] += p * expected_dag(v);
+    return E[u];
+}
+\end{lstlisting}
+
+\section{常见数列与技巧}\label{ux5e38ux89c1ux6570ux5217ux4e0eux6280ux5de7}
+
+\begin{itemize}
+\tightlist
+\item
+  等差/等比求和、前缀异或（周期 4）、\passthrough{\lstinline!1 xor ... xor n!}。
+\item
+  \passthrough{\lstinline!gcd(a,b)=gcd(a,b-a)!}；\passthrough{\lstinline!lcm(a,b)=a/gcd(a,b)*b!}。
+\item
+  斐波那契 gcd：\passthrough{\lstinline!gcd(F\_m,F\_n)=F\_gcd(m,n)!}（用于识别构造题）。
+\item
+  反复应用 \passthrough{\lstinline!x -> x/gcd(x,a)!} 时，质因数分解通常比模拟更快。
+\end{itemize}
+
+\begin{lstlisting}[language={C++}]
+long long xor_prefix(long long n) {
+    switch (n & 3) {
+        case 0: return n;
+        case 1: return 1;
+        case 2: return n + 1;
+        default: return 0;
+    }
+}
+
+pair<long long, long long> fib(long long n) { // (F_n, F_{n+1})
+    if (!n) return {0, 1};
+    auto [a, b] = fib(n >> 1);
+    long long c = a * (2 * b - a);
+    long long d = a * a + b * b;
+    return (n & 1) ? pair{d, c + d} : pair{c, d};
+}
+\end{lstlisting}
+
+\section{生成函数基础}\label{ux751fux6210ux51fdux6570ux57faux7840}
+
+把数列 \passthrough{\lstinline!a\_n!} 视为形式幂级数 \passthrough{\lstinline!A(x)=Σa\_n x\^n!}。加法对应逐项相加，乘法对应卷积；\passthrough{\lstinline!1/(1-x)!} 是全 1 数列，\passthrough{\lstinline!1/(1-x)\^k!} 的系数是 \passthrough{\lstinline!C(n+k-1,k-1)!}。小规模直接卷积，规模大时换 NTT。
+
+\begin{lstlisting}[language={C++}]
+using Poly = vector<long long>;
+Poly multiply(const Poly& a, const Poly& b, long long MOD) {
+    Poly c(a.size() + b.size() - 1);
+    for (int i = 0; i < (int)a.size(); ++i)
+        for (int j = 0; j < (int)b.size(); ++j)
+            c[i + j] = (c[i + j] + a[i] * b[j]) % MOD;
+    return c;
+}
+
+// (1 + x + ... + x^m)^k 的系数：重复卷积或用 NTT 加速
+Poly ways(Poly base, int k, long long MOD) {
+    Poly ans{1};
+    while (k) {
+        if (k & 1) ans = multiply(ans, base, MOD);
+        k >>= 1;
+        if (k) base = multiply(base, base, MOD);
+    }
+    return ans;
+}
+\end{lstlisting}
+
+\section{Burnside 引理与 Pólya 计数定理（Burnside's Lemma and Pólya Enumeration Theorem）}\label{burnside-puxf3lya}
+
+Burnside 引理：轨道数等于所有群作用下不动点数的平均值。对``颜色数为 \passthrough{\lstinline!c!}、置换 \passthrough{\lstinline!p!} 作用于位置''的染色问题，不动点数为 \passthrough{\lstinline!c\^\{cycles(p)\}!}；模数需要能除以群大小。
+
+\begin{lstlisting}[language={C++}]
+long long mod_pow(long long a, long long e, long long mod) {
+    long long r = 1;
+    for (; e; e >>= 1, a = a * a % mod) if (e & 1) r = r * a % mod;
+    return r;
+}
+long long burnside(const vector<vector<int>>& group, int colors, long long MOD) {
+    long long sum = 0;
+    for (const auto& perm : group) {
+        int n = perm.size(), cycles = 0;
+        vector<char> vis(n);
+        for (int i = 0; i < n; ++i) if (!vis[i]) {
+            ++cycles;
+            for (int u = i; !vis[u]; u = perm[u]) vis[u] = true;
+        }
+        sum = (sum + mod_pow(colors, cycles, MOD)) % MOD;
+    }
+    return sum * mod_pow(group.size(), MOD - 2, MOD) % MOD;
+}
+\end{lstlisting}
+
+\section{Prüfer 序列与矩阵树定理（Prüfer Sequence and Matrix-Tree Theorem）}\label{pruxfcfer-ux5e8fux5217ux4e0eux77e9ux9635ux6811ux5b9aux7406}
+
+Prüfer 序列长度为 \passthrough{\lstinline!n-2!}，每棵标号树与一个序列一一对应；度数满足 \passthrough{\lstinline!deg[v]=出现次数+1!}。矩阵树定理把拉普拉斯矩阵删去一行一列后的行列式作为生成树数量。
+
+\begin{lstlisting}[language={C++}]
+vector<int> prufer_encode(const vector<vector<int>>& g) {
+    int n = g.size() - 1;
+    vector<int> deg(n + 1), code;
+    priority_queue<int, vector<int>, greater<int>> leaves;
+    for (int u = 1; u <= n; ++u) {
+        deg[u] = g[u].size();
+        if (deg[u] == 1) leaves.push(u);
+    }
+    for (int step = 0; step < n - 2; ++step) {
+        int leaf = leaves.top(); leaves.pop();
+        int v = 0;
+        for (int x : g[leaf]) if (deg[x]) { v = x; break; }
+        code.push_back(v);
+        if (--deg[v] == 1) leaves.push(v);
+        deg[leaf] = 0;
+    }
+    return code;
+}
+
+vector<pair<int, int>> prufer_decode(const vector<int>& code) {
+    int n = code.size() + 2;
+    vector<int> deg(n + 1, 1);
+    for (int x : code) ++deg[x];
+    priority_queue<int, vector<int>, greater<int>> leaves;
+    for (int i = 1; i <= n; ++i) if (deg[i] == 1) leaves.push(i);
+    vector<pair<int, int>> edges;
+    for (int x : code) {
+        int u = leaves.top(); leaves.pop(); edges.push_back({u, x});
+        if (--deg[x] == 1) leaves.push(x);
+    }
+    edges.push_back({leaves.top(), leaves.top()});
+    int u = leaves.top(); leaves.pop(); int v = leaves.top();
+    edges.back() = {u, v};
+    return edges;
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language={C++}]
+long long tree_count(vector<vector<long long>> lap, long long MOD) {
+    int n = lap.size(); long long det = 1;
+    for (int col = 0; col < n; ++col) {
+        int pivot = col;
+        while (pivot < n && lap[pivot][col] % MOD == 0) ++pivot;
+        if (pivot == n) return 0;
+        if (pivot != col) swap(lap[pivot], lap[col]), det = (MOD - det) % MOD;
+        det = det * (lap[col][col] % MOD + MOD) % MOD;
+        long long inv = mod_pow((lap[col][col] % MOD + MOD) % MOD, MOD - 2, MOD);
+        for (int i = col + 1; i < n; ++i) {
+            long long factor = lap[i][col] % MOD * inv % MOD;
+            for (int j = col; j < n; ++j)
+                lap[i][j] = (lap[i][j] - factor * lap[col][j]) % MOD;
+        }
+    }
+    return (det + MOD) % MOD;
+}
+// 调用时传入删除一行一列后的拉普拉斯矩阵。
+\end{lstlisting}
+
+\section{二次剩余与 Tonelli–Shanks 算法（Quadratic Residues and Tonelli–Shanks Algorithm）}\label{ux4e8cux6b21ux5269ux4f59}
+
+Legendre 符号判断 \passthrough{\lstinline!a!} 是否为模奇素数 \passthrough{\lstinline!p!} 的二次剩余；Tonelli--Shanks 在存在平方根时以 \passthrough{\lstinline!O(log²p)!} 求出一个根。
+
+\begin{lstlisting}[language={C++}]
+long long legendre(long long a, long long p) {
+    a %= p; if (a < 0) a += p;
+    if (!a) return 0;
+    long long x = mod_pow(a, (p - 1) / 2, p);
+    return x == 1 ? 1 : -1;
+}
+
+long long tonelli_shanks(long long n, long long p) {
+    n %= p; if (!n) return 0;
+    if (p == 2) return n;
+    if (legendre(n, p) != 1) return -1;
+    if (p % 4 == 3) return mod_pow(n, (p + 1) / 4, p);
+    long long q = p - 1, s = 0;
+    while (!(q & 1)) q >>= 1, ++s;
+    long long z = 2;
+    while (legendre(z, p) != -1) ++z;
+    long long c = mod_pow(z, q, p), x = mod_pow(n, (q + 1) / 2, p);
+    long long t = mod_pow(n, q, p), m = s;
+    while (t != 1) {
+        long long i = 1, tt = t * t % p;
+        while (tt != 1) tt = tt * tt % p, ++i;
+        long long b = mod_pow(c, 1LL << (m - i - 1), p);
+        x = x * b % p; c = b * b % p; t = t * c % p; m = i;
+    }
+    return x;
+}
+\end{lstlisting}
+
+费马小定理：\passthrough{\lstinline!a\^(p-1) ≡ 1 (mod p)!}（\passthrough{\lstinline!p!} 质数且 \passthrough{\lstinline"p !| a"}），逆元为 \passthrough{\lstinline!a\^(p-2)!}。欧拉定理推广到 \passthrough{\lstinline!gcd(a,m)=1!}：\passthrough{\lstinline!a\^φ(m) ≡ 1 (mod m)!}。
+
+\section{置换与循环}\label{ux7f6eux6362ux4e0eux5faaux73af}
+
+置换分解成不相交环；重复应用 \passthrough{\lstinline!k!} 次时每个位置在所属环内移动 \passthrough{\lstinline!k mod len!}。求置换逆、循环节、最少交换次数都从环分解出发。
+
+\begin{lstlisting}[language={C++}]
+vector<int> vis(n), result(n);
+for (int i = 0; i < n; ++i) if (!vis[i]) {
+    vector<int> cyc;
+    for (int u = i; !vis[u]; u = p[u]) vis[u] = 1, cyc.push_back(u);
+    int m = cyc.size();
+    for (int j = 0; j < m; ++j) result[cyc[j]] = cyc[(j + k) % m];
+}
+\end{lstlisting}
+
+\section{快速傅里叶变换与数论变换（了解）}\label{fftnttux4e86ux89e3}
+
+多项式卷积、计数合并、字符串匹配。NTT 要求模数为 \passthrough{\lstinline!c·2\^k+1!}（常用 \passthrough{\lstinline!998244353!}），每层蝶形乘原根；逆变换乘 \passthrough{\lstinline!n\^\{-1\}!}。只在卷积规模大于 \passthrough{\lstinline!O(n²)!} 时值得使用。
+
+\begin{lstlisting}[language={C++}]
+void ntt(vector<int>& a, bool inv) {
+    int n = a.size();
+    for (int i = 1, j = 0; i < n; ++i) {
+        int bit = n >> 1; for (; j & bit; bit >>= 1) j ^= bit; j ^= bit;
+        if (i < j) swap(a[i], a[j]);
+    }
+    for (int len = 2; len <= n; len <<= 1) {
+        int wlen = qpow(G, (MOD - 1) / len);
+        if (inv) wlen = qpow(wlen, MOD - 2);
+        for (int i = 0; i < n; i += len) {
+            long long w = 1;
+            for (int j = 0; j < len / 2; ++j) {
+                int u = a[i + j], v = w * a[i + j + len / 2] % MOD;
+                a[i + j] = (u + v) % MOD; a[i + j + len / 2] = (u - v + MOD) % MOD;
+                w = w * wlen % MOD;
+            }
+        }
+    }
+    if (inv) { long long ni = qpow(n, MOD - 2); for (int &x : a) x = x * ni % MOD; }
+}
+\end{lstlisting}
+
+\section{高斯消元}\label{ux9ad8ux65afux6d88ux5143}
+
+解线性方程组、求秩、行列式。整数模数下用模逆；浮点版本选主元避免除以接近 0 的数。方程有自由变量时记录主元列并构造一组解。
+
+\begin{lstlisting}[language={C++}]
+int gauss(vector<vector<long long>> a) {
+    int n = a.size(), m = a[0].size(), rank = 0;
+    for (int col = 0; col < m && rank < n; ++col) {
+        int pivot = rank;
+        while (pivot < n && a[pivot][col] == 0) ++pivot;
+        if (pivot == n) continue;
+        swap(a[pivot], a[rank]);
+        long long inv = qpow(a[rank][col], MOD - 2);
+        for (int j = col; j < m; ++j) a[rank][j] = a[rank][j] * inv % MOD;
+        for (int i = 0; i < n; ++i) if (i != rank && a[i][col]) {
+            long long t = a[i][col];
+            for (int j = col; j < m; ++j) a[i][j] = (a[i][j] - t * a[rank][j]) % MOD;
+        }
+        ++rank;
+    }
+    return rank;
+}
+\end{lstlisting}
+
+
+
+
+

@@ -1,0 +1,347 @@
+\section{字符串高级算法：参数、调用与改造}
+
+本节紧跟前面的基础模板。先看每个接口传什么，再看哪些不变量不能动，最后看如何替换维护信息或转移。
+
+\subsection{Booth 最小表示法}
+
+循环字符串的最小表示不是把字符串复制后排序所有起点。Booth 双指针在 \passthrough{\lstinline!s+s!} 上比较两个候选起点，淘汰整段，复杂度 \(O(n)\)。
+
+\begin{lstlisting}[language={C++}]
+int booth(const string& s) {
+    // t=s+s，把所有循环移位统一成 t 中长度 n 的子串。
+    string t = s + s;
+    int n = s.size(), i = 0, j = 1, k = 0;
+    while (i < n && j < n && k < n) {
+        // k 表示两个候选起点已经匹配的长度。
+        if (t[i+k] == t[j+k]) { ++k; continue; }
+
+        // 第一个不同字符决定哪个起点更大；较大的候选可以淘汰一整段。
+        if (t[i+k] > t[j+k]) i = i + k + 1;
+        else j = j + k + 1;
+
+        // 两个指针不能相等，否则候选数会少一个。
+        if (i == j) ++j;
+        k = 0;
+    }
+
+    // 最小表示的起点一定在 [0,n-1] 中。
+    return min(i, j);
+}
+\end{lstlisting}
+
+\subsubsection{测试样例：最小表示的重复字符、周期和首尾交叉}
+
+下面每组输入一个字符串，输出它的字典序最小循环移位。
+
+\begin{lstlisting}
+输入
+4
+a
+aaaa
+baca
+caba
+
+输出
+a
+aaaa
+abac
+abac
+\end{lstlisting}
+
+前两组检查 \passthrough{\lstinline!i==j!} 和重复字符；后两组的最优起点不在原串开头，能抓住循环串复制后排序时的下标错误。
+
+例题：\href{https://www.luogu.com.cn/problem/P1368}{P1368 工艺}。把输入串交给 \passthrough{\lstinline!booth!}，从返回下标开始输出 \passthrough{\lstinline!n!} 个字符。题目求的是循环移位，不是反转后的最小串；若题面允许反转，要额外对反串再调用一次。
+
+
+\subsection{回文自动机（Palindromic Automaton）}
+
+PAM 的每个节点代表一个不同的回文串；\passthrough{\lstinline!fail!} 指向去掉两端后最长的回文后缀。插入字符时沿 \passthrough{\lstinline!fail!} 找到可以向两端扩展的节点。节点数最多 \passthrough{\lstinline!n+2!}，所以它适合``所有回文子串''的统计。
+
+\begin{lstlisting}[language={C++}]
+struct PAM {
+    static const int SIG = 26;
+    int next[MAXN][SIG]; // next[u][c]：回文串 u 两端加字符 c 后的节点。
+    int fail[MAXN];       // fail[u]：u 的最长真回文后缀。
+    int len[MAXN];        // len[u]：节点 u 代表的回文串长度。
+    int s[MAXN];          // 已插入的字符，get_fail 要访问历史字符。
+    long long occ[MAXN];  // 先统计“作为最长回文后缀”的次数，再沿 fail 汇总。
+    int last, tot, n;     // last=当前前缀的最长回文后缀，tot=节点总数，n=串长。
+
+    void init() {
+        // 0 号根表示长度 -1 的虚拟回文，1 号根表示长度 0 的空串。
+        memset(next, 0, sizeof(next));
+        memset(occ, 0, sizeof(occ));
+        n = 0; tot = 1; last = 1;
+        len[0] = -1; fail[0] = 0;
+        len[1] = 0; fail[1] = 0;
+    }
+    int get_fail(int x) {
+        // 从当前回文后缀沿 fail 向上跳，直到它能和新字符首尾匹配。
+        while (n - 1 - len[x] < 0 || s[n - 1 - len[x]] != s[n])
+            x = fail[x];
+        return x;
+    }
+    int add(char ch) {
+        // 新字符暂存在 s[n]，此时 n 还是旧长度。
+        s[n] = ch - 'a';
+        int cur = get_fail(last), c = s[n];
+        if (!next[cur][c]) {
+            // 当前回文后缀加上两端字符，产生一个此前没有出现过的新回文。
+            int now = ++tot;
+            len[now] = len[cur] + 2;
+
+            // 长度 1 的回文 fail 到空串根；其它节点继续从 fail[cur] 找。
+            fail[now] = (len[now] == 1) ? 1 : next[get_fail(fail[cur])][c];
+            next[cur][c] = now;
+        }
+
+        // 新前缀的最长回文后缀就是这条转移到达的节点。
+        last = next[cur][c]; ++occ[last]; ++n;
+        return last;
+    }
+    void count_occurrence() {
+        // fail 一定从长串指向短串，所以必须按 len 从大到小传递。
+        // 节点编号不保证按长度排序，不能盲写 for(i=tot;i>=1;--i)。
+        vector<int> ord(max(0, tot - 1));
+        iota(ord.begin(), ord.end(), 2); // 0/1 是两个虚拟根，不参与统计。
+        sort(ord.begin(), ord.end(), [&](int a, int b) {
+            return len[a] > len[b];
+        });
+        for (int u : ord) occ[fail[u]] += occ[u];
+    }
+};
+\end{lstlisting}
+
+\subsubsection{测试样例：回文自动机的根、重复回文和多测清空}
+
+下面每组输入一个小写字符串，输出不同的非空回文子串数量，也就是 \passthrough{\lstinline!tot-1!}。
+
+\begin{lstlisting}
+输入
+4
+a
+aaaa
+abacaba
+ababa
+
+输出
+1
+4
+7
+5
+\end{lstlisting}
+
+\passthrough{\lstinline!aaaa!} 的不同回文串是 \passthrough{\lstinline!a,aa,aaa,aaaa!}；\passthrough{\lstinline!abacaba!} 的七个不同回文串可用来检查 \passthrough{\lstinline!fail!} 链。连续多组调用前必须执行 \passthrough{\lstinline!init()!}，否则第二组的节点和出现次数会污染第三组。
+
+例题：\href{https://www.luogu.com.cn/problem/P5496}{P5496 【模板】回文自动机（PAM）}。题目要求每个位置结尾的回文串数量；插入第 \passthrough{\lstinline!i!} 个字符后，最长回文后缀是 \passthrough{\lstinline!last!}，所有回文后缀沿 \passthrough{\lstinline!fail!} 链连接，因此可以用 \passthrough{\lstinline!dp[i] = dp[i-len[last]] + 1!} 的题目特定统计，或沿 fail 链统计。若只问不同回文子串数量，答案是 \passthrough{\lstinline!tot-1!}；若问出现次数，要先 \passthrough{\lstinline!count\_occurrence()!}。
+
+
+\subsection{后缀数组、最长公共前缀、后缀自动机与 Aho--Corasick 失配树}
+
+后缀数组适合``后缀排序、子串字典序、多个后缀的最长公共前缀''；LCP 用 Kasai 求相邻后缀公共前缀，再用 RMQ 回答任意两个后缀的 LCP。题目出现``第 k 个不同子串''时，SAM 往往更直接：每个状态记录 \passthrough{\lstinline!len!}、\passthrough{\lstinline!link!} 和转移，按 DAG DP 统计从状态出发的不同串数。
+
+\begin{lstlisting}[language={C++}]
+struct SAM {
+    int next[MAXN][26]; // 状态转移；字符集大时改成 map/unordered_map。
+    int link[MAXN];     // 后缀链接：指向最长的更短 endpos 等价类。
+    int len[MAXN];      // 该状态能表示的最长子串长度。
+    int last = 1;       // 整个当前前缀对应的状态。
+    int tot = 1;        // 1 号状态是初始状态；0 号转移为空。
+
+    void extend(int c) {
+        // 新状态 cur 代表“以新字符结尾”的所有后缀。
+        int cur = ++tot; len[cur] = len[last] + 1;
+        int p = last;
+
+        // 沿 suffix link 补上以前不存在的 c 转移。
+        while (p && !next[p][c]) next[p][c] = cur, p = link[p];
+        if (!p) link[cur] = 1;
+        else {
+            int q = next[p][c];
+            if (len[p] + 1 == len[q]) link[cur] = q;
+            else {
+                // q 的长度太长，不能直接作为 cur 的 link。
+                // clone 复制 q 的转移，但把最长长度截为 len[p]+1。
+                int clone = ++tot;
+                memcpy(next[clone], next[q], sizeof next[q]);
+                len[clone] = len[p] + 1; link[clone] = link[q];
+
+                // 把原来指向 q 的、位于同一等价区间的转移改指 clone。
+                while (p && next[p][c] == q)
+                    next[p][c] = clone, p = link[p];
+                link[q] = link[cur] = clone;
+            }
+        }
+        last = cur;
+    }
+};
+\end{lstlisting}
+
+\subsubsection{调用测试：后缀自动机的空串、重复字符和克隆状态}
+
+当前代码片段只负责 \passthrough{\lstinline!extend!}，所以先测试最基本的不变量：初始状态编号为 \passthrough{\lstinline!1!}，字符串全相同时每个字符新增一个状态；如果要测试出现次数，还必须把 \passthrough{\lstinline!occ!} 统计和链接树排序一并接上。
+
+\begin{lstlisting}
+调用输入
+s = ""
+s = "a"
+s = "aaaa"
+s = "ab"
+
+应得到的状态总数 tot
+1
+2
+5
+3
+\end{lstlisting}
+
+第一组检查 \passthrough{\lstinline!init!}；第二、三组检查 \passthrough{\lstinline!last!} 和长度；第四组检查不同字符转移。真正测试克隆分支时，应使用一个会产生重复后缀等价类的字符串，并检查所有被旧状态指向的转移是否一起改到 clone。
+
+例题：\href{https://www.luogu.com.cn/problem/P3804}{P3804 【模板】后缀自动机（SAM）}问出现次数最多的子串：按 \passthrough{\lstinline!len!} 从大到小把 \passthrough{\lstinline!occ[u]!} 加到 \passthrough{\lstinline!occ[link[u]]!}，答案是 \passthrough{\lstinline!max(len[u]*occ[u])!}。若是第 \passthrough{\lstinline!k!} 个子串，先在状态 DAG 上做 \passthrough{\lstinline!dp[u]=sum(1+dp[v])!}，再按字符顺序跳转并扣减 \passthrough{\lstinline!1+dp[v]!}。
+
+AC 自动机把多个模式串建 Trie，再按 BFS 建 \passthrough{\lstinline!fail!}；把 fail 指针反向成树，就能把``文本中经过节点''转成 fail 子树求和。例题可用\href{https://www.luogu.com.cn/problem/P3796}{P3796 AC 自动机加强版}：插入模式串，扫描文本，沿 fail 链累计出现次数，最后找最大次数的模式串。查询中如果有``一个模式串是另一个模式串后缀''，不要只看 Trie 节点本身，必须沿 fail 树汇总。
+
+哈希二分 LCP 的模板：预处理双模/64 位前缀哈希，比较 \passthrough{\lstinline!hash(i,len)==hash(j,len)!}，二分最长长度。例题：\href{https://www.luogu.com.cn/problem/P3370}{P3370 【模板】字符串哈希}。如果是高风险哈希题，使用双模或 \passthrough{\lstinline!uint64\_t!} 随机基，不能把单模碰撞当成严格证明。
+
+
+\subsection{后缀数组与 LCP}
+
+后缀数组的倍增法按``前半排名、后半排名''排序。工程上可以使用 \passthrough{\lstinline!sort!} 版先保证正确；\passthrough{\lstinline!n!} 达到 \passthrough{\lstinline!2e5!} 以上再换基数排序优化。
+
+\begin{lstlisting}[language={C++}]
+vector<int> suffix_array(const string& s) {
+    int n = s.size();
+    vector<int> sa(n), rk(n), tmp(n);
+    iota(sa.begin(), sa.end(), 0);
+    // rk[i] 是长度 1 的后缀 s[i..] 的排名；不同字符最好先压成连续整数。
+    for (int i = 0; i < n; ++i) rk[i] = s[i];
+    for (int k = 1;; k <<= 1) {
+        // 现在按长度 2k 的二元组 (前 k 长排名, 后 k 长排名) 排序。
+        sort(sa.begin(), sa.end(), [&](int i, int j) {
+            if (rk[i] != rk[j]) return rk[i] < rk[j];
+            int ri = i + k < n ? rk[i+k] : -1;
+            int rj = j + k < n ? rk[j+k] : -1;
+            return ri < rj;
+        });
+        // 根据排好序的后缀重新编号；相邻二元组相同才共享排名。
+        tmp[sa[0]] = 0;
+        for (int i = 1; i < n; ++i) {
+            int a = sa[i-1], b = sa[i];
+            bool diff = rk[a] != rk[b];
+            int ra = a+k < n ? rk[a+k] : -1;
+            int rb = b+k < n ? rk[b+k] : -1;
+            tmp[b] = tmp[a] + (diff || ra != rb);
+        }
+        rk.swap(tmp);
+        // 所有排名都不同后，sa 已经是最终后缀数组。
+        if (rk[sa.back()] == n - 1) break;
+    }
+    return sa;
+}
+vector<int> kasai(const string& s, const vector<int>& sa) {
+    int n = s.size(); vector<int> rank(n), lcp(n);
+    for (int i = 0; i < n; ++i) rank[sa[i]] = i;
+    for (int i = 0, h = 0; i < n; ++i) {
+        int r = rank[i];
+        if (r == 0) continue;
+        int j = sa[r-1];
+        while (i+h < n && j+h < n && s[i+h] == s[j+h]) ++h;
+        lcp[r] = h;
+        if (h) --h;
+    }
+    return lcp; // lcp[r] = sa[r] 与 sa[r-1] 的 LCP
+}
+\end{lstlisting}
+
+\subsubsection{测试样例：后缀排序和 LCP 的经典字符串}
+
+\begin{lstlisting}
+输入字符串
+banana
+
+应得到后缀数组
+5 3 1 0 4 2
+
+应得到 lcp 数组
+0 1 3 0 0 2
+\end{lstlisting}
+
+\passthrough{\lstinline!banana!} 同时含有重复前缀和不同首字符，能检查倍增第二关键字的越界排名；\passthrough{\lstinline!lcp[2]=3!} 是 \passthrough{\lstinline!ana!} 与 \passthrough{\lstinline!anana!} 的公共前缀，能抓住 Kasai 的 \passthrough{\lstinline!h!} 是否正确复用。
+
+例题：\href{https://www.luogu.com.cn/problem/P3809}{P3809 【模板】后缀排序}。若要任意两个后缀的 LCP，把 \passthrough{\lstinline!lcp!} 做 RMQ；若要第 \passthrough{\lstinline!k!} 个不同子串，按后缀顺序累加 \passthrough{\lstinline!n-sa[i]-lcp[i]!}，第一次超过 \passthrough{\lstinline!k!} 的后缀就是答案所在位置。
+
+
+\subsection{AC 自动机与 fail 树}
+
+\begin{lstlisting}[language={C++}]
+struct AC {
+    int ch[MAXN][26]{}; // build 后不存在的转移也会补成 fail 转移。
+    int fail[MAXN]{};   // 当前节点的最长真后缀节点。
+    int out[MAXN]{};    // 节点本身及 fail 链上的模式串计数。
+    int tot = 0;
+    vector<int> tree[MAXN]; // fail 指针反图；用于子树汇总。
+    int insert(const string& s) {
+        int u = 0;
+        for (char cc : s) {
+            int c = cc - 'a';
+            if (!ch[u][c]) ch[u][c] = ++tot;
+            u = ch[u][c];
+        }
+        // 返回结束节点，题目要分别输出时保存这个编号。
+        return u;
+    }
+    void build() {
+        queue<int> q;
+        // 根的 fail 是自己；根的直接儿子 fail 都是根。
+        for (int c = 0; c < 26; ++c)
+            if (ch[0][c]) q.push(ch[0][c]);
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            for (int c = 0; c < 26; ++c) {
+                if (ch[u][c]) {
+                    // 子节点的 fail：沿 u 的 fail 走同一个字符。
+                    fail[ch[u][c]] = ch[fail[u]][c];
+                    q.push(ch[u][c]);
+                } else {
+                    // 补全自动机转移，扫描文本时就不需要 while 回退。
+                    ch[u][c] = ch[fail[u]][c];
+                }
+            }
+        }
+        // fail[u] 是 u 的父亲，之后可以把文本经过次数沿 fail 树向上累加。
+        for (int u = 1; u <= tot; ++u) tree[fail[u]].push_back(u);
+    }
+    void scan(const string& text) {
+        int u = 0;
+        for (char cc : text) {
+            // 每读一个字符，u 就是当前前缀的最长 Trie 后缀状态。
+            u = ch[u][cc - 'a'];
+            ++out[u];
+        }
+    }
+    void dfs_fail(int u) {
+        for (int v : tree[u]) {
+            dfs_fail(v);
+            // v 的所有出现也意味着 fail[v] 对应的模式串出现。
+            out[u] += out[v];
+        }
+    }
+};
+\end{lstlisting}
+
+\subsubsection{测试样例：AC 自动机的后缀模式和重复出现}
+
+模式串依次为 \passthrough{\lstinline!a!}、\passthrough{\lstinline!ab!}、\passthrough{\lstinline!bab!}，文本为 \passthrough{\lstinline!abab!}。扫描后沿 fail 树汇总，三个模式的出现次数应为：
+
+\begin{lstlisting}
+a   -> 2
+ab  -> 2
+bab -> 1
+\end{lstlisting}
+
+\passthrough{\lstinline!ab!} 是 \passthrough{\lstinline!a!} 的延长，\passthrough{\lstinline!bab!} 又是文本中较长的后缀模式；如果只读取当前 Trie 节点的 \passthrough{\lstinline!out!} 而不沿 fail 树汇总，\passthrough{\lstinline!a!} 的次数通常会少算。
+
+例题：\href{https://www.luogu.com.cn/problem/P3808}{P3808 【模板】AC 自动机（简单版）}。每个模式串的结束节点记录 \passthrough{\lstinline!id!}；扫描文本后，调用 \passthrough{\lstinline!dfs\_fail(0)!}，该节点的 \passthrough{\lstinline!out!} 就是模式串作为后缀出现的总次数。简单版只需问总出现次数，若要每个模式串分别输出，就保存插入时的节点编号。
+
+
+

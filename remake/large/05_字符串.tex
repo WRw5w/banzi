@@ -1,0 +1,289 @@
+\chapter{字符串算法}\label{ux5b57ux7b26ux4e32ux7b97ux6cd5}
+
+\section{选择算法}\label{ux9009ux62e9ux7b97ux6cd5}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+需求 & 算法 & 复杂度 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+单模式匹配 & KMP / Z & \passthrough{\lstinline!O(n+m)!} \\
+多模式匹配 & AC 自动机 & \passthrough{\lstinline!O(text + 总模式长)!} \\
+子串相等、二分答案 & 双哈希 & 期望 \passthrough{\lstinline!O(1)!} 查询 \\
+最长回文子串 & Manacher & \passthrough{\lstinline!O(n)!} \\
+所有后缀排序/不同子串 & 后缀数组 + LCP & \passthrough{\lstinline!O(n log n)!} \\
+子串出现次数/自动机 & SAM & \passthrough{\lstinline!O(n)!} \\
+\end{longtable}
+
+\section{Knuth--Morris--Pratt 字符串匹配算法（KMP）}\label{knuthmorrispratt-ux5b57ux7b26ux4e32ux5339ux914dux7b97ux6cd5kmp}
+
+\passthrough{\lstinline!nxt[i]!} 表示模式前缀 \passthrough{\lstinline!p[0..i]!} 的最长真前后缀长度。匹配失败时跳到 \passthrough{\lstinline!nxt[j-1]!}，不回退文本指针；可求出现位置、最小周期、前缀函数树。
+
+最小周期：若 \passthrough{\lstinline!n \% (n - pi[n-1]) == 0!}，周期为 \passthrough{\lstinline!n-pi[n-1]!}，否则为 \passthrough{\lstinline!n!}。
+
+\begin{lstlisting}[language={C++}]
+vector<int> prefix_function(const string& s) {
+    vector<int> pi(s.size());
+    for (int i = 1; i < (int)s.size(); ++i) {
+        int j = pi[i - 1];
+        while (j && s[i] != s[j]) j = pi[j - 1];
+        if (s[i] == s[j]) ++j;
+        pi[i] = j;
+    }
+    return pi;
+}
+vector<int> kmp(const string& text, const string& pat) {
+    string t = pat + '#' + text; vector<int> pi = prefix_function(t), pos;
+    for (int i = pat.size() + 1; i < (int)t.size(); ++i)
+        if (pi[i] == (int)pat.size()) pos.push_back(i - 2 * pat.size());
+    return pos;
+}
+\end{lstlisting}
+
+\section{Z 函数}\label{z-ux51fdux6570}
+
+\passthrough{\lstinline!z[i]!} 是 \passthrough{\lstinline!s[i..]!} 与 \passthrough{\lstinline!s[0..]!} 的最长公共前缀。维护当前最右匹配段 \passthrough{\lstinline![l,r)!}，落在段内时先继承 \passthrough{\lstinline!z[i-l]!}。把 \passthrough{\lstinline!pattern + '\#' + text!} 拼起来即可匹配。
+
+\begin{lstlisting}[language={C++}]
+vector<int> z_function(const string& s) {
+    int n = s.size(), l = 0, r = 0; vector<int> z(n);
+    for (int i = 1; i < n; ++i) {
+        if (i < r) z[i] = min(r - i, z[i - l]);
+        while (i + z[i] < n && s[z[i]] == s[i + z[i]]) ++z[i];
+        if (i + z[i] > r) l = i, r = i + z[i];
+    }
+    return z;
+}
+\end{lstlisting}
+
+\section{字符串哈希}\label{ux5b57ux7b26ux4e32ux54c8ux5e0c}
+
+前缀哈希 \passthrough{\lstinline!H[i+1]=H[i]*B+s[i]!}，子串哈希：\passthrough{\lstinline!H[r]-H[l]*powB[r-l]!}。双模数或 64 位自然溢出降低碰撞；随机底数并不能提供形式化保证。比较子串、二分最长公共前缀、回文判定都可用。
+
+\begin{lstlisting}[language={C++}]
+const unsigned long long BASE = 911382323ull;
+vector<unsigned long long> h(n + 1), pw(n + 1, 1);
+for (int i = 0; i < n; ++i)
+    h[i + 1] = h[i] * BASE + (unsigned char)s[i], pw[i + 1] = pw[i] * BASE;
+auto get_hash = [&](int l, int r) { return h[r] - h[l] * pw[r - l]; }; // [l,r)
+\end{lstlisting}
+
+\section{Manacher}\label{manacher}
+
+把字符串改为 \passthrough{\lstinline!\^\#a\#b\#$!}，求每个中心向外的回文半径 \passthrough{\lstinline!p[i]!}；维护最右回文段 \passthrough{\lstinline!(center,right)!}，线性求最长回文。若不想处理奇偶，也可分别对原串做奇/偶中心版本。
+
+\begin{lstlisting}[language={C++}]
+string t = "^#";
+for (char c : s) t += c, t += '#';
+t += '$';
+vector<int> p(t.size()); int center = 0, right = 0;
+for (int i = 1; i + 1 < (int)t.size(); ++i) {
+    int mir = 2 * center - i;
+    if (i < right) p[i] = min(right - i, p[mir]);
+    while (t[i + 1 + p[i]] == t[i - 1 - p[i]]) ++p[i];
+    if (i + p[i] > right) center = i, right = i + p[i];
+}
+\end{lstlisting}
+
+\section{字典树与 Aho--Corasick 多模式匹配自动机（AC 自动机）}\label{ux5b57ux5178ux6811ux4e0e-ahocorasick-ux591aux6a21ux5f0fux5339ux914dux81eaux52a8ux673aac-ux81eaux52a8ux673a}
+
+Trie 每个节点保存儿子、终止次数。AC 自动机用 BFS 建 fail：节点的 fail 指向最长真后缀状态，匹配时沿 fail 转移；把输出计数沿 fail 累加可统计所有模式出现次数。模式集合固定后一次建树、多次查询。
+
+\begin{lstlisting}[language={C++}]
+struct AC {
+    int ch[MAXN][26]{}; // Trie 边；build 后也会补齐为自动机转移。
+    int fail[MAXN]{};   // 最长真后缀节点。
+    int out[MAXN]{};    // 模式串结束次数及 fail 链汇总次数。
+    int tot = 0;
+    void insert(const string& s) {
+        int u = 0;
+        for (char c : s) {
+            int x = c - 'a';
+            if (!ch[u][x]) ch[u][x] = ++tot;
+            u = ch[u][x];
+        }
+        // 重复模式串要累加，而不是只记一个 bool。
+        ++out[u];
+    }
+    void build() {
+        queue<int> q;
+        // 根节点的直接儿子的 fail 都是根。
+        for (int c = 0; c < 26; ++c) if (ch[0][c]) q.push(ch[0][c]);
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            // 如果要统计每个模式串，推荐建 fail 树后再统一 DFS 汇总；
+            // 这里直接累加适合只问“当前位置结束的所有模式数”。
+            out[u] += out[fail[u]];
+            for (int c = 0; c < 26; ++c) {
+                int &v = ch[u][c];
+                if (v) {
+                    // v 的 fail 是 fail[u] 沿同字符转移。
+                    fail[v] = ch[fail[u]][c], q.push(v);
+                } else {
+                    // 补全转移，扫描时不需要反复 while 回退。
+                    v = ch[fail[u]][c];
+                }
+            }
+        }
+    }
+    int query(const string& s) {
+        int u = 0, ans = 0;
+        for (char c : s) {
+            // u 表示当前文本前缀的最长 Trie 后缀。
+            u = ch[u][c - 'a'];
+            ans += out[u];
+        }
+        return ans;
+    }
+};
+\end{lstlisting}
+
+\section{后缀数组与最长公共前缀（Suffix Array and Longest Common Prefix，LCP）}\label{ux540eux7f00ux6570ux7ec4ux4e0eux6700ux957fux516cux5171ux524dux7f00suffix-array-and-longest-common-prefixlcp}
+
+倍增排序：按 \passthrough{\lstinline!(rank[i], rank[i+k])!} 对后缀排序，重复 \passthrough{\lstinline!O(log n)!} 次，复杂度 \passthrough{\lstinline!O(n log²n)!}（用计数排序可到 \passthrough{\lstinline!O(n log n)!}）。Kasai 求相邻后缀 LCP，RMQ 查询任意两个后缀 LCP。常见应用：不同子串数 \passthrough{\lstinline!n(n+1)/2 - ΣLCP!}、最长重复子串、字典序第 k 个子串。
+
+\begin{lstlisting}[language={C++}]
+vector<int> suffix_array(string s) {
+    // 加入最小哨兵，保证所有真正后缀都排在哨兵之后。
+    s.push_back(0); int n = s.size();
+    vector<int> sa(n), r(n), nr(n);
+    iota(sa.begin(), sa.end(), 0);
+    for (int i = 0; i < n; ++i) r[i] = (unsigned char)s[i];
+    for (int k = 1;; k <<= 1) {
+        // 用长度 k 的前半排名和后半排名比较长度 2k 的前缀。
+        sort(sa.begin(), sa.end(), [&](int i, int j) {
+            if (r[i] != r[j]) return r[i] < r[j];
+            int ri = i + k < n ? r[i + k] : -1;
+            int rj = j + k < n ? r[j + k] : -1;
+            return ri < rj;
+        });
+        // 重新压缩排名；二元组完全相同的后缀共享排名。
+        nr[sa[0]] = 0;
+        for (int i = 1; i < n; ++i)
+            nr[sa[i]] = nr[sa[i - 1]] +
+                (r[sa[i - 1]] != r[sa[i]] ||
+                 (sa[i - 1] + k < n ? r[sa[i - 1] + k] : -1) !=
+                 (sa[i] + k < n ? r[sa[i] + k] : -1));
+        r.swap(nr);
+        if (r[sa.back()] == n - 1) break;
+    }
+    sa.erase(sa.begin()); return sa;
+}
+\end{lstlisting}
+
+\section{后缀自动机（Suffix Automaton，SAM）}\label{ux540eux7f00ux81eaux52a8ux673asuffix-automatonsam}
+
+在线加入字符，状态保存 \passthrough{\lstinline!len!}、\passthrough{\lstinline!link!}、转移；每个状态代表一组 endpos 相同的子串。状态数最多 \passthrough{\lstinline!2n-1!}。按 \passthrough{\lstinline!len!} 降序累加出现次数，可求每个子串出现频次、不同子串数 \passthrough{\lstinline!Σ(len[v]-len[link[v]])!}。转移字符集大时用 \passthrough{\lstinline!map!}，小字符集用数组。
+
+\begin{lstlisting}[language={C++}]
+struct SAM {
+    struct Node {
+        int next[26]{}; // 从该 endpos 等价类沿字符转移。
+        int link = -1;  // suffix link，指向更短的等价类。
+        int len = 0;    // 该状态能代表的最长子串长度。
+        int occ = 0;    // 直接作为前缀末尾出现的次数，之后沿 link 汇总。
+    } st[2 * MAXN];
+    int last = 0; // 当前整个字符串对应的状态。
+    int sz = 1;   // 状态 0 是初始状态。
+    void extend(char c) {
+        // cur 表示加入 c 后的新前缀及其所有后缀。
+        int cur = sz++, p = last; st[cur].len = st[last].len + 1; st[cur].occ = 1;
+        // 从 last 沿 suffix link 补齐缺失的 c 转移。
+        while (p >= 0 && !st[p].next[c - 'a']) st[p].next[c - 'a'] = cur, p = st[p].link;
+        if (p < 0) st[cur].link = 0;
+        else {
+            int q = st[p].next[c - 'a'];
+            if (st[p].len + 1 == st[q].len) st[cur].link = q;
+            else {
+                // q 太长，复制出 clone 把长度截断到 st[p].len+1。
+                int clone = sz++; st[clone] = st[q]; st[clone].len = st[p].len + 1; st[clone].occ = 0;
+                // 把原来能经过 c 到 q 的一段 link 链改指 clone。
+                while (p >= 0 && st[p].next[c - 'a'] == q) st[p].next[c - 'a'] = clone, p = st[p].link;
+                st[q].link = st[cur].link = clone;
+            }
+        }
+        last = cur;
+    }
+};
+\end{lstlisting}
+
+\section{回文自动机（Palindromic Automaton，PAM，了解）}\label{ux56deux6587ux81eaux52a8ux673apalindromic-automatonpamux4e86ux89e3}
+
+每个节点代表一个不同回文串，fail 指向最长回文后缀；在线插入字符即可统计不同回文子串、每个前缀的回文后缀。代码比 Manacher 长，只有在``动态加入/回文后缀结构''时使用。
+
+\begin{lstlisting}[language={C++}]
+struct PAM {
+    int next[MAXN][26]; // 回文串两端加字符后的转移。
+    int fail[MAXN];     // 最长真回文后缀。
+    int len[MAXN];      // 节点对应回文串长度。
+    int s[MAXN];        // 已插入字符，寻找可扩展回文时要回看它。
+    int occ[MAXN];      // 先记作最长回文后缀的次数，再沿 fail 汇总。
+    int last, n, tot;   // last=当前最长回文后缀，n=长度，tot=节点数。
+    void init() {
+        // 0 号根长度 0，1 号根长度 -1；两个根让边界转移统一。
+        memset(next, 0, sizeof(next)); memset(occ, 0, sizeof(occ));
+        n = 0; tot = 1; last = 0; s[0] = -1;
+        len[0] = 0; len[1] = -1; fail[0] = fail[1] = 1;
+    }
+    int get_fail(int u) {
+        // 沿 fail 跳，直到 u 的两端可以接上新字符 s[n]。
+        while (s[n - len[u] - 1] != s[n]) u = fail[u];
+        return u;
+    }
+    void add(char c) {
+        // 先把新字符写入串，再寻找能够扩展的最长回文后缀。
+        s[++n] = c - 'a'; int u = get_fail(last);
+        if (!next[u][s[n]]) {
+            // 这是一个此前未出现过的新回文节点。
+            int v = ++tot; len[v] = len[u] + 2;
+            // 新节点的 fail：从 fail[u] 开始寻找也能被该字符扩展的节点。
+            fail[v] = next[get_fail(fail[u])][s[n]];
+            next[u][s[n]] = v;
+        }
+        // last 是当前前缀的最长回文后缀；每个位置只直接计数一次。
+        last = next[u][s[n]]; ++occ[last];
+    }
+    int build(const string& str) {
+        init();
+        for (char c : str) add(c);
+        // fail 从长回文指向短回文，必须按长度降序汇总；
+        // 许多简化板子用编号倒序，只在编号也随长度单调时才安全。
+        vector<int> ord(max(0, tot - 1));
+        iota(ord.begin(), ord.end(), 2); // 0/1 是两个虚拟根，不参与统计。
+        sort(ord.begin(), ord.end(), [&](int a, int b) { return len[a] > len[b]; });
+        for (int v : ord) occ[fail[v]] += occ[v];
+        return tot - 1; // 不同非空回文子串数量
+    }
+};
+\end{lstlisting}
+
+\section{字符串常见组合}\label{ux5b57ux7b26ux4e32ux5e38ux89c1ux7ec4ux5408}
+
+\begin{itemize}
+\tightlist
+\item
+  子串出现次数：KMP 的前缀函数树或 SAM 的 endpos 计数。
+\item
+  多个模式在文本中出现：AC 自动机；需要撤销/动态模式时考虑 fail 树 + 树状数组。
+\item
+  比较循环字符串：最小表示法（Booth）\passthrough{\lstinline!O(n)!}。
+\item
+  最短覆盖/最小表示：先判周期，再用 KMP/哈希做边界验证。
+\end{itemize}
+
+\begin{lstlisting}[language={C++}]
+int min_rotation(const string& s) {
+    string t = s + s; int i = 0, j = 1, n = s.size();
+    while (i < n && j < n) {
+        int k = 0;
+        while (k < n && t[i + k] == t[j + k]) ++k;
+        if (k == n) break;
+        if (t[i + k] > t[j + k]) i += k + 1, i += (i == j);
+        else j += k + 1, j += (i == j);
+    }
+    return min(i, j);
+}
+\end{lstlisting}
+

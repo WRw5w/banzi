@@ -1,0 +1,513 @@
+\section{超过十行模板的针对性自测}
+
+这一节专门给前面基础章节中的大板子做``抄完立即验''的小测试。每一组都按总模板包装：
+
+\begin{lstlisting}[language={C++}]
+int t = 1;
+cin >> t;
+while (t--) solve();
+\end{lstlisting}
+
+若某个板子本身只是函数或数据结构，没有统一题面输入，就写成``调用测试''；这不是少写样例，而是避免把不存在的接口硬编成错误题面。真正提交时，把调用测试里的对象和操作翻译到题目自己的 \passthrough{\lstinline!solve()!} 即可。所有多测都要在 \passthrough{\lstinline!solve()!} 开头重建图、清空节点池、重置时间戳和懒标记。
+
+\subsection{基础、枚举、差分与二分}
+
+\subsubsection{折半搜索：空半边、没有可行解、恰好命中上界}
+
+代码维护的是``子集和不超过 \passthrough{\lstinline!limit!} 的最大值''，四个测试应分别得到：
+
+\begin{lstlisting}
+T=4
+1) a=[]，limit=0                         -> 0
+2) a=[7]，limit=6                        -> 0
+3) a=[3,5,6]，limit=8                    -> 8
+4) a=[8,1,4,4]，limit=9                  -> 9
+\end{lstlisting}
+
+第三组抓两半枚举后的二分恰好命中，第四组抓重复值和``不能贪心取当前最大数''。第一组必须让 \passthrough{\lstinline!gen!} 返回只含 \passthrough{\lstinline!0!} 的数组，不能访问空半边。
+
+\subsubsection{一维差分：单点、整段、重叠更新和负数更新}
+
+每组先给初始数组，再执行所有区间加，输出最终数组：
+
+\begin{lstlisting}
+T=4
+1) [5]；add(1,1,+3)                              -> [8]
+2) [0,0,0,0]；add(1,4,+2)                         -> [2,2,2,2]
+3) [1,2,3,4]；add(2,3,+5)，add(1,4,-1)            -> [0,6,7,3]
+4) [5,5,5]；add(1,2,-5)，add(2,2,+10)             -> [0,10,5]
+\end{lstlisting}
+
+第三、四组必须检查 \passthrough{\lstinline!diff[r+1]!} 的位置没有越界，并且多次更新的顺序是可叠加的；把 \passthrough{\lstinline!r+1!} 写成 \passthrough{\lstinline!r!} 会在第二组整段更新时立刻暴露。
+
+\subsubsection{二分答案：答案在端点、每组一段和多组切分}
+
+对``把正数数组分成至多 \passthrough{\lstinline!k!} 段，最小化最大段和''测试：
+
+\begin{lstlisting}
+T=4
+1) [5], k=1                         -> 5
+2) [1,2,3], k=3                     -> 3
+3) [7,2,5,10], k=2                  -> 14
+4) [4,4,4,4], k=2                   -> 8
+\end{lstlisting}
+
+第二组抓 \passthrough{\lstinline!k=n!}，第三组抓不能只按平均值切分，第四组抓多个相同最大值。\passthrough{\lstinline!l!} 必须从数组最大值开始，不能从 \passthrough{\lstinline!0!} 开始；\passthrough{\lstinline!check!} 中遇到单个 \passthrough{\lstinline!x>limit!} 要立即失败。
+
+\subsubsection{差分约束：无约束、可行环、负环和多条链}
+
+边 \passthrough{\lstinline!(u,v,w)!} 表示 \passthrough{\lstinline!x[v] <= x[u]+w!}，只检查是否有解：
+
+\begin{lstlisting}
+T=4
+1) n=1，0 条边                                      -> 有解
+2) n=2：1->2(5)，2->1(5)                             -> 有解
+3) n=2：1->2(-1)，2->1(-1)                           -> 无解（负环）
+4) n=3：1->2(0)，2->3(0)，3->1(1)                   -> 有解
+\end{lstlisting}
+
+第三组必须触发第 \passthrough{\lstinline!V!} 轮更新计数；第四组说明``有环''不等于``无解''，只有负环才无解。多测时 \passthrough{\lstinline!pushed/in\_queue/distance!} 不清空，会让后一组错误继承负环状态。
+
+\subsection{数学、筛法、生成函数与树计数}
+
+\subsubsection{试除分解、线性筛和欧拉函数：1、质数、平方数、重复质因子}
+
+\begin{lstlisting}
+质因数分解 T=4：
+1) 1       -> 空分解
+2) 2       -> 2^1
+3) 36      -> 2^2 * 3^2
+4) 97      -> 97^1
+
+欧拉函数 T=4：
+1) phi(1)  -> 1
+2) phi(2)  -> 1
+3) phi(12) -> 4
+4) phi(36) -> 12
+\end{lstlisting}
+
+筛法则单独检查 \passthrough{\lstinline!N=1、2、10、30!}：\passthrough{\lstinline!N=1!} 不应访问质数数组越界；\passthrough{\lstinline!N=10!} 的质数是 \passthrough{\lstinline!2,3,5,7!}，对应 \passthrough{\lstinline!phi(1..10)=1,1,2,2,4,2,6,4,6,4!}。\passthrough{\lstinline!p==lp[i]!} 的分支必须让 \passthrough{\lstinline!mu[i*p]=0!} 并停止继续枚举。
+
+\subsubsection{\texorpdfstring{整除分块：商相同区间和边界 \texttt{n/i}}{整除分块：商相同区间和边界 n/i}}
+
+计算 \passthrough{\lstinline!sum(floor(n/i), i=1..n)!}：
+
+\begin{lstlisting}
+n=1 -> 1
+n=2 -> 2+1=3
+n=5 -> 5+2+1+1+1=10
+n=10 -> 10+5+3+2+2+1+1+1+1+1=27
+\end{lstlisting}
+
+四组都要让 \passthrough{\lstinline!r=n/(n/l)!}，不能写成 \passthrough{\lstinline!r=n/l!}；最后一个商为 \passthrough{\lstinline!1!} 的长区间是最容易漏掉的部分。
+
+\subsubsection{非质数模的同余合并：互质、相容非互质、相同模数和无解}
+
+调用 \passthrough{\lstinline!merge\_congruence(a1,m1,a2,m2)!}：
+
+\begin{lstlisting}
+1) x=1 (mod 3), x=4 (mod 5)       -> x=4,  mod 15
+2) x=1 (mod 4), x=3 (mod 6)       -> x=9,  mod 12
+3) x=2 (mod 4), x=2 (mod 6)       -> x=2,  mod 12
+4) x=0 (mod 2), x=1 (mod 4)       -> 无解
+\end{lstlisting}
+
+第二、三组抓 \passthrough{\lstinline!g=gcd(m1,m2)!} 后的最小公倍数；第四组抓 \passthrough{\lstinline"d\%g!=0"}。合并后的 \passthrough{\lstinline!a!} 必须归一到 \passthrough{\lstinline![0,m)!}，中间乘法用 \passthrough{\lstinline!\_\_int128!}，否则大模数样例会溢出。
+
+\subsubsection{异或前缀和与普通小卷积：周期四、单位元和重复系数}
+
+\begin{lstlisting}
+xor_prefix(0)=0，xor_prefix(1)=1，xor_prefix(2)=3，xor_prefix(3)=0
+
+[1] * [1]             -> [1]
+[1,1] * [1,1]         -> [1,2,1]
+[1,2,3] * [4,5]       -> [4,13,22,15]
+\end{lstlisting}
+
+第一行抓 \passthrough{\lstinline!n\&3==0!}，不能把 \passthrough{\lstinline!0!} 和 \passthrough{\lstinline!4!} 的分支混淆；卷积第三组同时检查 \passthrough{\lstinline!c[i+j]!} 下标和重复贡献累加。
+
+\subsubsection{Prüfer 序列与矩阵树定理：最小树、星形树、路径树和不连通图}
+
+\begin{lstlisting}
+Prüfer 解码：
+1) code=[]       -> n=2，边为 1-2
+2) code=[1]      -> n=3，边为 2-1、1-3
+3) code=[1,1]    -> n=4，得到以 1 为中心的星形树
+
+Prüfer 编码：
+4) 路径 1-2-3-4 -> [2,3]（使用最小编号叶子）
+\end{lstlisting}
+
+矩阵树的删除一行一列后的行列式：
+
+\begin{lstlisting}
+1) 单边图 1-2 的 1x1 矩阵 [1]                         -> 1
+2) 三角形的矩阵 [[2,-1],[-1,2]]                       -> 3
+3) 四点路径的三对角余子式                              -> 1
+4) 不连通图的零矩阵                                    -> 0
+\end{lstlisting}
+
+第一组抓 \passthrough{\lstinline!n-2=0!} 的空序列；第四组抓叶子优先队列和 \passthrough{\lstinline!pivot==n!} 的行列式零分支。矩阵树代码若模数不是质数，不能直接使用费马逆元，这四组默认模数为质数。
+
+\subsection{数据结构：下标、懒标记、版本与回滚}
+
+\subsubsection{并查集、树状数组和普通线段树：单点、整段、重复操作、多测清空}
+
+\begin{lstlisting}
+并查集 T=4：
+1) n=1，query(1,1)                                  -> true
+2) n=3，union(1,2)，query(1,3)                       -> false
+3) 接上 union(2,3)，query(1,3)                       -> true
+4) 再次 union(1,3)                                   -> false（不能重复计数）
+
+树状数组 T=4：
+1) n=1，add(1,5)，sum(1)                             -> 5
+2) n=4，add(1,4,2)，range(1,4)                       -> 8
+3) [1,2,3,4] 通过单点加构造后 range(2,3)             -> 5
+4) 先 add(4,-3)，再 query(1,4)，必须包含最后一个下标
+\end{lstlisting}
+
+普通``区间加、区间和''线段树再按下列四组手算最终查询：
+
+\begin{lstlisting}
+1) [5]：query(1,1)                                    -> 5
+2) [0,0,0,0]：add(1,4,2)，query(1,4)                  -> 8
+3) [1,2,3,4]：add(2,3,5)，query(1,4)                  -> 20
+4) [1,1,1]：add(1,3,2)，add(2,2,-1)，query(1,3)      -> 8
+\end{lstlisting}
+
+第四组必须经过``整段懒标记后访问子区间''的 \passthrough{\lstinline!push!}；把 \passthrough{\lstinline!push\_down!} 忘掉时通常只会在这组错。
+
+\subsubsection{线段树上二分与稀疏表：第一个位置、找不到、重复最值}
+
+对 \passthrough{\lstinline!first\_at\_least!}：
+
+\begin{lstlisting}
+1) a=[0]，x=0                 -> 1
+2) a=[1,3,5]，x=4             -> 3
+3) a=[1,3,5]，x=6             -> -1
+4) a=[0,0,0,7]，x=7           -> 4
+\end{lstlisting}
+
+对静态区间最小值：
+
+\begin{lstlisting}
+1) [5]，query(1,1)             -> 5
+2) [3,1,2,1]，query(1,4)      -> 1
+3) [3,1,2,1]，query(2,3)      -> 1
+4) [7,7,7]，query(1,3)        -> 7
+\end{lstlisting}
+
+第二、三组同时检查 \passthrough{\lstinline!k=floor(log2(len))!} 和右端点 \passthrough{\lstinline!r-(1<<k)+1!}；稀疏表只能用于幂等运算，不能把这份代码改成区间和。
+
+\subsubsection{二进制字典树、主席树和块状数组：零值、重复值、跨边界}
+
+二进制字典树（先插入，再查询最大异或）：
+
+\begin{lstlisting}
+1) 插入 [0]，query(0)                    -> 0
+2) 插入 [1,2,4]，query(3)                -> 7
+3) 插入 [5,5]，query(5)                  -> 0
+4) 插入 [8,15]，query(7)                 -> 15
+\end{lstlisting}
+
+主席树静态区间第 \passthrough{\lstinline!k!} 小：
+
+\begin{lstlisting}
+1) [5]，query(1,1,1)                    -> 5
+2) [1,2,3]，query(1,3,1),query(1,3,3)  -> 1,3
+3) [4,4,1]，query(1,3,2)                -> 4
+4) [10,0,7,3]，query(2,4,2)              -> 3
+\end{lstlisting}
+
+块状数组使用 0-based 下标测试 \passthrough{\lstinline!add(l,r,v)!}：
+
+\begin{lstlisting}
+1) n=1，add(0,0,5)                       -> [5]
+2) n=4，add(0,3,1)                       -> [1,1,1,1]
+3) n=5，add(1,3,2)                       -> [0,2,2,2,0]
+4) n=6，add(0,5,3),add(2,4,-1)           -> [3,3,2,2,2,3]
+\end{lstlisting}
+
+主席树第二、三组抓版本相减的左右端点；块状数组第三、四组抓``同一块''和``跨多个整块''两个分支。
+
+\subsubsection{Treap 与可回滚并查集：空树、重复键、快照恢复}
+
+Treap 不固定随机优先级，不能比较树形，只比较中序序列和子树大小：
+
+\begin{lstlisting}
+1) 空树 split(key=0)                     -> 左右均空
+2) 插入 [5]，split(4)                     -> 左空，右为 [5]
+3) 插入 [2,2,7]，中序必须保留两个 2    -> [2,2,7]
+4) split(5) 后 merge(left,right)          -> 恢复原中序和 size
+\end{lstlisting}
+
+可回滚并查集：
+
+\begin{lstlisting}
+初始 1,2,3 独立；s0=snapshot()
+union(1,2)；s1=snapshot()
+union(2,3)；此时 1 与 3 连通
+rollback(s1)；此时 1 与 2 连通、1 与 3 不连通
+rollback(s0)；三个点再次全部独立
+\end{lstlisting}
+
+这里专门抓 \passthrough{\lstinline!rollback!} 时恢复的是``合并前的大集合大小''，以及空合并不应压入历史栈；如果把路径压缩加回去，回滚会失效。
+
+\subsection{图论：路径、连通性、流和树上边界}
+
+\subsubsection{拓扑排序：单点、链、分支和有向环}
+
+\begin{lstlisting}
+1) V=1,E=0                       -> 拓扑序 [1]
+2) 1->2->3                       -> [1,2,3]
+3) 1->3,2->3                     -> 1/2 任一先出，3 必须最后
+4) 1->2,2->1                     -> 检测为环，不能输出完整序列
+\end{lstlisting}
+
+第三组不能把拓扑序误认为唯一；第四组检查 \passthrough{\lstinline"topo.size()!=n"}，并且每个 \passthrough{\lstinline!solve()!} 都要重新计算入度。
+
+\subsubsection{Dijkstra 与 0-1 BFS：重复堆项、不可达点和零边}
+
+Dijkstra 的四组边（源点均为 1）：
+
+\begin{lstlisting}
+1) V=1,E=0                                      -> dist[1]=0
+2) 1->2(5),1->3(1),3->2(1)                     -> dist[2]=2
+3) 1->2(4)，点 3 无入边                         -> dist[3]=INF
+4) 1->2(0),2->3(0),1->3(5)                     -> dist[3]=0
+\end{lstlisting}
+
+0-1 BFS 用同样的方向边测试：
+
+\begin{lstlisting}
+1) 单点                                      -> 0
+2) 1->2(0),2->3(1)                            -> dist[3]=1
+3) 1->2(1),1->3(0),3->2(0)                   -> dist[2]=0
+4) 点 4 不可达                                -> dist[4]=INF
+\end{lstlisting}
+
+第三组抓 \passthrough{\lstinline!w=0!} 必须放队首；Dijkstra 第二组抓旧堆项，弹出时不能再次松弛旧距离。
+
+\subsubsection{最小生成树：单点、重边、环和不连通图}
+
+\begin{lstlisting}
+1) V=1,E=0                                      -> cost=0, connected=true
+2) 三角形边权 1,2,3                             -> cost=3
+3) 两点有两条边权 5,1                           -> cost=1
+4) V=3，仅有边 1-2                              -> connected=false
+\end{lstlisting}
+
+第三组抓按边权排序和重复连边；第四组不能因为已经得到一个森林就误报为生成树。Kruskal 和 Prim 的结果应在四组上完全一致。
+
+\subsubsection{强连通分量、割点和桥：空边、全环、重边}
+
+\begin{lstlisting}
+强连通分量：
+1) V=1,E=0                         -> 1 个分量
+2) 1->2,2->3                       -> 3 个分量
+3) 1->2,2->3,3->1                  -> 1 个分量
+4) 1<->2,2->3,3<->4                -> {1,2},{3,4} 两个分量
+
+无向桥：
+1) 单点                                -> 0 条桥
+2) 链 1-2-3                            -> 2 条桥
+3) 三角形                              -> 0 条桥
+4) 两条平行边 1-2，再加 2-3            -> 只有 2-3 是桥
+\end{lstlisting}
+
+第四组必须使用边编号跳过父边；若只写 \passthrough{\lstinline!v==parent!}，平行边会被错误当成桥。SCC 第四组抓缩点后保留两个分量而不是把分量内边当成有向无环图边。
+
+\subsubsection{二分图染色与最大匹配：孤立点、增广链、奇环}
+
+\begin{lstlisting}
+染色：
+1) V=1,E=0                         -> 是二分图
+2) 一条边 1-2                       -> 是
+3) 路径 1-2-3-4                    -> 是
+4) 三角形 1-2-3-1                 -> 不是
+
+最大匹配（左侧点数=右侧点数）：
+1) 无边                             -> 0
+2) 只有 1 条边                      -> 1
+3) 边 1-{1,2},2-{2}                -> 2（必须回溯增广）
+4) 完全二分图 K3,3                  -> 3
+\end{lstlisting}
+
+第三组是 \passthrough{\lstinline!vis!} 时间戳最关键的样例；每个左点开始增广前必须换新时间戳，不能每次都清空错误的那一侧或沿用旧访问标记。
+
+\subsubsection{最大流与最小费用最大流：零容量、瓶颈、拆路和需求不足}
+
+Dinic：
+
+\begin{lstlisting}
+1) s,t 之间没有边                              -> 0
+2) 唯一边 s->t 容量 5                           -> 5
+3) 两条互不相交路径，容量分别 3、2             -> 5
+4) 两条路径共享中间边容量 1                    -> 1
+\end{lstlisting}
+
+每次 BFS 后 \passthrough{\lstinline!it!} 必须清零；第三、四组检查反向边和残量网络。费用流 \passthrough{\lstinline!min\_cost\_flow(s,t,need)!}：
+
+\begin{lstlisting}
+1) need=0                                      -> (0,0)
+2) 唯一路径容量 3、单位费用 5，need=2          -> (2,10)
+3) 两条路径费用 2 和 8，need=3                 -> (3,10)
+4) 总容量 1 但 need=2                          -> flow=1，不能伪造满流
+\end{lstlisting}
+
+若题目允许负费用边，再加一组 \passthrough{\lstinline!s->a(-5),a->t(0),s->t(0)!}，最优费用应为 \passthrough{\lstinline!-5!}；这组用于检查初始势能是否正确，不能把``所有费用非负''这个前提偷偷当成算法的一部分。
+
+\subsubsection{最近公共祖先、树上差分、直径和树形动态规划}
+
+用同一棵树 \passthrough{\lstinline!1-2,1-3,3-4,3-5!}：
+
+\begin{lstlisting}
+最近公共祖先：lca(1,1)=1，lca(2,4)=1，lca(4,5)=3，lca(1,5)=1
+树上路径加：路径 (4,5) 加 1 后，3、4、5 各增加 1，1、2 不增加
+直径：端点可为 2、4/5，长度为 3
+\end{lstlisting}
+
+再单独测：单点树直径为 \passthrough{\lstinline!0!}，链 \passthrough{\lstinline!1-2-3-4!} 直径为 \passthrough{\lstinline!3!}，星形树 \passthrough{\lstinline!1-\{2,3,4\}!} 直径为 \passthrough{\lstinline!2!}。树形最大独立集用点权：
+
+\begin{lstlisting}
+1) 单点权 5                              -> 5
+2) 边 1-2，权 5,7                        -> 7
+3) 链权 1,10,1                            -> 10
+4) 星形中心权 10，三个叶子权 6            -> 18
+\end{lstlisting}
+
+第一组抓根节点和 \passthrough{\lstinline!lca(u,u)!}；路径差分要区分``点路径''和``边路径''，不能把 \passthrough{\lstinline!lca!} 的减法公式混用。
+
+\subsubsection{深度优先序、重链剖分与长链剖分：链、星、跨链路径}
+
+\begin{lstlisting}
+树 A：1-2-3-4
+1) 子树(1) 应覆盖全部 DFS 序
+2) 子树(3) 只覆盖 {3,4}
+3) HLD path_sum(2,4) 必须包含 2、3、4
+4) 长链根 1 的长儿子必须是 2，而不是按“子树大小”重新选择
+
+树 B：1-{2,3,4}
+5) HLD path_sum(2,3) 必须拆成两条轻链并经过 1
+6) 长链长度相同的儿子只要求结果正确，不能依赖某个固定 tie-break
+\end{lstlisting}
+
+这组不比较 \passthrough{\lstinline!dfn!} 的具体编号，因为同深度遍历顺序可以不同；只检查子树区间连续、路径和正确、长链选择标准确实是``最大向下深度''。
+
+点分治代码若只保留重心分解而没有 \passthrough{\lstinline!query/modify/answer!}，只能做调用测试：单点、四点链、四点星、半径 \passthrough{\lstinline!0!}、两个子树各有一个距离相同的点。重点是验证重心被标记后不会再次进入同一分治层，并且跨重心的点对只计一次。
+
+\subsection{动态规划和字符串}
+
+\subsubsection{线性动态规划、树形动态规划和数位动态规划}
+
+线性动态规划这一段同时测试``最长严格递增子序列''和``最大子段和''两段代码，输出写成 \passthrough{\lstinline!(LIS 长度, 最大子段和)!}：
+
+\begin{lstlisting}
+1) a=[5]                                           -> (1,5)
+2) a=[-5]                                          -> (1,-5)
+3) a=[3,1,2]                                       -> (2,6)
+4) a=[5,1,5,1]                                     -> (2,12)
+\end{lstlisting}
+
+第二组抓最大子段和不能把答案初值固定成 \passthrough{\lstinline!0!}；第三组抓 \passthrough{\lstinline!lower\_bound!} 与``不能把 LIS 当成最长连续段''。树形 DP 用前面的四组独立集权值；换根 DP 再测单点、链、星和两个相同最大值，重点检查第二次 DFS 使用的是``父答案减去当前子树贡献''，不能把子树答案重复加回。
+
+数位 DP 统计区间内不含数字 \passthrough{\lstinline!4!} 的数（包含 \passthrough{\lstinline!0!}）：
+
+\begin{lstlisting}
+T=4
+1) [0,0]       -> 1
+2) [0,4]       -> 4
+3) [0,10]      -> 10
+4) [0,99]      -> 81
+\end{lstlisting}
+
+第二组抓数字 \passthrough{\lstinline!4!} 的排除和前导零；第四组抓 \passthrough{\lstinline!count(R)-count(L-1)!}，以及 \passthrough{\lstinline!tight!} 只在仍贴着上界时为真。
+
+\subsubsection{Knuth--Morris--Pratt 字符串匹配：首位、重叠和无匹配}
+
+\begin{lstlisting}
+T=4（文本，模式，第一次出现位置/重叠出现次数）
+1) a       , a       -> 0 / 1
+2) aaaaa   , aaa     -> 0 / 3
+3) abc     , d       -> -1 / 0
+4) abababa , aba     -> 0 / 3
+\end{lstlisting}
+
+第二、四组必须允许重叠匹配；把匹配成功后 \passthrough{\lstinline!j!} 直接清零会少算。模式为空串是否允许必须由题面规定，模板不要擅自把它当普通非空模式。
+
+AC 自动机、后缀数组、后缀自动机和回文自动机的四组详细样例已经紧跟补充实现页；再加一组统一多测：\passthrough{\lstinline!a!}、\passthrough{\lstinline!aaaa!}、\passthrough{\lstinline!abacaba!}、\passthrough{\lstinline!abab!}。每组都必须重新 \passthrough{\lstinline!init!}，否则上一组的 Trie 节点和 fail 指针会污染下一组。后缀数组比较后缀时要检查空后缀，回文自动机要保留长度 \passthrough{\lstinline!-1!} 的虚根。
+
+\subsection{进阶专题：整体二分、时间分治、可满足性与匹配}
+
+下面这些模板的代码依赖题目状态，采用调用级测试，但每组仍然给出可核对的目标。
+
+\subsubsection{整体二分与线段树分治时间}
+
+\begin{lstlisting}
+整体二分（第 k 小）：
+1) 数组 [5]，k=1                             -> 5
+2) [1,2,3]，k=1                              -> 1
+3) [1,2,3]，k=3                              -> 3
+4) [4,4,1]，k=2                              -> 4
+
+线段树分治时间（边存在区间）：
+1) 单条边全程存在，询问其两端                   -> 连通
+2) 边只在时间 [2,3] 存在，询问 t=1               -> 不连通
+3) 两条边的存在区间只在一个时刻重合             -> 该时刻连通
+4) 删除不存在的边                                -> 必须按题面判非法，不能修改回滚栈
+\end{lstlisting}
+
+整体二分中答案区间必须覆盖真实值域；时间分治中叶节点才回答询问，回到父节点时必须回滚到进入节点前的快照。
+
+\subsubsection{二可满足性算法与约束状态图}
+
+子句格式为 \passthrough{\lstinline!(x\_i 或 x\_j)!}：
+
+\begin{lstlisting}
+1) 0 个变量、0 个子句                         -> 可满足
+2) (x1 或 x1)                                  -> x1=true
+3) (x1 或 x1) 且 (!x1 或 !x1)                   -> 不可满足
+4) (x1 或 x2)、(!x1 或 x2)、(x1 或 !x2)         -> 可满足，唯一要求 x1=x2=true
+\end{lstlisting}
+
+第三组抓同一变量和反变量是否落在同一个强连通分量；第四组抓蕴含边方向。状态图搜索若没有定义``重复状态''和``终止状态''，不能只套 DFS，应分别测试空状态、一步可胜、重复到旧状态和无路可走四类调用。
+
+\subsubsection{快速傅里叶变换/数论变换与 Kuhn--Munkres 加权匹配}
+
+卷积用单位多项式、重复系数和非二次长度三组；结果应与前面生成函数的 \passthrough{\lstinline![1],[1,1],[1,2,3]!} 三组完全一致，另加：
+
+\begin{lstlisting}
+[1,0,0,1] * [1,1] -> [1,1,0,1,1]
+\end{lstlisting}
+
+它专门抓变换长度是否至少为 \passthrough{\lstinline!a.size()+b.size()-1!}，以及逆变换除以长度是否在模意义下使用逆元。
+
+Kuhn--Munkres 最大权完备匹配：
+
+\begin{lstlisting}
+1) [[5]]                                      -> 5
+2) [[1,2],[3,4]]                               -> 5
+3) [[-1,-2],[-3,-4]]                           -> -5
+4) 对角为 10、非对角为 1 的 3x3 矩阵          -> 30
+\end{lstlisting}
+
+第三组不能把答案初值设成 \passthrough{\lstinline!0!}；如果模板只支持非负权，必须先整体平移并在最后还原。
+
+\subsubsection{笛卡尔树、虚树、Steiner 树和高斯消元}
+
+最小笛卡尔树调用：
+
+\begin{lstlisting}
+1) [1]                 -> 根为 1
+2) [1,2,3]             -> 根为 1，右链
+3) [3,2,1]             -> 根为 1，左链
+4) [2,1,3]             -> 根为 1，左右子树分别为 2、3
+\end{lstlisting}
+
+虚树四组关键点：单个关键点、关键点包含根、两个叶子、关键点的最近公共祖先不是原关键点。输出只检查保留了所有关键点及其必要的 LCA，不能把整棵原树都复制进虚树。
+
+Steiner 树先用三点图手算：\passthrough{\lstinline!1-2=1,2-3=1,1-3=3!}，终端 \passthrough{\lstinline!\{1,3\}!} 的最小连通代价为 \passthrough{\lstinline!2!}；再测单终端代价 \passthrough{\lstinline!0!}、重复终端不能重复计费、不可达终端返回题面规定的无解。高斯消元则复用补充页的``唯一解、无解、多解''三组，另加交换行的主元为 \passthrough{\lstinline!0!} 的矩阵，确认会换到下面的非零行。
+
+这些自测不是随机数据集：每组都至少命中一个边界分支和一个正常分支。需要做更大压力测试时，保留同一批核心模式，用生成器重复 \passthrough{\lstinline!t!} 次；不要把 \passthrough{\lstinline!t=2345678!} 的数百万行文本直接塞进 PDF，现场测试应生成后通过标准输入喂给程序。
+

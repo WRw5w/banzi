@@ -1,0 +1,320 @@
+\section{计算几何高级算法：参数、调用与改造}
+
+本节紧跟前面的基础模板。先看每个接口传什么，再看哪些不变量不能动，最后看如何替换维护信息或转移。
+
+\subsection{极角排序与凸包}
+
+极角排序常用于按方向扫描点或半平面。不要直接 \passthrough{\lstinline!atan2!} 排序，优先用半平面标记加叉积：
+
+\begin{lstlisting}[language={C++}]
+int half(Point a) { return (a.y > 0 || (a.y == 0 && a.x >= 0)) ? 0 : 1; }
+bool polar_cmp(Point a, Point b) {
+    if (half(a) != half(b)) return half(a) < half(b);
+    return cross(a, b) > 0;
+}
+\end{lstlisting}
+
+凸包单调链中，若题目要求保留边上的点用 \passthrough{\lstinline!cross < 0!}，只保留顶点通常用 \passthrough{\lstinline!cross <= 0!} 弹出。例题可配合\href{https://www.luogu.com.cn/problem/P1452}{P1452 Beauty Contest G}：先求凸包，再用旋转卡壳求直径平方。
+
+
+\subsection{旋转卡壳、凸多边形内点与最近点对}
+
+凸包直径的卡壳指针只向前走，面积/距离比较是单调的；不要对每个点重新扫描所有点。最近点对分治按 \passthrough{\lstinline!x!} 排序，递归解决左右，再只检查按 \passthrough{\lstinline!y!} 排序的窄条带，复杂度 \(O(n\log n)\)。
+
+\begin{lstlisting}[language={C++}]
+long double closest(int l, int r) {
+    if (r - l <= 1) return INF;
+    int m = (l + r) >> 1;
+    long double midx = p[m].x;
+    long double ans = min(closest(l, m), closest(m, r));
+    vector<Point> strip;
+    for (int i = l; i < r; ++i)
+        if (fabsl(p[i].x - midx) * fabsl(p[i].x - midx) < ans)
+            strip.push_back(p[i]);
+    sort(strip.begin(), strip.end(), by_y);
+    for (int i = 0; i < (int)strip.size(); ++i)
+        for (int j = i + 1; j < (int)strip.size() &&
+             (strip[j].y - strip[i].y) * (strip[j].y - strip[i].y) < ans; ++j)
+            ans = min(ans, dist2(strip[i], strip[j]));
+    return ans;
+}
+\end{lstlisting}
+
+\subsubsection{测试样例：最近点对的单点、重合点和跨分治边界}
+
+下面每组输入 \passthrough{\lstinline!n!} 个点，输出最小平方距离。题目若要求输出实际距离，再在最后开平方。
+
+\begin{lstlisting}
+输入
+4
+2
+0 0
+3 4
+2
+1 1
+1 1
+4
+0 0
+0 3
+4 0
+4 3
+5
+0 0
+10 10
+5 5
+5 6
+20 0
+
+输出
+25
+0
+9
+1
+\end{lstlisting}
+
+第二组检查重复点必须直接得到 \passthrough{\lstinline!0!}；第三组有多条同样的最短边；第四组的答案来自中间两个点，能检查合并后的 \passthrough{\lstinline!strip!} 是否按 \passthrough{\lstinline!y!} 排序以及带状区域边界是否写错。
+
+例题：\href{https://www.luogu.com.cn/problem/P1429}{P1429 平面最近点对（加强版）}。按 \passthrough{\lstinline!x!} 排序后调用分治；若保留平方距离，比较时避免不必要的 \passthrough{\lstinline!sqrt!}，最后输出时再开根号。
+
+凸多边形点内判定可以先叉积判断扇区，再对扇区二分；切割则保留直线左侧点并对每条边和切线求交。题面已保证凸多边形时不要用通用半平面交替代简单二分。
+
+
+\subsection{半平面交（Half-Plane Intersection）}
+
+把每个不等式写成``有向直线左侧保留''，按极角排序，用双端队列维护当前交集。关键接口是 \passthrough{\lstinline!outside(line, point)!} 和相邻直线求交；平行线要保留更严格的一条。
+
+\begin{lstlisting}[language={C++}]
+struct HalfPlane { Point a, v; }; // a + t*v，保留左侧
+bool outside(const HalfPlane& h, Point p) {
+    // cross(v, p-a) < 0 表示 p 在有向直线右侧，即不满足半平面。
+    return cross(h.v, p - h.a) < -EPS;
+}
+Point intersection(HalfPlane a, HalfPlane b) {
+    // 令 a.a + t*a.v = b.a + s*b.v，叉乘消去 s 得 t。
+    // 调用前必须保证两条直线不平行，否则分母为 0。
+    long double t = cross(b.v, b.a - a.a) / cross(b.v, a.v);
+    return a.a + a.v * t;
+}
+\end{lstlisting}
+
+\subsubsection{调用测试：半平面交的方向、平行边和空交集}
+
+当前片段只展示了 \passthrough{\lstinline!outside!} 和两条直线求交，完整的双端队列流程没有写出，因此不伪造完整输入输出。补齐 HPI 后必须至少验证：
+
+\begin{lstlisting}
+测试一：x>=0、x<=2、y>=0、y<=2，面积应为 4。
+测试二：在测试一中再加入 x<=1，面积应为 2。
+测试三：同时加入 x<=0 和 x>=1，交集为空，面积应为 0。
+\end{lstlisting}
+
+其中测试一检查有向边左侧约定，测试二检查同向平行边保留更严格者，测试三检查双端队列清空和空交集判断。
+
+例题：\href{https://www.luogu.com.cn/problem/P4196}{P4196 半平面交 / 凸多边形}。每个输入凸多边形的每条边都转成``边的左侧''，所有多边形的边合在一起做 HPI，最后对双端队列中的相邻交点求面积。若交集为空，输出 \passthrough{\lstinline!0!}；平行同向边必须只留下更靠内的那条。
+
+
+\subsection{圆几何与扫描线}
+
+点到圆、圆与圆位置关系先比较距离平方和半径平方，避免无意义开根号；两圆相交时，沿圆心连线求基点，再沿垂直方向偏移。线圆交点用参数方程代入二次方程。
+
+\begin{lstlisting}[language={C++}]
+vector<Point> circle_circle(Point a, long double r,
+                            Point b, long double R) {
+    // d 是圆心向量，len 是圆心距；先判位置关系，再做开根号。
+    Point d = b - a;
+    long double len = hypotl(d.x, d.y);
+    if (len > r + R + EPS || len < fabsl(r - R) - EPS) return {};
+
+    // 两圆公共弦所在直线到圆心 a 的距离方向投影为 x。
+    long double x = (r*r - R*R + len*len) / (2*len);
+
+    // h2 是公共交点相对基点的垂直距离平方，浮点误差可能让它略小于 0。
+    long double h2 = max((long double)0, r*r - x*x);
+    Point e = d / len, base = a + e * x;
+    Point per = {-e.y, e.x};
+
+    // h2=0 是相切；否则关于圆心连线对称地产生两个交点。
+    if (h2 < EPS) return {base};
+    long double h = sqrtl(h2);
+    return {base + per*h, base - per*h};
+}
+\end{lstlisting}
+
+最小圆覆盖的现场策略是随机打乱点，增量维护当前圆：发现点在圆外，就以它为边界重新枚举之前点；双层/三层枚举保证期望 \(O(n)\)。例题：\href{https://www.luogu.com.cn/problem/P1742}{P1742 最小圆覆盖}。
+
+\subsubsection{测试样例：圆相交的无交、相切和双交点}
+
+下面调用 \passthrough{\lstinline!circle\_circle!}，只统计交点个数；重合圆必须在调用前单独分类，不能让 \passthrough{\lstinline!len=0!} 进入除法。
+
+\begin{lstlisting}
+输入
+4
+0 0 1 5 0 1
+0 0 1 2 0 1
+0 0 1 1 0 1
+0 0 1 0 3 1
+
+输出
+0
+1
+2
+0
+\end{lstlisting}
+
+四组分别是外离、外切、两点相交和内离。第二组必须允许 \passthrough{\lstinline!h2=0!} 返回一个点；如果浮点误差使 \passthrough{\lstinline!h2!} 略小于零而没有截成 \passthrough{\lstinline!0!}，相切样例会出现异常。
+
+矩形并面积用扫描线 + 线段树维护 \passthrough{\lstinline!x!} 轴覆盖长度；每个事件是 \passthrough{\lstinline!(y, x1, x2, delta)!}，按 \passthrough{\lstinline!y!} 排序，先用上一层覆盖长度乘高度差，再更新 \passthrough{\lstinline![x1,x2)!}。例题：\href{https://www.luogu.com.cn/problem/P5490}{P5490 扫描线}。坐标离散化后叶子代表相邻坐标段，不是原始坐标点。
+
+
+\subsection{圆与直线、最小圆覆盖}
+
+直线写成 \passthrough{\lstinline!p + t*v!}，代入圆方程后得到关于 \passthrough{\lstinline!t!} 的二次方程；判别式小于 \passthrough{\lstinline!0!} 无交点，等于 \passthrough{\lstinline!0!} 相切，大于 \passthrough{\lstinline!0!} 两交点。
+
+\begin{lstlisting}[language={C++}]
+vector<Point> line_circle(Point p, Point v, Point o, long double r) {
+    // 直线参数式：P(t)=p+t*v；如果题目给的是线段，最后还要检查 t in [0,1]。
+    Point q = p - o;
+    long double A = dot(v, v), B = 2 * dot(q, v);
+    long double C = dot(q, q) - r * r;
+    long double D = B * B - 4 * A * C;
+    // 判别式决定交点个数；因为有误差，接近 0 时按相切处理。
+    if (D < -EPS) return {};
+    D = max((long double)0, D);
+    long double t1 = (-B - sqrtl(D)) / (2 * A);
+    long double t2 = (-B + sqrtl(D)) / (2 * A);
+    if (D < EPS) return {p + v * t1};
+    return {p + v * t1, p + v * t2};
+}
+
+Circle min_circle(vector<Point> p) {
+    // 随机打乱是期望线性复杂度的关键；不要用固定输入顺序硬套均摊结论。
+    shuffle(p.begin(), p.end(), mt19937(chrono::steady_clock::now().time_since_epoch().count()));
+    Circle c{{0, 0}, -1};
+    for (int i = 0; i < (int)p.size(); ++i) if (!inside(c, p[i])) {
+        // p[i] 在当前圆外，新的最小圆必须把它放在边界上。
+        c = {p[i], 0};
+        for (int j = 0; j < i; ++j) if (!inside(c, p[j])) {
+            // 两个边界点确定直径圆；若还不够，再由三个点确定外接圆。
+            c = circle_diameter(p[i], p[j]);
+            for (int k = 0; k < j; ++k) if (!inside(c, p[k]))
+                c = circle_three_points(p[i], p[j], p[k]);
+        }
+    }
+    return c;
+}
+\end{lstlisting}
+
+例题仍可用\href{https://www.luogu.com.cn/problem/P1742}{P1742 最小圆覆盖}。\passthrough{\lstinline!inside!} 要允许 \passthrough{\lstinline!c.r<0!} 作为空圆；三点共线时不能直接除以零，应退化为三点中最远的两点直径圆。几何模板里的 \passthrough{\lstinline!Point/Circle/dot/cross!} 名称必须统一，不能把 \passthrough{\lstinline!Point::dot!} 和全局 \passthrough{\lstinline!dot!} 重复定义成不同类型。
+
+\subsubsection{测试样例：直线圆交、最小圆覆盖的退化点集}
+
+先测 \passthrough{\lstinline!line\_circle!} 的判别式分支。以下都把圆设为圆心 \passthrough{\lstinline!(0,0)!}、半径 \passthrough{\lstinline!1!}，直线方向为 \passthrough{\lstinline!(1,0)!}：
+
+\begin{lstlisting}
+调用 1：p=(0,0), v=(1,0)
+结果：2 个交点，参数 t=-1,1
+
+调用 2：p=(0,1), v=(1,0)
+结果：1 个交点，参数 t=0
+
+调用 3：p=(0,2), v=(1,0)
+结果：0 个交点
+
+调用 4：p=(2,0), v=(1,0)
+结果：无限直线仍有 2 个交点，参数 t=-3,-1；
+      若题目要的是线段，必须额外检查 t 是否在 [0,1]。
+\end{lstlisting}
+
+再测 \passthrough{\lstinline!min\_circle!}。输出使用误差 \passthrough{\lstinline!1e-9!} 比较，不能因为随机打乱点的顺序不同而要求浮点输出逐位相同：
+
+\begin{lstlisting}
+调用 1：[(0,0)]
+期望：圆心 (0,0)，半径 0
+
+调用 2：[(0,0),(2,0)]
+期望：圆心 (1,0)，半径 1
+
+调用 3：[(0,0),(1,0),(3,0)]
+期望：圆心 (1.5,0)，半径 1.5
+
+调用 4：[(0,0),(0,2),(2,0),(2,2)]
+期望：圆心 (1,1)，半径 sqrt(2)
+\end{lstlisting}
+
+第一组专门抓 \passthrough{\lstinline!D<0 / D=0 / D>0!} 判断和``直线误当线段''；第二组专门抓空圆半径、两点直径、三点共线除零，以及三点外接圆的分支。
+
+
+\subsection{扫描线求矩形并面积}
+
+把每个矩形 \passthrough{\lstinline![x1,x2)×[y1,y2)!} 变成两个事件：在 \passthrough{\lstinline!y1!} 加入，在 \passthrough{\lstinline!y2!} 删除。线段树维护当前 \passthrough{\lstinline!x!} 轴覆盖长度；\passthrough{\lstinline!cover>0!} 时整段都被覆盖，否则由左右儿子合并。
+
+\begin{lstlisting}[language={C++}]
+struct Event { long long y, x1, x2; int delta; };
+struct CoverNode {
+    int tag = 0;       // 当前 x 小区间被完整覆盖了多少层。
+    long long len = 0; // 该节点代表范围内至少被覆盖一次的长度。
+};
+vector<long long> xs;
+CoverNode seg[MAXN * 4];
+void pull(int p, int l, int r) {
+    // xs[l..r] 是坐标点，节点覆盖的是 [xs[l], xs[r])。
+    if (seg[p].tag) seg[p].len = xs[r] - xs[l];
+    else if (r - l == 1) seg[p].len = 0;
+    else seg[p].len = seg[p<<1].len + seg[p<<1|1].len;
+}
+void modify(int p, int l, int r, int ql, int qr, int d) {
+    // 更新的是离散下标半开区间 [ql,qr)，不是点 [ql,qr]。
+    if (qr <= l || r <= ql) return;
+    if (ql <= l && r <= qr) { seg[p].tag += d; pull(p,l,r); return; }
+    int m = (l + r) >> 1;
+    modify(p<<1,l,m,ql,qr,d);
+    modify(p<<1|1,m,r,ql,qr,d);
+    pull(p,l,r);
+}
+long long union_area(vector<Event> e) {
+    // 事件按 y 扫描；在处理当前 y 前，seg[1].len 对应上一段高度。
+    sort(e.begin(), e.end(), [](auto& a, auto& b) { return a.y < b.y; });
+    long long ans = 0, last_y = e[0].y;
+    for (int i = 0; i < (int)e.size();) {
+        ans += seg[1].len * (e[i].y - last_y);
+        int j = i;
+        while (j < (int)e.size() && e[j].y == e[i].y) {
+            // 同一条扫描线上的事件必须先全部更新，再进入下一段高度。
+            int l = lower_bound(xs.begin(), xs.end(), e[j].x1) - xs.begin();
+            int r = lower_bound(xs.begin(), xs.end(), e[j].x2) - xs.begin();
+            modify(1, 0, (int)xs.size()-1, l, r, e[j].delta);
+            ++j;
+        }
+        last_y = e[i].y; i = j;
+    }
+    return ans;
+}
+\end{lstlisting}
+
+例题：\href{https://www.luogu.com.cn/problem/P5490}{P5490 【模板】扫描线}。\passthrough{\lstinline!xs!} 必须去重排序，线段树叶子代表 \passthrough{\lstinline!xs[i]!} 到 \passthrough{\lstinline!xs[i+1]!} 的小区间；所以树的右边界是 \passthrough{\lstinline!xs.size()-1!}，更新是半开区间 \passthrough{\lstinline![l,r)!}。把离散点当成叶子会多算或少算一格。
+
+\subsubsection{测试样例：矩形并面积的相邻、重叠、嵌套}
+
+下面采用``输入矩形左下角和右上角''的调用格式。每个矩形对应半开区域 \passthrough{\lstinline![x1,x2) * [y1,y2)!}；若你的题目允许任意顺序输入，先规范化端点。
+
+\begin{lstlisting}
+调用 1：1 个矩形
+[(0,0,2,1)]
+期望面积：2
+
+调用 2：两个只接边、不重叠的矩形
+[(0,0,1,1),(1,0,2,1)]
+期望面积：2
+
+调用 3：两个有重叠的矩形
+[(0,0,2,2),(1,1,3,3)]
+期望面积：4+4-1=7
+
+调用 4：一个矩形完全包含另一个矩形
+[(0,0,4,4),(1,1,3,3)]
+期望面积：16
+\end{lstlisting}
+
+第二组检查相邻坐标是否被错误重复计算；第三组检查覆盖层数从 \passthrough{\lstinline!2!} 降回 \passthrough{\lstinline!1!} 时是否错误清空长度；第四组检查 \passthrough{\lstinline!cover>0!} 时是否直接取整段长度。每个调用都必须清空 \passthrough{\lstinline!xs!}、事件数组、线段树 \passthrough{\lstinline!tag/len!}，否则把四组放进同一个 \passthrough{\lstinline!t!} 中会暴露多测污染。
+
+
+

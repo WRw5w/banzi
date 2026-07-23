@@ -1,0 +1,41 @@
+\section{位运算与异或}\label{ux4f4dux8fd0ux7b97ux4e0eux5f02ux6216}
+
+\begin{itemize}
+\tightlist
+\item
+  \passthrough{\lstinline!x \& -x!}：最低位的 \passthrough{\lstinline!1!}；Fenwick 跳跃依赖此性质。
+\item
+  \passthrough{\lstinline!\_\_builtin\_popcountll(x)!}：1 的个数。
+\item
+  枚举子集：\passthrough{\lstinline!sub=(sub-1)\&mask!}。
+\item
+  异或满足交换律、结合律、自反性；``除一个数外都出现两次''直接全体异或。
+\item
+  线性基：维护若干最高位不同的向量，支持最大异或、判断可表示、计数不同异或值；见 \href{08-进阶专题.md}{08-进阶专题}。
+\end{itemize}
+
+\section{线性基（XOR Basis）}\label{ux7ebfux6027ux57faxor-basis}
+
+维护最高位不同的向量。插入时从高位向下消元；最大异或值从高位贪心尝试。可扩展为求第 k 小异或、判断异或方程组是否有解、求线性空间维数。
+
+\begin{lstlisting}[language={C++}]
+struct LinearBasis {
+    long long b[61]{}; // b[i] 的最高位是 i；每个主元位只保留一个向量。
+    bool insert(long long x) {
+        for (int i = 60; i >= 0; --i) if (x >> i & 1) {
+            // 从高位消元；如果该位已有主元，就异或消掉这一位。
+            if (!b[i]) { b[i] = x; return true; }
+            x ^= b[i];
+        }
+        // 完全消成 0：x 属于已有线性空间，插入不会增加秩。
+        return false;
+    }
+    long long maximum(long long x = 0) const {
+        // 从高位向低位贪心；异或后变大才保留，保证最高位最优。
+        for (int i = 60; i >= 0; --i) x = max(x, x ^ b[i]);
+        return x;
+    }
+};
+\end{lstlisting}
+
+

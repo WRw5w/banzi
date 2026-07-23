@@ -1,0 +1,1946 @@
+\documentclass[UTF8,openany,oneside,zihao=-4]{ctexbook}
+
+\usepackage[a4paper,margin=2cm,headheight=14pt]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{calc}
+\usepackage[
+  hidelinks,
+  unicode,
+  bookmarksopen=true,
+  bookmarksnumbered=true,
+  pdfpagelabels=true
+]{hyperref}
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\providecommand{\passthrough}[1]{#1}
+\providecommand{\real}[1]{#1}
+\newfontfamily\newboardcodefont{Cascadia Mono}
+\newcommand{\inputnewboard}[1]{%
+  {%
+    \lstset{basicstyle=\newboardcodefont\small}%
+    \input{#1}%
+  }%
+}
+
+% ========== 颜色 ==========
+\definecolor{codeblue}{HTML}{0550AE}
+\definecolor{codegray}{HTML}{6E7781}
+\definecolor{codebg}{HTML}{F6F8FA}
+\definecolor{warnred}{HTML}{CF222E}
+\definecolor{fixgreen}{HTML}{116329}
+\definecolor{teal}{HTML}{0E6E6E}
+
+% ========== 页眉页脚 ==========
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textbf{算法板子}}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+% ========== 段落与列表 ==========
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+\setlist[itemize]{leftmargin=1.8em,itemsep=0.15em,topsep=0.15em}
+\setlist[enumerate]{leftmargin=2em,itemsep=0.2em,topsep=0.2em}
+
+% ========== 标题样式 ==========
+\titleformat{\chapter}{\LARGE\bfseries}{\thechapter}{0.7em}{}[\vspace{0.2em}\hrule]
+\titleformat{\section}{\large\bfseries\color{codeblue}}{\thesection}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{teal}}{\thesubsection}{0.5em}{}
+
+% ========== 代码样式 ==========
+\lstdefinestyle{cpp}{
+  language=C++,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{codeblue}\bfseries,
+  commentstyle=\color{codegray},
+  stringstyle=\color{warnred},
+  backgroundcolor=\color{codebg},
+  frame=single,
+  rulecolor=\color{codebg},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  tabsize=4,
+  literate=
+    {≤}{{$\leq$}}1 {≥}{{$\geq$}}1 {≡}{{$\equiv$}}1
+    {∤}{{$\nmid$}}1 {φ}{{$\varphi$}}1 {∏}{{$\prod$}}1
+    {μ}{{$\mu$}}1 {α}{{$\alpha$}}1 {≈}{{$\approx$}}1 {∨}{{$\lor$}}1
+    {├}{{|}}1 {└}{{`}}1 {─}{{--}}1
+}
+\lstset{style=cpp}
+
+% ========== 提示框 ==========
+\newtcolorbox{warn}{
+  colback=red!3,colframe=warnred,
+  fonttitle=\bfseries,title={\color{warnred}注意},
+  boxrule=0.4pt,left=4pt,right=4pt,top=2pt,bottom=2pt,
+  breakable
+}
+\newtcolorbox{tip}{
+  colback=green!3,colframe=fixgreen,
+  fonttitle=\bfseries,title={\color{fixgreen}用法/扩展},
+  boxrule=0.4pt,left=4pt,right=4pt,top=2pt,bottom=2pt,
+  breakable
+}
+\newtcolorbox{note}{
+  colback=blue!3,colframe=codeblue,
+  boxrule=0.4pt,left=4pt,right=4pt,top=2pt,bottom=2pt,
+  breakable
+}
+
+\begin{document}
+
+% ========== 封面 ==========
+\begin{titlepage}
+\thispdfpagelabel{封面}
+\centering
+\vspace*{3cm}
+{\Huge\bfseries 算法板子\par}
+\vspace{0.6cm}
+{\Large 竞赛代码模板完整大版本\par}
+\vspace{1.5cm}
+{\normalsize 完整覆盖 · 专题详解 · 统一目录\par}
+\vfill
+{\large \today\par}
+\end{titlepage}
+\clearpage
+
+\tableofcontents
+\clearpage
+
+\inputnewboard{remake/large/00_总览.tex}
+
+% ==========================================================
+\chapter{竞赛模板}
+% ==========================================================
+
+\begin{warn}
+\begin{itemize}
+  \item \texttt{\#define int long long} 之后 main 必须写 \texttt{signed main}，否则编译错误。
+  \item 位运算中常数 \texttt{1} 默认是 32 位，当 $i \ge 31$ 时 \texttt{1 << i} 溢出变负数，必须写 \texttt{1LL << i}。
+  \item \texttt{inf = 2e18} 做加法时可能溢出（如 \texttt{inf + x} 爆 long long），松弛前先判 \texttt{if(dist[u] != inf)}。
+\end{itemize}
+\end{warn}
+
+\begin{lstlisting}
+#include <bits/stdc++.h>
+using namespace std;
+#define int long long
+#define endl '\n'
+
+const int inf = 2e18;
+const int N = 1e6 + 10;
+
+void solve() {
+    int n;
+    cin >> n;
+}
+
+signed main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    int t = 1;
+    cin >> t;
+    while (t--) {
+        solve();
+    }
+    return 0;
+}
+\end{lstlisting}
+
+\begin{tip}
+\begin{itemize}
+  \item 不需要多测时把 \lstinline|cin >> t| 注释掉即可。
+  \item 多测时注意：solve() 里不要中途 \lstinline|return|（会导致后续输入串流）；全局数组/容器必须清空干净。
+  \item 局部变量必须初始化！\lstinline|int sum;| 在 OJ 上可能是乱码，必须写 \lstinline|int sum = 0;|。
+\end{itemize}
+\end{tip}
+
+\inputnewboard{remake/large/01_模板.tex}
+
+% ==========================================================
+\chapter{STL 常用函数速查}
+% ==========================================================
+
+\section{容器}
+
+\subsection{vector}
+\begin{lstlisting}
+vector<int> a(n, 0);       // n 个元素初始化为 0
+a.push_back(x);            // 尾部插入
+a.pop_back();              // 尾部删除
+a.size();                  // 元素个数（返回 size_t，比较时注意）
+a.empty();                 // 是否为空
+a.clear();                 // 清空
+a.resize(m, val);          // 重设大小
+a.erase(a.begin() + i);   // 删除第 i 个元素 O(n)
+// 去重：
+sort(a.begin(), a.end());
+a.erase(unique(a.begin(), a.end()), a.end());
+\end{lstlisting}
+
+\subsection{array}
+\begin{lstlisting}
+array<int, N> a;           // 固定大小数组，N 必须是编译期常量
+array<int, 5> a = {1, 2, 3, 4, 5};  // 初始化
+array<int, 5> a = {};      // 全部初始化为 0
+a.size();                  // 元素个数（编译期确定，始终为 N）
+a.fill(val);               // 全部填充为 val
+a.front();  a.back();      // 首尾元素
+a.data();                  // 底层数组指针
+a[i];                      // 随机访问 O(1)
+// 支持比较运算符（按字典序），可以直接当 map 的 key
+// 与 C 数组的区别：可以赋值、比较、作为函数返回值
+\end{lstlisting}
+
+\begin{warn}
+\begin{itemize}
+  \item \lstinline|array| 不能用变量做大小，\lstinline|array<int, n>| 编译错误（n 必须是 \lstinline|constexpr|）。
+  \item 局部 \lstinline|array| 不会自动初始化为 0！必须写 \lstinline|array<int, 5> a = {};| 或 \lstinline|a.fill(0);|。
+  \item 竞赛中常用场景：需要把固定长度的数组当 \lstinline|map| / \lstinline|set| 的 key 时，用 \lstinline|array| 比手写 \lstinline|struct| 方便。
+\end{itemize}
+\end{warn}
+
+\subsection{string}
+\begin{lstlisting}
+string s;
+getline(cin, s);           // 读一整行（注意前面 cin>>n 后要 cin.ignore()）
+s.substr(pos, len);        // 从 pos 开始取 len 个字符
+s.find("abc");             // 查找子串，找不到返回 string::npos
+s += "xyz";                // 拼接
+to_string(123);            // int -> string
+stoi("123");               // string -> int
+stoll("123456789012");     // string -> long long
+\end{lstlisting}
+
+\subsection{set / multiset}
+\begin{lstlisting}
+set<int> s;
+s.insert(x);              // 插入
+s.erase(x);               // 删除所有值为 x 的元素
+s.count(x);               // 0 或 1
+s.lower_bound(x);         // >= x 的第一个迭代器
+s.upper_bound(x);         // > x 的第一个迭代器
+// multiset 删除单个元素：
+auto it = ms.find(x);
+if (it != ms.end()) ms.erase(it); // 只删一个！
+// 如果写 ms.erase(x) 会删掉所有等于 x 的元素！
+\end{lstlisting}
+
+\subsection{map}
+\begin{lstlisting}
+map<int, int> mp;
+mp[key] = val;             // 插入/修改
+mp.count(key);             // 是否存在
+mp.erase(key);             // 删除
+// 遍历：
+for (auto& [k, v] : mp) { ... }
+// 注意：mp[key] 如果 key 不存在会自动插入默认值 0！
+// 只查询用 mp.count(key) 或 mp.find(key)
+\end{lstlisting}
+
+\subsection{unordered\_map / unordered\_set}
+\begin{lstlisting}
+unordered_map<int, int> mp;  // 哈希表，平均 O(1) 查找/插入/删除
+mp[key] = val;              // 插入/修改（同 map）
+mp.count(key);              // 是否存在
+mp.erase(key);              // 删除
+for (auto& [k, v] : mp) { ... }  // 遍历（无序！）
+
+unordered_set<int> us;
+us.insert(x);
+us.count(x);                // 0 或 1
+us.erase(x);
+
+// 与 map/set 的区别：
+// 1. 无序，不支持 lower_bound / upper_bound
+// 2. 平均 O(1)，但最坏 O(n)（哈希冲突）
+// 3. 不能直接用 pair/vector 做 key（需要自定义哈希）
+\end{lstlisting}
+
+\begin{warn}
+\begin{itemize}
+  \item \textbf{被卡哈希}：Codeforces 等平台可以构造数据卡 \lstinline|unordered_map| 的默认哈希，导致退化为 $O(n^2)$。
+  \item 防卡方法：自定义哈希函数加随机种子：
+\end{itemize}
+\end{warn}
+
+\begin{lstlisting}
+struct custom_hash {
+    size_t operator()(int x) const {
+        static const size_t FIXED_RANDOM =
+            chrono::steady_clock::now().time_since_epoch().count();
+        x ^= FIXED_RANDOM;
+        return x ^ (x >> 16);
+    }
+};
+unordered_map<int, int, custom_hash> mp;
+\end{lstlisting}
+
+\begin{tip}
+\begin{itemize}
+  \item 用 \lstinline|mp.reserve(n)| 预分配空间、\lstinline|mp.max_load_factor(0.25)| 降低负载因子，可以显著提速。
+  \item 需要有序遍历或 \lstinline|lower_bound| 时，必须用 \lstinline|map| / \lstinline|set|。
+  \item \lstinline|unordered_map| 的 \lstinline|[]| 操作同样会自动插入默认值，注意与 \lstinline|map| 一样的坑。
+\end{itemize}
+\end{tip}
+
+\subsection{priority\_queue}
+\begin{lstlisting}
+// 大根堆（默认）
+priority_queue<int> pq;
+// 小根堆
+priority_queue<int, vector<int>, greater<int>> pq;
+pq.push(x);
+pq.top();    // 堆顶（不弹出）
+pq.pop();    // 弹出堆顶
+\end{lstlisting}
+
+\subsection{deque}
+\begin{lstlisting}
+deque<int> dq;
+dq.push_front(x); dq.push_back(x);
+dq.pop_front();   dq.pop_back();
+dq.front();       dq.back();
+dq[i];            // 支持随机访问
+\end{lstlisting}
+
+\subsection{stack}
+\begin{lstlisting}
+stack<int> stk;
+stk.push(x);      // 压栈
+stk.pop();         // 弹栈（无返回值！）
+stk.top();         // 取栈顶元素
+stk.empty();       // 是否为空
+stk.size();        // 元素个数
+// 注意：stack 没有 clear()，清空方式：
+// while (!stk.empty()) stk.pop();
+// 或直接 stk = stack<int>();
+\end{lstlisting}
+
+\subsection{list}
+\begin{lstlisting}
+list<int> lst;
+lst.push_back(x);  lst.push_front(x);   // 头尾插入 O(1)
+lst.pop_back();    lst.pop_front();      // 头尾删除 O(1)
+lst.front();       lst.back();           // 访问头尾
+lst.insert(it, x);                       // 在迭代器 it 前插入 O(1)
+lst.erase(it);                           // 删除迭代器指向的元素 O(1)
+lst.size();        lst.empty();
+lst.remove(val);                         // 删除所有值为 val 的元素
+lst.sort();                              // 链表专用排序（归并）O(n log n)
+lst.unique();                            // 去除相邻重复元素（需先排序）
+lst.merge(lst2);                         // 合并两个有序链表
+lst.reverse();                           // 反转链表
+lst.splice(it, lst2);                    // 将 lst2 全部移接到 it 前面 O(1)
+// 注意：list 不支持随机访问（没有 []），遍历只能用迭代器
+// 适用场景：频繁在中间插入/删除，且不需要随机访问
+\end{lstlisting}
+
+\section{常用算法}
+
+\begin{lstlisting}
+// 排序
+sort(a.begin(), a.end());                    // 升序
+sort(a.begin(), a.end(), greater<int>());    // 降序
+
+// 二分查找（要求有序）
+lower_bound(a.begin(), a.end(), x);  // >= x 的第一个位置
+upper_bound(a.begin(), a.end(), x);  // > x 的第一个位置
+
+// 去重
+unique(a.begin(), a.end());  // 返回去重后的尾迭代器
+
+// 全排列
+next_permutation(a.begin(), a.end()); // 下一个排列，到最后返回 false
+
+// 最值
+*max_element(a.begin(), a.end());
+*min_element(a.begin(), a.end());
+
+// 累加
+accumulate(a.begin(), a.end(), 0LL); // 注意初始值类型！
+\end{lstlisting}
+
+\begin{warn}
+\begin{itemize}
+  \item 自定义 \lstinline|sort| 的比较函数必须用严格小于 \lstinline|<|，不能用 \lstinline|<=|，否则破坏严格弱序，导致随机 RE/WA。
+  \item \lstinline|accumulate| 初始值写 \lstinline|0| 会按 int 累加溢出，必须写 \lstinline|0LL|。
+  \item \lstinline|vector.size()| 返回无符号数，\lstinline|a.size() - 1| 当 size 为 0 时会下溢变成极大值！
+\end{itemize}
+\end{warn}
+
+\section{pair / tuple}
+
+\begin{lstlisting}
+// pair
+pair<int, int> p = {1, 2};
+auto [x, y] = p;  // C++17 结构化绑定
+p.first; p.second; // 访问元素
+// pair 支持比较运算符（先比 first，再比 second）
+// 可以直接作为 map 的 key、放入 set、sort
+
+// make_pair
+auto p2 = make_pair(3, 4); // 自动推导类型
+
+// tuple（三元及以上）
+tuple<int, int, int> t = {1, 2, 3};
+auto [a, b, c] = t;  // C++17 结构化绑定
+get<0>(t); get<1>(t); get<2>(t); // 访问元素
+auto t2 = make_tuple(1, 2, 3);
+// tuple 也支持比较运算符（按字典序）
+// 竞赛中三元排序直接用 tuple 最方便
+\end{lstlisting}
+
+\begin{tip}
+\begin{itemize}
+  \item 多关键字排序用 \lstinline|vector<tuple<int,int,int>>| 比写结构体更快。
+  \item \lstinline|tie(a, b, c) = make_tuple(x, y, z)| 可以一行赋值多个变量。
+  \item C++17 的结构化绑定 \lstinline|auto [a, b, c] = t| 最简洁，推荐使用。
+\end{itemize}
+\end{tip}
+
+\section{bitset}
+
+\begin{note}
+\lstinline|bitset<N>| 是固定大小的位集合，N 必须是编译期常量。空间 $N/8$ 字节，位运算操作是 $O(N/64)$（64 位压缩）。
+\end{note}
+
+\begin{lstlisting}
+bitset<1000> bs;          // 全部初始化为 0
+bitset<8> bs2("10101010"); // 从字符串初始化（注意：字符串最右对应第 0 位）
+bitset<8> bs3(0xAA);      // 从整数初始化
+
+// 单位操作
+bs.set(i);        // 第 i 位置 1
+bs.set(i, 0);     // 第 i 位置 0
+bs.reset(i);      // 第 i 位置 0
+bs.flip(i);       // 第 i 位取反
+bs.test(i);       // 返回第 i 位的值（bool）
+bs[i];            // 同 test(i)，但不做越界检查
+
+// 全局操作
+bs.set();         // 全部置 1
+bs.reset();       // 全部置 0
+bs.flip();        // 全部取反
+bs.count();       // 1 的个数（popcount）
+bs.size();        // 总位数 N
+bs.any();         // 是否存在至少一个 1
+bs.none();        // 是否全为 0
+bs.all();         // 是否全为 1（C++11）
+
+// 位运算（O(N/64)，比手写快很多）
+bitset<1000> a, b;
+a & b;  a | b;  a ^ b;  ~a;   // 返回新 bitset
+a &= b; a |= b; a ^= b;       // 原地修改
+a <<= k; a >>= k;             // 左移/右移 k 位
+(a & b).count();               // 两个集合的交集大小
+
+// 转换
+bs.to_ulong();    // 转为 unsigned long（N <= 32 时）
+bs.to_ullong();   // 转为 unsigned long long（N <= 64 时）
+bs.to_string();   // 转为 "010101..." 字符串
+
+// 查找（非标准但 GCC 支持）
+bs._Find_first();  // 第一个 1 的位置（没有则返回 N）
+bs._Find_next(i);  // i 之后第一个 1 的位置（没有则返回 N）
+// 枚举所有 1 的位置：
+for (int i = bs._Find_first(); i < (int)bs.size(); i = bs._Find_next(i)) {
+    // 处理位置 i
+}
+\end{lstlisting}
+
+\begin{warn}
+\begin{itemize}
+  \item \lstinline|bitset| 的大小 N 必须是编译期常量，不能用变量！
+  \item \lstinline|bs[i]| 的 $i$ 从 0 开始，第 0 位是最低位。
+  \item 从字符串构造时，字符串的最后一个字符对应第 0 位（最低位），容易搞反。
+  \item \lstinline|_Find_first| 和 \lstinline|_Find_next| 是 GCC 扩展，非标准，但竞赛中可用。
+\end{itemize}
+\end{warn}
+
+\begin{tip}
+\begin{itemize}
+  \item \textbf{bitset 优化 DP}：将布尔 DP 数组改用 bitset，转移用位移 + 或运算，复杂度除以 64。经典例题：背包可行性判断 \lstinline|bs |= (bs << w[i])|。
+  \item \textbf{bitset 求交集/汉明距离}：\lstinline|(a ^ b).count()| 即汉明距离，\lstinline|(a & b).count()| 即共同元素个数。
+  \item \textbf{bitset 优化图算法}：传递闭包 $O(n^3/64)$，二部图匹配加速等。
+  \item \textbf{bitset 加速暴力}：$n \le 40000$ 的 $O(n^2)$ 布尔运算用 bitset 可以压到 $O(n^2/64)$，约等于 $n \le 5000$ 的常规暴力速度。
+\end{itemize}
+\end{tip}
+
+\subsection{bitset 优化背包 / 子集和可行性}
+
+\begin{note}
+判断若干物品能凑出哪些重量（布尔 DP），把 \lstinline|dp[j]| 改为 bitset 的第 $j$ 位，转移用左移 + 或，复杂度 $O(nV/64)$。
+\end{note}
+
+\begin{lstlisting}
+// bs[j] = 1 表示重量 j 可以被凑出
+bitset<MAXV> bs;
+bs[0] = 1;                 // 重量 0 总能凑出（什么都不选）
+for (int i = 0; i < n; i++)
+    bs |= bs << w[i];      // 01 背包：每个物品做一次整体左移再或
+// bs[j] 为 1 即容量 j 可达；bs.count() 为可达重量种类数
+
+// 完全背包可行性：物品可重复选，按位逐位递推
+// for (int i = 0; i < n; i++)
+//     for (int j = w[i]; j < MAXV; j++) if (bs[j-w[i]]) bs[j] = 1;
+\end{lstlisting}
+
+\begin{warn}
+\begin{itemize}
+  \item \lstinline|MAXV| 必须 $\ge$ 最大可能重量 $+1$，且是编译期常量。
+  \item \lstinline|bs |= bs << w[i]| 一次只把每个物品计入一次，是 01 背包语义；完全背包需另写逐位递推。
+\end{itemize}
+\end{warn}
+
+\subsection{bitset 优化传递闭包（Floyd）}
+
+\begin{note}
+求有向图可达性矩阵，$O(n^3)$ 的 Floyd 用 bitset 整行或运算压到 $O(n^3/64)$。
+\end{note}
+
+\begin{lstlisting}
+bitset<MAXN> reach[MAXN];  // reach[i][j]=1 表示 i 能到达 j
+// 初始化：reach[i][i]=1，有边 i->j 则 reach[i][j]=1
+for (int k = 0; k < n; k++)
+    for (int i = 0; i < n; i++)
+        if (reach[i][k])
+            reach[i] |= reach[k];  // i 能到 k，则 k 能到的 i 都能到
+\end{lstlisting}
+
+\subsection{bitset 优化字符串匹配（Shift-And）}
+
+\begin{note}
+在文本 $t$ 中查找模式串 $p$（长 $m$），用 bitset 维护"当前已匹配前缀"集合，$O(nm/64)$。
+\end{note}
+
+\begin{lstlisting}
+// B[c] 第 j 位为 1 表示 p[j]==c
+bitset<MAXM> B[256], D;
+for (int j = 0; j < m; j++) B[(unsigned char)p[j]][j] = 1;
+for (int i = 0; i < (int)t.size(); i++) {
+    D = ((D << 1) | bitset<MAXM>(1)) & B[(unsigned char)t[i]];
+    if (D[m - 1]) {
+        // 在文本位置 i - m + 1 处匹配成功
+    }
+}
+\end{lstlisting}
+
+\begin{tip}
+Shift-And 的状态 \lstinline|D[j]=1| 表示 \lstinline|p[0..j]| 是 \lstinline|t| 当前结尾的后缀。把 \lstinline{|} 换成"或非"、判 \lstinline|D[m-1]==0| 即为 Shift-Or 变体，原理相同。
+\end{tip}
+
+\section{\_\_int128}
+
+\begin{note}
+GCC 扩展的 128 位整数，范围约 $[-1.7 \times 10^{38}, 1.7 \times 10^{38}]$。用于中间计算结果超过 long long 但最终结果不超过的情况。
+\end{note}
+
+\begin{lstlisting}
+__int128 a = 1;
+// 不能直接 cin/cout，需要手写 IO
+void print128(__int128 x) {
+    if (x < 0) { putchar('-'); x = -x; }
+    if (x > 9) print128(x / 10);
+    putchar(x % 10 + '0');
+}
+
+__int128 read128() {
+    __int128 x = 0; int f = 1; char c = getchar();
+    while (c < '0' || c > '9') { if (c == '-') f = -1; c = getchar(); }
+    while (c >= '0' && c <= '9') { x = x * 10 + c - '0'; c = getchar(); }
+    return x * f;
+}
+
+// 典型应用：大数乘法取模，避免 long long 乘法溢出
+int mul_mod(int a, int b, int mod) {
+    return (__int128)a * b % mod;
+}
+\end{lstlisting}
+
+\begin{warn}
+\begin{itemize}
+  \item \lstinline|__int128| 不能直接用 \lstinline|cin/cout/printf|，必须手写 IO。
+  \item \lstinline|__int128| 是 GCC 扩展，MSVC 不支持。竞赛 OJ 一般都支持。
+  \item 不能用于 \lstinline|bitset| 的下标或 \lstinline|vector| 的大小。
+\end{itemize}
+\end{warn}
+
+\section{\_\_builtin 系列}
+
+\begin{lstlisting}
+// 二进制中 1 的个数
+__builtin_popcount(x);     // unsigned int 版
+__builtin_popcountll(x);   // unsigned long long 版
+
+// 末尾 0 的个数（即最低位 1 的位置）
+__builtin_ctz(x);          // x != 0 时才有意义
+__builtin_ctzll(x);
+
+// 前导 0 的个数
+__builtin_clz(x);          // x != 0 时才有意义
+__builtin_clzll(x);
+
+// 奇偶性（1 的个数是否为奇数）
+__builtin_parity(x);       // 奇数个 1 返回 1
+__builtin_parityll(x);
+
+// 常用推导
+// 最高位 1 的位置 = 63 - __builtin_clzll(x)   (x > 0)
+// 最低位 1 的位置 = __builtin_ctzll(x)         (x > 0)
+// 向上取 2 的幂 = 1LL << (64 - __builtin_clzll(x - 1))  (x > 1)
+// 向下取 2 的幂 = 1LL << (63 - __builtin_clzll(x))      (x > 0)
+// log2(x) 下取整 = 63 - __builtin_clzll(x)    (x > 0)
+\end{lstlisting}
+
+\begin{warn}
+\begin{itemize}
+  \item \lstinline|__builtin_clz(0)| 和 \lstinline|__builtin_ctz(0)| 是未定义行为！使用前必须判断 $x \neq 0$。
+  \item \lstinline|int| 类型用不带 \lstinline|ll| 的版本，\lstinline|long long| 类型必须用 \lstinline|ll| 版本，否则结果错误。
+\end{itemize}
+\end{warn}
+
+\section{C++ 常用函数速查}
+
+\subsection{数值函数}
+
+\begin{lstlisting}
+// <algorithm> 头文件
+min(a, b);  max(a, b);        // 最小值/最大值
+min({a, b, c, d});            // 多个值取最小（C++11，初始化列表）
+max({a, b, c, d});
+swap(a, b);                   // 交换两个值
+clamp(x, lo, hi);             // 限制 x 在 [lo, hi] 范围内（C++17）
+
+// <numeric> 头文件
+accumulate(a.begin(), a.end(), 0LL);      // 累加（注意初始值类型！）
+accumulate(a.begin(), a.end(), 1LL, multiplies<>()); // 累乘
+iota(a.begin(), a.end(), 0);              // 填充 0, 1, 2, ...
+partial_sum(a.begin(), a.end(), pre.begin()); // 前缀和
+adjacent_difference(a.begin(), a.end(), d.begin()); // 差分
+inner_product(a.begin(), a.end(), b.begin(), 0LL);  // 内积
+gcd(a, b);  lcm(a, b);       // 最大公约数/最小公倍数（C++17）
+midpoint(a, b);               // (a+b)/2 不溢出（C++20）
+reduce(a.begin(), a.end());   // 并行累加（C++17，无序）
+
+// <cmath> 头文件
+abs(x);                       // 绝对值（整数用 abs，浮点也可以）
+ceil(x);  floor(x);  round(x); // 上取整/下取整/四舍五入
+sqrt(x);  cbrt(x);            // 平方根/立方根
+log(x);   log2(x);  log10(x); // 自然对数/以2为底/以10为底
+pow(x, y);                    // x 的 y 次方（浮点，整数慎用！）
+fmod(x, y);                   // 浮点取模
+hypot(x, y);                  // sqrt(x*x + y*y)，不溢出
+\end{lstlisting}
+
+\begin{warn}
+\begin{itemize}
+  \item \lstinline|pow(x, y)| 返回浮点数，\lstinline|pow(5, 2)| 可能返回 24.999...，赋给 int 变成 24！整数幂次用快速幂。
+  \item 整数除法上取整：$\lceil a/b \rceil$ = \lstinline|(a + b - 1) / b|（$a, b > 0$ 时）。不要用 \lstinline|ceil((double)a / b)|，浮点不精确。
+  \item \lstinline|abs(INT_MIN)| 溢出！\lstinline|INT_MIN| 的绝对值超过 \lstinline|INT_MAX|。
+\end{itemize}
+\end{warn}
+
+\subsection{区间操作函数}
+
+\begin{lstlisting}
+// 排序
+sort(a.begin(), a.end());                    // 升序
+sort(a.begin(), a.end(), greater<int>());    // 降序
+stable_sort(a.begin(), a.end());             // 稳定排序
+partial_sort(a.begin(), a.begin()+k, a.end()); // 只排前 k 小
+nth_element(a.begin(), a.begin()+k, a.end());  // 第 k 小放到位置 k，O(n)
+
+// 二分查找（要求有序）
+lower_bound(a.begin(), a.end(), x);  // >= x 的第一个位置
+upper_bound(a.begin(), a.end(), x);  // > x 的第一个位置
+binary_search(a.begin(), a.end(), x); // 是否存在 x（bool）
+equal_range(a.begin(), a.end(), x);  // 返回 {lower_bound, upper_bound} 的 pair
+
+// 查找
+find(a.begin(), a.end(), x);         // 找第一个 x，返回迭代器
+count(a.begin(), a.end(), x);        // 统计 x 的个数
+count_if(a.begin(), a.end(), [](int v){ return v > 0; }); // 条件统计
+any_of(a.begin(), a.end(), pred);    // 是否存在满足条件的
+all_of(a.begin(), a.end(), pred);    // 是否全部满足条件
+none_of(a.begin(), a.end(), pred);   // 是否全不满足条件
+
+// 最值
+*max_element(a.begin(), a.end());     // 最大值
+*min_element(a.begin(), a.end());     // 最小值
+auto [mi, ma] = minmax_element(a.begin(), a.end()); // 同时求最小和最大的迭代器
+
+// 去重（要求有序）
+auto it = unique(a.begin(), a.end()); // 返回去重后的尾迭代器
+a.erase(it, a.end());                // 真正删除多余元素
+
+// 反转、旋转、填充
+reverse(a.begin(), a.end());          // 反转
+rotate(a.begin(), a.begin()+k, a.end()); // 左旋 k 位
+fill(a.begin(), a.end(), val);        // 填充
+fill_n(a.begin(), k, val);           // 填充前 k 个
+generate(a.begin(), a.end(), [&](){ return rng(); }); // 用函数生成
+
+// 拷贝、变换
+copy(a.begin(), a.end(), b.begin());  // 拷贝到 b
+transform(a.begin(), a.end(), b.begin(), [](int x){ return x*2; }); // 变换
+\end{lstlisting}
+
+\begin{tip}
+\begin{itemize}
+  \item \lstinline|nth_element| 是 $O(n)$ 的，比 \lstinline|sort| 后取第 k 个快很多。常用于求中位数。
+  \item \lstinline|partial_sort| 只排前 k 小，$O(n \log k)$，当 $k \ll n$ 时比完整排序快。
+  \item \lstinline|rotate| 实现数组左旋非常方便，$O(n)$。
+\end{itemize}
+\end{tip}
+
+\subsection{排列与组合}
+
+\begin{lstlisting}
+// 全排列
+// next_permutation: 生成下一个字典序排列，到最后返回 false
+// prev_permutation: 生成上一个字典序排列，到最前返回 false
+vector<int> a = {1, 2, 3};
+do {
+    // 处理当前排列 a
+} while (next_permutation(a.begin(), a.end()));
+// 注意：要枚举所有排列，a 必须先排序为最小排列！
+
+// 枚举子集（用 bitmask）
+for (int mask = 0; mask < (1 << n); mask++) {
+    // mask 的第 i 位为 1 表示选第 i 个元素
+    for (int i = 0; i < n; i++)
+        if (mask >> i & 1) { /* 选了第 i 个 */ }
+}
+
+// 枚举大小为 k 的子集（用 bitmask）
+// 见位运算章节
+
+// is_permutation: 判断两个序列是否互为排列
+is_permutation(a.begin(), a.end(), b.begin()); // bool
+\end{lstlisting}
+
+\begin{warn}
+\begin{itemize}
+  \item \lstinline|next_permutation| 会修改原数组！如果要枚举所有排列，初始必须是最小排列（升序）。
+  \item 全排列总数是 $n!$，$n \ge 12$ 时 $n! > 10^8$，注意复杂度。
+  \item \lstinline|prev_permutation| 生成上一个排列，初始必须是最大排列（降序）才能枚举所有排列。
+\end{itemize}
+\end{warn}
+
+\subsection{全排列函数详解（next\_permutation / prev\_permutation）}
+
+\begin{note}
+C++ STL 提供的 \lstinline|next_permutation| 和 \lstinline|prev_permutation| 是生成排列的核心工具。它们\textbf{原地修改}序列，将其变换为字典序的下一个/上一个排列，返回 \lstinline|bool| 表示是否成功（到达最后/最前时返回 \lstinline|false| 并回绕为最小/最大排列）。时间复杂度单次 $O(n)$，枚举所有排列总计 $O(n! \cdot n)$。
+\end{note}
+
+\begin{lstlisting}
+// 函数签名
+bool next_permutation(BidirIt first, BidirIt last);
+bool next_permutation(BidirIt first, BidirIt last, Compare comp);
+bool prev_permutation(BidirIt first, BidirIt last);
+bool prev_permutation(BidirIt first, BidirIt last, Compare comp);
+// 返回值：成功生成下一个/上一个排列返回 true
+//         已经是最大/最小排列时回绕并返回 false
+
+// ===== 用法一：枚举所有排列 =====
+// 必须先排序为最小排列（升序），然后用 do-while 循环
+vector<int> a = {1, 2, 3};
+sort(a.begin(), a.end()); // 必须先升序排列！
+do {
+    // 处理当前排列，例如输出
+    for (int x : a) cout << x << " ";
+    cout << endl;
+} while (next_permutation(a.begin(), a.end()));
+// 输出：1 2 3 / 1 3 2 / 2 1 3 / 2 3 1 / 3 1 2 / 3 2 1
+
+// ===== 用法二：有重复元素的排列（自动去重） =====
+// next_permutation 天然支持重复元素，不会生成重复排列
+vector<int> a = {1, 1, 2};
+sort(a.begin(), a.end());
+do {
+    for (int x : a) cout << x << " ";
+    cout << endl;
+} while (next_permutation(a.begin(), a.end()));
+// 输出：1 1 2 / 1 2 1 / 2 1 1（只有 3 种，不是 3!=6 种）
+
+// ===== 用法三：只排列部分元素（前 k 个的全排列） =====
+// 枚举 n 个元素中选 k 个的全排列（P(n,k)）
+int n = 4, k = 2;
+vector<int> a = {1, 2, 3, 4};
+sort(a.begin(), a.end());
+do {
+    // 只看前 k 个元素，它们是一种选法的排列
+    for (int i = 0; i < k; i++) cout << a[i] << " ";
+    cout << endl;
+    // 将后面的部分反转，使 next_permutation 跳到下一组前 k 个
+    reverse(a.begin() + k, a.end());
+} while (next_permutation(a.begin(), a.end()));
+
+// ===== 用法四：求当前排列之后的第 k 个排列 =====
+vector<int> a = {1, 2, 3, 4};
+int k = 5;
+while (k-- && next_permutation(a.begin(), a.end()));
+// a 变成第 5 个后继排列
+
+// ===== 用法五：对字符串使用 =====
+string s = "abc";
+sort(s.begin(), s.end());
+do {
+    cout << s << endl;
+} while (next_permutation(s.begin(), s.end()));
+// 输出：abc / acb / bac / bca / cab / cba
+
+// ===== 用法六：自定义比较函数（降序排列枚举） =====
+vector<int> a = {3, 2, 1}; // 按 greater 的最小排列
+do {
+    for (int x : a) cout << x << " ";
+    cout << endl;
+} while (next_permutation(a.begin(), a.end(), greater<int>()));
+// 枚举所有"降序字典序"的排列
+\end{lstlisting}
+
+\begin{warn}
+\begin{itemize}
+  \item \textbf{初始状态很重要}：用 \lstinline|next_permutation| 枚举所有排列，初始必须是升序（字典序最小）；用 \lstinline|prev_permutation| 则初始必须是降序（字典序最大）。否则只能枚举到从当前位置到末尾的部分排列。
+  \item \textbf{回绕行为}：当 \lstinline|next_permutation| 在最大排列上调用时，会将数组变回最小排列并返回 \lstinline|false|。这就是 \lstinline|do-while| 的终止条件——回绕后 \lstinline|false| 退出循环。
+  \item \textbf{复杂度}：$n!$ 增长极快，$n = 8$ 时 $n! = 40320$，$n = 10$ 时 $n! = 3628800$，$n = 12$ 时 $n! \approx 4.8 \times 10^8$。竞赛中 $n \le 8$ 比较安全，$n \le 10$ 勉强可行。
+  \item \textbf{不要用 while}：写 \lstinline|while (next_permutation(...))| 会跳过初始排列！必须用 \lstinline|do { ... } while (next_permutation(...))|。
+\end{itemize}
+\end{warn}
+
+\begin{tip}
+\begin{itemize}
+  \item \textbf{判断是否为排列}：用 \lstinline|is_permutation(a.begin(), a.end(), b.begin())| 判断 $a$ 和 $b$ 是否互为排列。
+  \item \textbf{next\_permutation 的原理}：从右往左找第一个 $a[i] < a[i+1]$ 的位置，再从右往左找第一个 $a[j] > a[i]$ 的位置，交换 $a[i]$ 和 $a[j]$，最后反转 $a[i+1 \ldots]$。
+  \item \textbf{求排列数/排名}：需要知道某排列是第几个，用康托展开（见下节）。
+  \item \textbf{竞赛经典场景}：暴力枚举所有排列检查是否满足条件（如 N 皇后的暴力解、TSP 暴力等）。
+\end{itemize}
+\end{tip}
+
+\subsubsection{DFS 递归生成全排列}
+
+\begin{note}
+当需要在生成过程中剪枝（如 N 皇后），或需要更灵活的控制（如只要部分元素的排列），用 DFS 递归比 \lstinline|next_permutation| 更方便。
+\end{note}
+
+\begin{lstlisting}
+// 生成 {1, 2, ..., n} 的全排列（不重复元素）
+vector<int> path;
+vector<bool> used;
+
+void dfs(int n) {
+    if ((int)path.size() == n) {
+        // 得到一个排列 path，处理它
+        for (int x : path) cout << x << " ";
+        cout << endl;
+        return;
+    }
+    for (int i = 1; i <= n; i++) {
+        if (used[i]) continue;
+        path.push_back(i);
+        used[i] = true;
+        dfs(n);
+        path.pop_back();
+        used[i] = false;
+    }
+}
+// 调用：used.assign(n + 1, false); dfs(n);
+
+// 有重复元素的 DFS 全排列（去重版）
+// nums 必须先排序！
+vector<int> nums; // 已排序
+vector<int> path;
+vector<bool> used;
+
+void dfs2(int n) {
+    if ((int)path.size() == n) {
+        for (int x : path) cout << x << " ";
+        cout << endl;
+        return;
+    }
+    for (int i = 0; i < n; i++) {
+        if (used[i]) continue;
+        // 去重：同一层中，相同值只选第一个未用的
+        if (i > 0 && nums[i] == nums[i-1] && !used[i-1]) continue;
+        path.push_back(nums[i]);
+        used[i] = true;
+        dfs2(n);
+        path.pop_back();
+        used[i] = false;
+    }
+}
+// 调用：sort(nums.begin(), nums.end()); used.assign(n, false); dfs2(n);
+\end{lstlisting}
+
+\begin{tip}
+\begin{itemize}
+  \item DFS 版本可以方便地在递归中\textbf{剪枝}，例如 N 皇后问题在放置每个皇后时检查冲突，大幅减少搜索量。
+  \item DFS 生成\textbf{部分排列}（选 $k$ 个）：只需把终止条件改为 \lstinline|path.size() == k|。
+  \item 去重的关键条件 \lstinline|!used[i-1]| 表示：如果前一个相同元素没有被选（说明是同层回溯回来的），则跳过当前元素，避免重复。
+\end{itemize}
+\end{tip}
+
+\subsection{排列序（康托展开与逆康托展开）}
+
+\begin{note}
+康托展开：将一个排列映射为它在所有排列中的字典序排名（0-indexed）。逆康托展开：由排名恢复排列。时间复杂度均为 $O(n^2)$（用树状数组可优化到 $O(n \log n)$）。
+\end{note}
+
+\begin{lstlisting}
+// 康托展开：求排列 p 在所有 n! 个排列中的排名（0-indexed）
+// p 是 {0, 1, ..., n-1} 的排列
+int cantor(vector<int>& p) {
+    int n = p.size();
+    int rank = 0;
+    vector<int> fact(n, 1);
+    for (int i = 1; i < n; i++) fact[i] = fact[i-1] * i;
+    for (int i = 0; i < n; i++) {
+        int cnt = 0; // 统计 p[i] 后面比 p[i] 小的个数
+        for (int j = i + 1; j < n; j++)
+            if (p[j] < p[i]) cnt++;
+        rank += cnt * fact[n - 1 - i];
+    }
+    return rank;
+}
+
+// 逆康托展开：由排名 rank 恢复排列（0-indexed）
+// 返回 {0, 1, ..., n-1} 的第 rank 个排列
+vector<int> inv_cantor(int rank, int n) {
+    vector<int> fact(n, 1);
+    for (int i = 1; i < n; i++) fact[i] = fact[i-1] * i;
+    vector<int> avail; // 可用元素
+    for (int i = 0; i < n; i++) avail.push_back(i);
+    vector<int> res;
+    for (int i = 0; i < n; i++) {
+        int idx = rank / fact[n - 1 - i];
+        rank %= fact[n - 1 - i];
+        res.push_back(avail[idx]);
+        avail.erase(avail.begin() + idx);
+    }
+    return res;
+}
+\end{lstlisting}
+
+\begin{tip}
+\begin{itemize}
+  \item 如果排列是 $\{1, 2, \ldots, n\}$（1-indexed），只需将输入减 1 再调用，或将 avail 改为 $1 \sim n$。
+  \item 用树状数组替代内层循环可以优化到 $O(n \log n)$（统计前缀中比当前小的个数）。
+  \item 康托展开在排列哈希、状态压缩（如 8-puzzle）中非常有用。
+  \item $n \le 20$ 时 $n!$ 超过 \lstinline|long long| 范围，需要用高精度或只处理小规模。$n \le 12$ 时 \lstinline|int| 足够，$n \le 20$ 用 \lstinline|long long|。
+\end{itemize}
+\end{tip}
+
+\subsection{字符串处理函数}
+
+\begin{lstlisting}
+// <string> 头文件
+s.substr(pos, len);            // 子串
+s.find("abc");                 // 查找子串位置，找不到返回 string::npos
+s.rfind("abc");                // 从右往左找
+s.find_first_of("aeiou");     // 找第一个属于给定字符集的字符
+s.find_last_of("aeiou");      // 找最后一个属于给定字符集的字符
+s.find_first_not_of("01");    // 找第一个不在给定字符集中的字符
+s.replace(pos, len, "new");   // 替换子串
+s.insert(pos, "abc");         // 在 pos 处插入
+s.erase(pos, len);            // 删除从 pos 开始的 len 个字符
+s.starts_with("pre");         // 是否以 "pre" 开头（C++20）
+s.ends_with("suf");           // 是否以 "suf" 结尾（C++20）
+s.contains("sub");            // 是否包含子串（C++23）
+
+// 类型转换
+to_string(123);                // int -> string
+to_string(3.14);               // double -> string
+stoi("123");                   // string -> int
+stoll("123456789012");         // string -> long long
+stod("3.14");                  // string -> double
+
+// <cctype> 字符分类（传入 char）
+isalpha(c);   // 是否是字母
+isdigit(c);   // 是否是数字
+isalnum(c);   // 是否是字母或数字
+isupper(c);   // 是否是大写字母
+islower(c);   // 是否是小写字母
+isspace(c);   // 是否是空白字符
+toupper(c);   // 转大写
+tolower(c);   // 转小写
+
+// 整行读入
+getline(cin, s);  // 读一整行（注意前面 cin>>n 后要 cin.ignore()）
+
+// 字符串流（<sstream>）
+stringstream ss("1 2 3");
+int a, b, c;
+ss >> a >> b >> c;  // 按空格分割解析
+\end{lstlisting}
+
+\begin{warn}
+\begin{itemize}
+  \item \lstinline|s.find()| 找不到时返回 \lstinline|string::npos|（一个极大的无符号数），不是 $-1$！判断时用 \lstinline|if (s.find(x) != string::npos)|。
+  \item \lstinline|stoi| 对超出 int 范围的字符串会抛异常，大数用 \lstinline|stoll|。
+  \item \lstinline|getline| 前如果用了 \lstinline|cin >>|，必须先 \lstinline|cin.ignore()| 消耗掉残留的换行符，否则读到空行。
+\end{itemize}
+\end{warn}
+
+\subsection{其他实用工具}
+
+\begin{lstlisting}
+// 二分答案的 lambda 写法
+auto check = [&](int mid) -> bool {
+    // 判断 mid 是否可行
+    return true;
+};
+
+// 自定义哈希（pair 做 key）
+struct pair_hash {
+    size_t operator()(const pair<int,int>& p) const {
+        return hash<long long>()(((long long)p.first << 32) | p.second);
+    }
+};
+unordered_map<pair<int,int>, int, pair_hash> mp;
+unordered_set<pair<int,int>, pair_hash> st;
+
+// 离散化
+vector<int> vals(a.begin(), a.end()); // 复制原数组
+sort(vals.begin(), vals.end());
+vals.erase(unique(vals.begin(), vals.end()), vals.end());
+// 映射：原值 -> 离散化后的编号
+for (int i = 0; i < n; i++)
+    a[i] = lower_bound(vals.begin(), vals.end(), a[i]) - vals.begin();
+// 反映射：vals[a[i]] 即为原值
+
+// iota 快速填充连续序列
+vector<int> idx(n);
+iota(idx.begin(), idx.end(), 0); // idx = {0, 1, 2, ..., n-1}
+// 按其他数组的值排序下标（间接排序）
+sort(idx.begin(), idx.end(), [&](int i, int j) {
+    return a[i] < a[j];
+});
+
+// merge 合并两个有序序列
+merge(a.begin(), a.end(), b.begin(), b.end(), c.begin());
+
+// set_intersection / set_union / set_difference（要求有序）
+vector<int> res;
+set_intersection(a.begin(), a.end(), b.begin(), b.end(), back_inserter(res));
+// 类似地：set_union, set_difference, set_symmetric_difference
+\end{lstlisting}
+
+\begin{tip}
+\begin{itemize}
+  \item 离散化是竞赛高频操作，用于将大值域压缩到 $[0, n)$，配合树状数组/线段树使用。
+  \item 间接排序（按下标排序）可以保留原数组不变，同时知道排序后每个元素的原始位置。
+  \item \lstinline|merge| 和集合运算函数要求输入有序，输出也有序。
+\end{itemize}
+\end{tip}
+
+% ==========================================================
+\chapter{位运算}
+% ==========================================================
+
+\section{基本性质}
+
+\begin{note}
+\begin{itemize}
+  \item 与 \lstinline|&|：同 1 为 1。交换律、结合律。$a \& 0 = 0$，$a \& a = a$，$a \& (\sim a) = 0$。
+  \item 或 \lstinline{|}：有 1 为 1。交换律、结合律。$a | 0 = a$，$a | a = a$，$a | (\sim a) = -1$（全 1）。
+  \item 异或 \lstinline|^|：不同为 1。交换律、结合律。$a \oplus 0 = a$，$a \oplus a = 0$，$a \oplus (\sim a) = -1$。
+  \item 取反 \lstinline|~|：$\sim a = -a - 1$（补码性质）。
+\end{itemize}
+\end{note}
+
+\subsection{分配律与吸收律}
+
+\begin{note}
+\begin{itemize}
+  \item 与对或的分配律：$a \& (b | c) = (a \& b) | (a \& c)$
+  \item 或对与的分配律：$a | (b \& c) = (a | b) \& (a | c)$
+  \item 异或对与的分配律：$a \& (b \oplus c) = (a \& b) \oplus (a \& c)$
+  \item 吸收律：$a \& (a | b) = a$，$a | (a \& b) = a$
+  \item 德摩根律：$\sim(a \& b) = (\sim a) | (\sim b)$，$\sim(a | b) = (\sim a) \& (\sim b)$
+\end{itemize}
+\end{note}
+
+\subsection{异或的重要性质}
+
+\begin{note}
+\begin{itemize}
+  \item 自逆性：$a \oplus b \oplus b = a$（异或同一个数两次等于没异或，用于加密/交换）。
+  \item 无进位加法：异或等价于不考虑进位的二进制加法。
+  \item 前缀异或：$a_l \oplus a_{l+1} \oplus \cdots \oplus a_r = \text{pre}[r] \oplus \text{pre}[l-1]$，类比前缀和。
+  \item 交换两数（不用临时变量）：\lstinline|a ^= b; b ^= a; a ^= b;|（但实际竞赛中直接用 swap 更安全）。
+  \item 线性基：$n$ 个数的所有异或组合可以用至多 $\log V$ 个基底表示。
+\end{itemize}
+\end{note}
+
+\subsection{$O(1)$ 求连续自然数的异或和}
+
+\begin{note}
+求 $1 \oplus 2 \oplus \cdots \oplus m$ 是一个经典结论。令 $S(m) = \bigoplus_{i=1}^{m} i$，则结果只取决于 $m \bmod 4$：
+\begin{itemize}
+  \item $m \bmod 4 = 0$ 时，$S(m) = m$
+  \item $m \bmod 4 = 1$ 时，$S(m) = 1$
+  \item $m \bmod 4 = 2$ 时，$S(m) = m + 1$
+  \item $m \bmod 4 = 3$ 时，$S(m) = 0$
+\end{itemize}
+
+\textbf{为什么有这个结论}：核心引理是\textbf{每 4 个对齐到 4 的倍数的连续整数，异或起来等于 0}。即对任意 $k \equiv 0 \pmod 4$：
+$$k \oplus (k+1) \oplus (k+2) \oplus (k+3) = 0.$$
+原因：这 4 个数的\textbf{低 2 位}恰好取遍 $00,01,10,11$，异或为 $0$；而\textbf{高位}（第 2 位及以上）四个数完全相同，相同的数异或偶数次也为 $0$。所以整块异或为 $0$。
+
+把 $S(m)$ 写成 $0 \oplus 1 \oplus \cdots \oplus m$（多异或一个 $0$ 不影响结果），再从 $0$ 开始每 4 个分一组：$(0\,1\,2\,3)(4\,5\,6\,7)\cdots$，每个\textbf{完整块}都异或为 $0$，于是只剩下结尾不满一块的零头：
+\begin{itemize}
+  \item $m \equiv 3$：恰好若干完整块，全抵消，$S(m) = 0$。
+  \item $m \equiv 0$：到 $m-1$（$\equiv 3$）为完整块抵消，再异或上多出来的 $m$，$S(m) = m$。
+  \item $m \equiv 1$：$S(m) = S(m-1) \oplus m = (m-1) \oplus m$。此时 $m$ 为奇数，$m-1$ 与 $m$ 只差最低位，故 $(m-1)\oplus m = 1$。
+  \item $m \equiv 2$：$S(m) = S(m-1) \oplus m = 1 \oplus m$。此时 $m$ 为偶数（最低位为 $0$），故 $1 \oplus m = m + 1$。
+\end{itemize}
+
+\textbf{推论（区间异或和）}：利用前缀异或，任意区间 $\bigoplus_{i=l}^{r} i = S(r) \oplus S(l-1)$，同样 $O(1)$。
+\end{note}
+
+\begin{lstlisting}
+// 1 ^ 2 ^ ... ^ m，O(1)
+int xor_n(int m) {
+    switch (m & 3) {        // m & 3 等价于 m % 4
+        case 0: return m;
+        case 1: return 1;
+        case 2: return m + 1;
+        default: return 0;  // case 3
+    }
+}
+
+// 区间异或和 l ^ (l+1) ^ ... ^ r，O(1)
+int xor_range(int l, int r) {
+    return xor_n(r) ^ xor_n(l - 1);
+}
+\end{lstlisting}
+
+\subsection{与/或的单调性}
+
+\begin{note}
+\begin{itemize}
+  \item 与运算越与越小：$a \& b \le \min(a, b)$。连续与一串数，结果单调不增。
+  \item 或运算越或越大：$a | b \ge \max(a, b)$。连续或一串数，结果单调不减。
+  \item 推论：子数组的 AND 值最多有 $O(\log V)$ 种（每次变化至少少一个 1）；OR 同理。
+  \item 应用：枚举子数组的 AND/OR 值时，可以利用单调性 + 双指针/二分优化。
+\end{itemize}
+\end{note}
+
+\subsection{常用恒等式速查}
+
+\begin{note}
+\begin{itemize}
+  \item $a \& (a-1)$：去掉 $a$ 最低位的 1。应用：统计 1 的个数、判断 2 的幂。
+  \item $a \& (-a)$：取出 $a$ 最低位的 1（lowbit）。应用：树状数组。
+  \item $a | (a+1)$：将 $a$ 最低位的 0 置为 1。
+  \item $a \& (a+1)$：将 $a$ 末尾连续的 1 全部清零。
+  \item $a | (a-1)$：将 $a$ 末尾连续的 0 全部置 1。
+  \item $(a \oplus b) | (a \& b) = a | b$
+  \item $(a \oplus b) \& (a \& b) = 0$（异或和与互斥）
+  \item $a + b = (a \oplus b) + 2 \cdot (a \& b)$（加法 = 无进位和 + 进位）
+  \item $a + b = (a | b) + (a \& b)$（另一个加法分解）
+\end{itemize}
+\end{note}
+
+\section{竞赛常用性质科普}
+
+\subsection{按位独立性（Bitwise Independence）}
+
+\begin{note}
+位运算中，AND / OR / XOR 对每一位的运算是独立的——第 $i$ 位的结果只取决于所有操作数的第 $i$ 位。
+
+\textbf{竞赛意义}：遇到"对一组数做位运算后求最优值"的题目，可以逐位贪心或逐位 DP，把一个 $\log V$ 位的问题拆成 $\log V$ 个独立的 0/1 问题。
+
+典型应用：
+\begin{itemize}
+  \item 求"选若干数使 OR 最大"——从高位到低位贪心，每一位独立决策。
+  \item 求"所有子数组 AND 之和"——对每一位分别统计有多少子数组该位为 1。
+  \item 位运算卷积（AND/OR/XOR 卷积）的正确性也依赖于按位独立性。
+\end{itemize}
+\end{note}
+
+\subsection{异或与线性代数}
+
+\begin{note}
+异或运算构成 $\text{GF}(2)$（二元域）上的加法，AND 构成乘法。因此：
+\begin{itemize}
+  \item $n$ 个数的所有异或组合构成一个线性空间，维度 $\le \log V$。
+  \item 线性基（Gaussian Elimination on GF(2)）可以在 $O(n \log V)$ 时间内求出基底。
+  \item 线性基支持：求最大/最小异或值、判断某个值能否被异或出、求第 $k$ 小异或值。
+  \item 异或方程组可以用高斯消元求解（开关灯问题、翻转问题）。
+\end{itemize}
+\end{note}
+
+\subsection{位运算与集合论的对应}
+
+\begin{note}
+将整数看作集合（第 $i$ 位为 1 表示元素 $i$ 在集合中），位运算对应集合运算：
+\begin{itemize}
+  \item $a \& b$ = $A \cap B$（交集）
+  \item $a | b$ = $A \cup B$（并集）
+  \item $a \oplus b$ = $A \triangle B$（对称差）
+  \item $\sim a$ = $\overline{A}$（补集）
+  \item $a \& (\sim b)$ = $A \setminus B$（差集）
+  \item $(a \& b) == a$ 等价于 $A \subseteq B$（子集判断）
+\end{itemize}
+
+\textbf{竞赛意义}：状压 DP 中，集合操作全部用位运算实现，理解这层对应关系可以快速写出状态转移。
+\end{note}
+
+\subsection{popcount 的性质与应用}
+
+\begin{note}
+$\text{popcount}(x)$ 表示 $x$ 二进制中 1 的个数。常用性质：
+\begin{itemize}
+  \item $\text{popcount}(a \oplus b)$ = $a$ 和 $b$ 不同位的个数（汉明距离）。
+  \item $\text{popcount}(a \& b)$ = $a$ 和 $b$ 同时为 1 的位数。
+  \item $\text{popcount}(a | b) = \text{popcount}(a) + \text{popcount}(b) - \text{popcount}(a \& b)$（容斥）。
+  \item $a + b = 2 \cdot (a \& b) + (a \oplus b)$，因此 $\text{popcount}(a) + \text{popcount}(b) = \text{popcount}(a \oplus b) + 2 \cdot \text{popcount}(a \& b)$。
+\end{itemize}
+
+\textbf{竞赛应用}：
+\begin{itemize}
+  \item 状压 DP 中按 popcount 分层枚举（先枚举选 1 个的状态，再选 2 个……）。
+  \item 判断两个状态的"距离"用汉明距离。
+  \item 用 \lstinline|__builtin_popcountll(x)| 获取，$O(1)$。
+\end{itemize}
+\end{note}
+
+\subsection{高位/低位操作}
+
+\begin{note}
+\begin{itemize}
+  \item 最高位位置：$\lfloor \log_2 x \rfloor$ = \lstinline|63 - __builtin_clzll(x)|（$x > 0$）。
+  \item 最低位位置：\lstinline|__builtin_ctzll(x)|（$x > 0$）。
+  \item 只保留最高位的 1：\lstinline|1LL << (63 - __builtin_clzll(x))|。
+  \item 只保留最低位的 1：\lstinline|x & (-x)|（lowbit）。
+  \item 将最高位以下全部填 1：先求最高位位置 $k$，然后 \lstinline|(1LL << (k+1)) - 1|。
+\end{itemize}
+
+\textbf{竞赛意义}：
+\begin{itemize}
+  \item 贪心从高位到低位确定答案时，需要快速定位最高位。
+  \item 树状数组的核心操作就是 lowbit。
+  \item 求"不超过 $x$ 的最大 2 的幂"等问题直接用最高位操作。
+\end{itemize}
+\end{note}
+
+\subsection{位运算与不等式}
+
+\begin{note}
+\begin{itemize}
+  \item $a \& b \le \min(a, b)$，$a | b \ge \max(a, b)$。
+  \item $a \oplus b \le a + b$（异或不会产生进位，加法会）。
+  \item $a + b = (a | b) + (a \& b) \ge a | b$。
+  \item $(a \oplus b) + (a \& b) \cdot 2 = a + b$。
+  \item 若 $a \& b = 0$（无公共位），则 $a + b = a | b = a \oplus b$。
+\end{itemize}
+
+\textbf{竞赛意义}：
+\begin{itemize}
+  \item "选两个数使 AND 最大"——从高位贪心，尽量让高位同时为 1。
+  \item "选两个数使 XOR 最大"——用异或字典树从高位贪心取不同位。
+  \item $a \& b = 0$ 时三种运算等价，常用于状压 DP 中"两个集合不相交"的条件。
+\end{itemize}
+\end{note}
+
+\subsection{SOS DP（子集和 / 超集和）}
+
+\begin{note}
+给定数组 $f[mask]$，求所有子集的和：$g[mask] = \sum_{sub \subseteq mask} f[sub]$。
+
+暴力枚举子集是 $O(3^n)$，SOS DP 可以做到 $O(n \cdot 2^n)$：
+\begin{lstlisting}
+for (int i = 0; i < n; i++)
+    for (int mask = 0; mask < (1 << n); mask++)
+        if (mask >> i & 1)
+            f[mask] += f[mask ^ (1 << i)];
+\end{lstlisting}
+
+类似地，超集和（$g[mask] = \sum_{mask \subseteq sup} f[sup]$）只需把条件改为 \lstinline|if (!(mask >> i & 1))|。
+
+\textbf{竞赛应用}：
+\begin{itemize}
+  \item 求"有多少对 $(i,j)$ 满足 $a_i \& a_j = a_i$（即 $a_i$ 是 $a_j$ 的子集）"。
+  \item 位运算卷积（AND/OR 卷积）的核心变换。
+  \item 容斥原理在位运算上的高效实现。
+\end{itemize}
+\end{note}
+
+\section{常用技巧}
+
+\begin{lstlisting}
+// lowbit：取出最低位的 1
+int lowbit(int x) { return x & (-x); }
+
+// 判断是否是 2 的幂
+bool is_pow2(int x) { return x > 0 && (x & (x - 1)) == 0; }
+
+// 枚举子集（枚举 mask 的所有非空子集）
+for (int sub = mask; sub; sub = (sub - 1) & mask) {
+    // sub 是 mask 的一个子集
+}
+
+// 枚举大小为 k 的子集（从 n 个元素中选 k 个）
+int s = (1 << k) - 1;
+while (s < (1 << n)) {
+    // 处理 s
+    int lb = s & (-s);
+    int r = s + lb;
+    s = (((r ^ s) >> 2) / lb) | r;
+}
+\end{lstlisting}
+
+\begin{warn}
+\begin{itemize}
+  \item 位运算优先级极低！\lstinline|if (x & 1 == 1)| 实际是 \lstinline|x & (1 == 1)|，必须加括号 \lstinline|if ((x & 1) == 1)|。
+  \item 左移 \lstinline|1 << i| 当 $i \ge 31$ 时溢出，必须写 \lstinline|1LL << i|。
+\end{itemize}
+\end{warn}
+
+\inputnewboard{remake/large/01_位运算.tex}
+\inputnewboard{remake/large/01_线性基_详解.tex}
+
+% ==========================================================
+
+\chapter{基础算法}
+\inputnewboard{remake/large/02_基础.tex}
+
+\chapter{数学}
+\inputnewboard{remake/large/03_数学.tex}
+\inputnewboard{remake/large/03_数学_详解.tex}
+
+\inputnewboard{remake/large/04_数据结构.tex}
+\inputnewboard{remake/large/04_数据结构_详解.tex}
+
+\inputnewboard{remake/large/05_字符串.tex}
+\inputnewboard{remake/large/05_字符串_详解.tex}
+
+\inputnewboard{remake/large/06_图论.tex}
+
+\chapter{树上算法与高级结构}
+\inputnewboard{remake/large/07_树上进阶.tex}
+
+\chapter{动态规划}
+\inputnewboard{remake/large/08_动态规划.tex}
+\inputnewboard{remake/large/08_动态规划_详解.tex}
+
+\inputnewboard{remake/large/09_博弈.tex}
+\inputnewboard{remake/large/09_博弈_详解.tex}
+
+\inputnewboard{remake/large/10_几何.tex}
+\inputnewboard{remake/large/10_几何_详解.tex}
+\inputnewboard{remake/large/11_针对性测试.tex}
+
+\chapter{对拍}
+% ==========================================================
+
+\begin{note}
+对拍（Stress Testing）是竞赛中查错的核心手段：用随机数据生成器产生大量测试数据，分别用暴力程序和待测程序运行，比较输出是否一致。一旦发现不一致，即可定位 bug。
+
+对拍三件套：
+\begin{itemize}
+  \item \textbf{gen.cpp}：随机数据生成器，输出一组合法的输入数据。
+  \item \textbf{brute.cpp}：暴力解法（正确但慢），作为对照标准。
+  \item \textbf{sol.cpp}：你的正式解法（快但可能有 bug）。
+\end{itemize}
+\end{note}
+
+\section{对拍脚本}
+
+\subsection{Linux / macOS（Bash）}
+
+\begin{lstlisting}
+#!/bin/bash
+# 编译三个程序
+g++ -O2 -o gen gen.cpp
+g++ -O2 -o brute brute.cpp
+g++ -O2 -o sol sol.cpp
+
+for ((i = 1; ; i++)); do
+    # 生成随机数据（用循环变量 i 做种子）
+    ./gen $i > in.txt
+    # 分别运行暴力和正解
+    ./brute < in.txt > out_brute.txt
+    ./sol   < in.txt > out_sol.txt
+    # 比较输出
+    if diff out_brute.txt out_sol.txt > /dev/null 2>&1; then
+        echo "Test $i: AC"
+    else
+        echo "Test $i: WA !!!"
+        echo "--- Input ---"
+        cat in.txt
+        echo "--- Brute ---"
+        cat out_brute.txt
+        echo "--- Sol ---"
+        cat out_sol.txt
+        break
+    fi
+done
+\end{lstlisting}
+
+\subsection{Windows（BAT）}
+
+\begin{lstlisting}
+@echo off
+g++ -O2 -o gen.exe gen.cpp
+g++ -O2 -o brute.exe brute.cpp
+g++ -O2 -o sol.exe sol.cpp
+
+set i=0
+:loop
+set /a i+=1
+gen.exe %i% > in.txt
+brute.exe < in.txt > out_brute.txt
+sol.exe   < in.txt > out_sol.txt
+fc out_brute.txt out_sol.txt > nul
+if errorlevel 1 (
+    echo Test %i%: WA !!!
+    echo --- Input ---
+    type in.txt
+    echo --- Brute ---
+    type out_brute.txt
+    echo --- Sol ---
+    type out_sol.txt
+    pause
+    goto :eof
+)
+echo Test %i%: AC
+goto loop
+\end{lstlisting}
+
+\begin{warn}
+\begin{itemize}
+  \item 编译时加 \lstinline|-O2| 让暴力跑得更快，能测更多组。
+  \item 如果正解有可能输出多种正确答案（如最优方案不唯一），不能直接 diff，需要写 checker 来判断正确性。
+  \item 如果对拍跑很久都没问题，考虑增大数据范围或换生成策略（边界、特殊图等）。
+\end{itemize}
+\end{warn}
+
+\section{随机数据生成器（gen.cpp）}
+
+\begin{note}
+生成器的核心原则：
+\begin{itemize}
+  \item 用命令行参数作为随机种子，保证每次运行的数据不同，且可复现。
+  \item 生成的数据必须满足题目的输入格式和约束条件。
+  \item 对拍时先用小数据（$n \le 10$），确认暴力能跑出来。
+\end{itemize}
+\end{note}
+
+\begin{lstlisting}
+#include <bits/stdc++.h>
+using namespace std;
+
+mt19937 rng; // 梅森旋转随机数引擎
+
+// 生成 [lo, hi] 范围内的随机整数
+int randint(int lo, int hi) {
+    return uniform_int_distribution<int>(lo, hi)(rng);
+}
+
+// 生成 [lo, hi] 范围内的随机 long long
+long long randll(long long lo, long long hi) {
+    return uniform_int_distribution<long long>(lo, hi)(rng);
+}
+
+// 生成长度为 len 的随机小写字母字符串
+string randstr(int len) {
+    string s(len, ' ');
+    for (char& c : s) c = 'a' + randint(0, 25);
+    return s;
+}
+
+// 生成 n 个节点的随机树（输出 n-1 条边）
+// 方法：每个新节点随机连接到已有节点
+vector<pair<int,int>> rand_tree(int n) {
+    vector<pair<int,int>> edges;
+    for (int i = 2; i <= n; i++) {
+        int fa = randint(1, i - 1);
+        edges.push_back({fa, i});
+    }
+    // 打乱边的顺序和方向
+    shuffle(edges.begin(), edges.end(), rng);
+    for (auto& [u, v] : edges)
+        if (randint(0, 1)) swap(u, v);
+    return edges;
+}
+
+// 生成 n 个节点 m 条边的随机简单图（无重边无自环）
+vector<pair<int,int>> rand_graph(int n, int m) {
+    set<pair<int,int>> used;
+    vector<pair<int,int>> edges;
+    while ((int)edges.size() < m) {
+        int u = randint(1, n), v = randint(1, n);
+        if (u == v) continue;
+        if (u > v) swap(u, v);
+        if (used.count({u, v})) continue;
+        used.insert({u, v});
+        edges.push_back({u, v});
+    }
+    shuffle(edges.begin(), edges.end(), rng);
+    for (auto& [u, v] : edges)
+        if (randint(0, 1)) swap(u, v);
+    return edges;
+}
+
+// 生成 n 个不重复的随机整数（值域 [lo, hi]）
+vector<int> rand_distinct(int n, int lo, int hi) {
+    set<int> used;
+    vector<int> res;
+    while ((int)res.size() < n) {
+        int x = randint(lo, hi);
+        if (!used.count(x)) {
+            used.insert(x);
+            res.push_back(x);
+        }
+    }
+    return res;
+}
+
+// 生成随机排列 [1, 2, ..., n]
+vector<int> rand_perm(int n) {
+    vector<int> p(n);
+    iota(p.begin(), p.end(), 1);
+    shuffle(p.begin(), p.end(), rng);
+    return p;
+}
+
+int main(int argc, char* argv[]) {
+    // 用命令行参数做种子
+    rng.seed(atoi(argv[1]));
+
+    // ===== 根据题目修改以下内容 =====
+    int n = randint(1, 10); // 对拍时用小范围
+    cout << n << "\n";
+    for (int i = 0; i < n; i++) {
+        cout << randint(1, 100);
+        if (i + 1 < n) cout << " ";
+    }
+    cout << "\n";
+
+    return 0;
+}
+\end{lstlisting}
+
+\begin{tip}
+\begin{itemize}
+  \item \lstinline|mt19937| 比 \lstinline|rand()| 质量更好且可移植。用 \lstinline|mt19937_64| 生成 64 位随机数。
+  \item \lstinline|uniform_int_distribution<int>(lo, hi)| 生成 $[lo, hi]$ 闭区间均匀分布。
+  \item 生成随机树时，如果需要链状树（极端数据），让每个节点连接 $i-1$；如果需要菊花图，让所有节点连接节点 1。
+  \item 随机图的边数 $m$ 不能超过 $\frac{n(n-1)}{2}$，否则死循环。
+\end{itemize}
+\end{tip}
+
+\section{暴力解法（brute.cpp）}
+
+\begin{note}
+暴力程序的原则：正确性第一，效率无所谓。能用 $O(n^3)$ 就用 $O(n^3)$，能枚举就枚举，绝不优化。
+\end{note}
+
+\begin{lstlisting}
+#include <bits/stdc++.h>
+using namespace std;
+#define int long long
+#define endl '\n'
+
+void solve() {
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; i++) cin >> a[i];
+
+    // ===== 暴力做法（保证正确，不管复杂度）=====
+    // 例：暴力枚举所有子集 / 全排列 / O(n^2) 枚举
+    int ans = 0;
+    for (int i = 0; i < n; i++)
+        for (int j = i; j < n; j++) {
+            // ...
+        }
+
+    cout << ans << endl;
+}
+
+signed main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    int t = 1;
+    // cin >> t; // 根据题目决定是否多测
+    while (t--) solve();
+    return 0;
+}
+\end{lstlisting}
+
+\section{交互题对拍}
+
+\begin{note}
+交互题无法用管道对拍，需要写一个 interactor 同时充当评测端和数据生成器。
+\end{note}
+
+\begin{lstlisting}
+// interactor.cpp —— 模拟交互评测
+// 编译后用管道连接：
+// Linux:  mkfifo pipe; (./interactor < pipe | ./sol > pipe)
+// 或者直接写成单文件 interactor，用 popen 启动 sol
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    mt19937 rng(42);
+    // 生成隐藏数据
+    int secret = uniform_int_distribution<int>(1, 1000)(rng);
+
+    // 模拟交互过程
+    int queries = 0;
+    while (true) {
+        int guess;
+        // 读取选手的输出（选手的 cout 是这里的 cin）
+        if (!(cin >> guess)) break;
+        queries++;
+        if (guess == secret) {
+            cout << "=" << endl; // 正确
+            break;
+        } else if (guess < secret) {
+            cout << "<" << endl; // 太小
+        } else {
+            cout << ">" << endl; // 太大
+        }
+    }
+    // 检查询问次数是否超限
+    cerr << "Queries used: " << queries << endl;
+    return 0;
+}
+\end{lstlisting}
+
+\begin{warn}
+\begin{itemize}
+  \item 对拍时 gen 的数据范围要小！暴力程序通常是 $O(n^2)$ 或 $O(2^n)$，$n$ 太大跑不完。一般 $n \le 10$ 起步，跑上万组。
+  \item 每次对拍脚本传入不同的种子 \lstinline|./gen $i|，确保数据多样性。找到 WA 后用同一个种子可以复现。
+  \item 注意行末空格和换行的差异可能导致 diff 报 WA，可以在对比前做 trim。
+  \item 如果正解涉及浮点数输出，diff 无法判断精度误差，需要写 checker 比较相对/绝对误差。
+  \item 生成的输入必须严格满足题目约束（如连通图、无重边、值域范围等），否则暴力和正解可能行为都不确定。
+\end{itemize}
+\end{warn}
+
+% ==========================================================
+\chapter{竞赛环境速查}
+% ==========================================================
+
+\section{Windows 命令行（CMD / PowerShell）}
+
+\subsection{编译与运行}
+
+\begin{lstlisting}
+:: 基础编译
+g++ -o sol.exe sol.cpp
+
+:: 推荐编译选项（竞赛常用）
+g++ -O2 -std=c++17 -o sol.exe sol.cpp
+
+:: 开所有警告 + 调试信息（调试时用）
+g++ -Wall -Wextra -Wshadow -g -fsanitize=address,undefined -o sol.exe sol.cpp
+
+:: 编译并立即运行
+g++ -O2 -o sol.exe sol.cpp && sol.exe
+
+:: 从文件读入、输出到文件
+sol.exe < in.txt
+sol.exe < in.txt > out.txt
+
+:: 同时输出到屏幕和文件（PowerShell）
+.\sol.exe < in.txt | Tee-Object out.txt
+
+:: 计时运行（PowerShell）
+Measure-Command { .\sol.exe < in.txt > out.txt }
+\end{lstlisting}
+
+\begin{warn}
+\begin{itemize}
+  \item \lstinline|-fsanitize=address,undefined| 可以检测数组越界、未定义行为等，调试利器！但会显著变慢，提交前务必去掉。
+  \item \lstinline|-O2| 和 \lstinline|-fsanitize| 不要同时用，优化可能把 sanitizer 的检测优化掉。
+  \item Windows 下 PowerShell 和 CMD 的重定向语法一样，但管道行为有差异。推荐用 PowerShell。
+\end{itemize}
+\end{warn}
+
+\subsection{文件操作}
+
+\begin{lstlisting}
+:: 查看文件内容
+type in.txt                  :: CMD
+cat in.txt                   :: PowerShell (Get-Content 的别名)
+
+:: 比较两个文件
+fc out_brute.txt out_sol.txt :: CMD（按行比较）
+diff out1.txt out2.txt       :: PowerShell (Compare-Object 的别名，需 Git)
+
+:: 复制 / 移动 / 删除
+copy a.txt b.txt
+move a.txt b.txt
+del a.txt
+
+:: 创建目录
+mkdir contest
+
+:: 列出当前目录文件
+dir                          :: CMD
+ls                           :: PowerShell
+\end{lstlisting}
+
+\subsection{进程与调试}
+
+\begin{lstlisting}
+:: 强制终止程序（死循环时用）
+Ctrl + C                     :: 终端中直接按
+
+:: 查看正在运行的进程
+tasklist | findstr sol.exe
+
+:: 强制杀死进程
+taskkill /F /IM sol.exe
+
+:: 查看程序返回值（上一条命令的退出码）
+echo %errorlevel%            :: CMD
+echo $LASTEXITCODE           :: PowerShell
+\end{lstlisting}
+
+\subsection{常用技巧}
+
+\begin{lstlisting}
+:: 快速生成测试数据并对拍（单行命令）
+g++ -O2 -o gen.exe gen.cpp && g++ -O2 -o brute.exe brute.cpp && g++ -O2 -o sol.exe sol.cpp
+
+:: 批量编译当前目录所有 cpp 文件（PowerShell）
+Get-ChildItem *.cpp | ForEach-Object {
+    g++ -O2 -o ($_.BaseName + ".exe") $_.FullName
+}
+
+:: 清理编译产物（PowerShell）
+Remove-Item *.exe, *.o, in.txt, out*.txt -ErrorAction SilentlyContinue
+
+:: 查看 g++ 版本
+g++ --version
+
+:: 检查是否安装了某工具
+where g++
+where python
+\end{lstlisting}
+
+\begin{tip}
+\begin{itemize}
+  \item 文件重定向 \lstinline|< in.txt > out.txt| 在比赛中比在代码里写 \lstinline|freopen| 更灵活，不用改代码。
+  \item 如果需要在代码内重定向（某些 OJ 要求），用：\\
+    \lstinline|freopen("input.txt", "r", stdin);|\\
+    \lstinline|freopen("output.txt", "w", stdout);|
+  \item PowerShell 中 \lstinline|Measure-Command| 可以精确测量运行时间，判断是否会 TLE。
+\end{itemize}
+\end{tip}
+
+\section{VS Code 快捷键速查}
+
+\begin{note}
+以下快捷键基于 Windows 默认键位。macOS 把 \lstinline|Ctrl| 换成 \lstinline|Cmd|。
+\end{note}
+
+\subsection{文件与编辑}
+
+\begin{lstlisting}
+Ctrl + N              新建文件
+Ctrl + O              打开文件
+Ctrl + S              保存
+Ctrl + Shift + S      另存为
+Ctrl + W              关闭当前标签
+Ctrl + Tab            切换已打开的文件
+
+Ctrl + Z              撤销
+Ctrl + Shift + Z      重做（或 Ctrl + Y）
+Ctrl + X              剪切整行（光标在行上，不选中也可以）
+Ctrl + C              复制整行（同上）
+Ctrl + Shift + K      删除整行
+Alt + Up/Down         上下移动当前行
+Shift + Alt + Up/Down 向上/下复制当前行
+Ctrl + D              选中当前单词，再按选下一个相同的
+Ctrl + Shift + L      选中所有相同的单词（批量重命名变量超好用）
+\end{lstlisting}
+
+\subsection{查找与替换}
+
+\begin{lstlisting}
+Ctrl + F              查找
+Ctrl + H              查找并替换
+Ctrl + Shift + F      全局搜索（跨文件）
+Ctrl + G              跳转到指定行号
+F12                   跳转到定义
+Alt + F12             速览定义（弹窗）
+Ctrl + Shift + O      跳转到当前文件的符号（函数名等）
+\end{lstlisting}
+
+\subsection{多光标与选择}
+
+\begin{lstlisting}
+Alt + Click           添加多光标
+Ctrl + Alt + Up/Down  上下添加光标（竖向多行编辑）
+Ctrl + Shift + L      选中所有匹配项并添加光标
+Ctrl + L              选中当前行
+Shift + Alt + 拖拽    列选择（矩形选择）
+Ctrl + Shift + [/]    折叠/展开代码块
+\end{lstlisting}
+
+\subsection{终端}
+
+\begin{lstlisting}
+Ctrl + `              打开/关闭集成终端
+Ctrl + Shift + `      新建终端
+Ctrl + Shift + 5      拆分终端（左右并排）
+Ctrl + PageUp/Down    切换终端标签
+\end{lstlisting}
+
+\begin{tip}
+\begin{itemize}
+  \item 在终端中按 \lstinline|Up| 键可以翻出上一条命令，快速重复编译运行。
+  \item 可以配置 VS Code 的 \lstinline|tasks.json| 实现一键编译运行（见下方配置）。
+\end{itemize}
+\end{tip}
+
+\subsection{调试}
+
+\begin{lstlisting}
+F5                    启动调试
+Shift + F5            停止调试
+F9                    切换断点
+F10                   单步跳过（Step Over）
+F11                   单步进入（Step Into）
+Shift + F11           单步跳出（Step Out）
+Ctrl + Shift + D      打开调试面板
+\end{lstlisting}
+
+\subsection{其他实用操作}
+
+\begin{lstlisting}
+Ctrl + Shift + P      命令面板（万能入口）
+Ctrl + ,              打开设置
+Ctrl + B              切换侧边栏显示/隐藏
+Ctrl + J              切换底部面板显示/隐藏
+Ctrl + K, Ctrl + S    查看所有快捷键
+Ctrl + /              注释/取消注释当前行
+Ctrl + Shift + A      块注释（/* ... */）
+Ctrl + K, Ctrl + F    格式化选中代码
+Shift + Alt + F       格式化整个文件
+Ctrl + Shift + V      预览 Markdown
+\end{lstlisting}
+
+\section{VS Code 竞赛配置}
+
+\subsection{一键编译运行（tasks.json）}
+
+\begin{note}
+在 \lstinline|.vscode/tasks.json| 中配置，按 \lstinline|Ctrl+Shift+B| 即可一键编译运行当前文件。
+\end{note}
+
+\begin{lstlisting}
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "compile and run",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-O2", "-std=c++17",
+                "-Wall", "-Wextra",
+                "-o", "${fileDirname}/${fileBasenameNoExtension}.exe",
+                "${file}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$gcc"
+        }
+    ]
+}
+\end{lstlisting}
+
+\subsection{调试配置（launch.json）}
+
+\begin{lstlisting}
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug C++",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}.exe",
+            "args": [],
+            "cwd": "${fileDirname}",
+            "stopAtEntry": false,
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb",
+            "preLaunchTask": "compile and run"
+        }
+    ]
+}
+\end{lstlisting}
+
+\subsection{推荐插件}
+
+\begin{note}
+\begin{itemize}
+  \item \textbf{C/C++}（Microsoft）：语法高亮、智能补全、调试支持。
+  \item \textbf{Code Runner}：右键一键运行代码，支持输入重定向。
+  \item \textbf{Competitive Programming Helper (cph)}：自动抓取样例、一键测试，支持 Codeforces/AtCoder 等。
+  \item \textbf{Error Lens}：将编译错误/警告直接显示在代码行内，快速定位问题。
+  \item \textbf{Bracket Pair Colorizer}（VS Code 已内置）：括号彩色匹配，嵌套多层时一目了然。
+\end{itemize}
+\end{note}
+
+\subsection{推荐用户设置（settings.json 片段）}
+
+\begin{lstlisting}
+{
+    // 自动保存
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000,
+    // 字体推荐等宽字体
+    "editor.fontFamily": "Consolas, 'Courier New', monospace",
+    "editor.fontSize": 15,
+    // 显示行号
+    "editor.lineNumbers": "on",
+    // Tab 转空格，宽度 4
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    // 括号匹配高亮
+    "editor.bracketPairColorization.enabled": true,
+    // 终端默认 PowerShell
+    "terminal.integrated.defaultProfile.windows": "PowerShell"
+}
+\end{lstlisting}
+
+\begin{tip}
+\begin{itemize}
+  \item 比赛时建议关闭自动补全的延迟弹出，避免打字时频繁弹出提示干扰思路：\\
+    \lstinline|"editor.quickSuggestions": false|
+  \item 使用 \lstinline|Ctrl+Shift+P| 输入 ``Snippets'' 可以自定义代码片段，把常用模板设为一键插入。
+  \item 如果终端太小，\lstinline|Ctrl+`| 打开终端后，拖拽顶部边框可以调整高度。
+\end{itemize}
+\end{tip}
+
+\inputnewboard{remake/large/12_索引.tex}
+
+\end{document}

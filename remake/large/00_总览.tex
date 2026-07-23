@@ -1,0 +1,128 @@
+\chapter{总览、复杂度与学习路线}\label{ux603bux89c8ux590dux6742ux5ea6ux4e0eux5b66ux4e60ux8defux7ebf}
+
+\section{先判断题目属于哪一类}\label{ux5148ux5224ux65adux9898ux76eeux5c5eux4e8eux54eaux4e00ux7c7b}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{静态数组/区间}：前缀和、差分、排序、双指针、二分、树状数组、线段树。
+\item
+  \textbf{图/网格可达性}：BFS、DFS、连通分量、拓扑、最短路、并查集。
+\item
+  \textbf{选择最优方案}：贪心（交换论证/单调性）或 DP（状态有重叠）。
+\item
+  \textbf{计数/取模}：组合数、容斥、DP、生成式递推、矩阵快速幂。
+\item
+  \textbf{字符串模式}：KMP/Z/哈希；多模式匹配用 AC，回文用 Manacher。
+\item
+  \textbf{树上问题}：先想 DFS 序、子树、倍增、LCA、树形 DP，再考虑重链/点分治。
+\item
+  \textbf{双方对抗/取石子}：先判无偏性与终止规则，再选 Win/Lose、SG 或 Minimax。
+\end{enumerate}
+
+\section{复杂度速查（单次操作约 1 秒时的经验值）}\label{ux590dux6742ux5ea6ux901fux67e5ux5355ux6b21ux64cdux4f5cux7ea6-1-ux79d2ux65f6ux7684ux7ecfux9a8cux503c}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1646}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3797}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4557}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+规模
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+通常可接受
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+典型算法
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\passthrough{\lstinline!n ≤ 20!} & \passthrough{\lstinline!O(2\^n n)!} & 状压、子集枚举、折半搜索 \\
+\passthrough{\lstinline!n ≤ 40!} & \passthrough{\lstinline!O(2\^(n/2))!} & Meet-in-the-middle \\
+\passthrough{\lstinline!n ≤ 200!} & \passthrough{\lstinline!O(n³)!} & Floyd、区间 DP、矩阵转移 \\
+\passthrough{\lstinline!n ≤ 2000!} & \passthrough{\lstinline!O(n²)!} & 二维 DP、朴素 LIS、部分图算法 \\
+\passthrough{\lstinline!n ≤ 2e5!} & \passthrough{\lstinline!O(n log n)!} & 排序、堆、树状数组、线段树、Dijkstra \\
+\passthrough{\lstinline!n ≤ 1e6!} & \passthrough{\lstinline!O(n)!} 或 \passthrough{\lstinline!O(n log log n)!} & 线性扫描、线性筛、哈希 \\
+\passthrough{\lstinline!n ≤ 1e18!} & \passthrough{\lstinline!O(log n)!} / \passthrough{\lstinline!O(log² n)!} & 快速幂、矩阵快速幂、数论分块 \\
+\end{longtable}
+
+若题目有 \passthrough{\lstinline!T!} 组数据，先把所有规模相加；不要只看单组上限。
+
+\section{分层路线}\label{ux5206ux5c42ux8defux7ebf}
+
+\subsection{L0：实现基本功}\label{l0ux5b9eux73b0ux57faux672cux529f}
+
+C++ 输入输出、引用/指针、\passthrough{\lstinline!vector/string/pair/tuple!}、排序比较器、lambda、\passthrough{\lstinline!lower\_bound!}、位运算、递归栈、\passthrough{\lstinline!long long!}、模运算规范。
+
+\subsection{L1：线性与排序}\label{l1ux7ebfux6027ux4e0eux6392ux5e8f}
+
+前缀和/差分 → 双指针/滑动窗口 → 二分查找/二分答案 → 离散化 → 排序贪心 → 单调栈/单调队列。
+
+\subsection{L2：基础图和数学}\label{l2ux57faux7840ux56feux548cux6570ux5b66}
+
+BFS/DFS/连通分量 → 拓扑 → 并查集 → Dijkstra/MST → 模运算、筛法、组合数、逆元。
+
+\subsection{L3：基础 DP 和经典数据结构}\label{l3ux57faux7840-dp-ux548cux7ecfux5178ux6570ux636eux7ed3ux6784}
+
+线性 DP、背包、区间 DP、树形 DP → 树状数组、线段树、ST 表、堆、Trie。
+
+\subsection{L4：字符串、树和提升题}\label{l4ux5b57ux7b26ux4e32ux6811ux548cux63d0ux5347ux9898}
+
+KMP/Z/哈希/Manacher → LCA/树上差分/直径 → SCC/割点桥/二分图匹配 → 0-1 BFS、差分约束、网络流。
+
+\subsection{L5：银牌常见进阶}\label{l5ux94f6ux724cux5e38ux89c1ux8fdbux9636}
+
+CDQ/整体二分、点分治、虚树、LCT/DSU on Tree、凸包与旋转卡壳、后缀数组/SAM/PAM、矩阵快速幂、状压与数位 DP 优化、基础博弈。
+
+\section{赛场决策树}\label{ux8d5bux573aux51b3ux7b56ux6811}
+
+\begin{lstlisting}
+先读约束
+├─ n 很小（≤ 20/40）？→ 子集枚举 / 折半搜索 / 状压 DP
+├─ 需要连续区间？→ 前缀和 / 差分 / 双指针 / 单调队列
+├─ “最小的最大值/最大的最小值”？→ 二分答案 + 可行性检查
+├─ 图上可达/层数？→ BFS；有权最短路？→ 0-1 BFS / Dijkstra
+├─ 边权全为 1 且有状态？→ 分层 BFS / 乘积图
+├─ 选取若干对象最优？→ 先尝试贪心交换论证，再写 DP
+├─ 多次区间修改/查询？→ 差分 / 树状数组 / 线段树
+├─ 树上路径/子树？→ DFS 序、LCA、树上差分、重链或点分治
+└─ 字符串匹配/回文/多模式？→ KMP/Z、Manacher、AC 自动机
+\end{lstlisting}
+
+\section{正确性证明的四种常用模板}\label{ux6b63ux786eux6027ux8bc1ux660eux7684ux56dbux79cdux5e38ux7528ux6a21ux677f}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{不变量}：循环/数据结构每一步都维持同一个性质，如 Dijkstra 已确定点的最短路不再改变。
+\item
+  \textbf{交换论证}：把任意最优解改造成贪心解而不变差，如按结束时间排序的区间调度。
+\item
+  \textbf{归纳/状态转移}：证明 DP 状态覆盖所有合法前缀，转移恰好枚举最后一步。
+\item
+  \textbf{势能/单调性}：证明每次操作让某个量单调变化，从而保证双指针、并查集、单调栈的线性复杂度。
+\end{itemize}
+
+\section{提交前检查}\label{ux63d0ux4ea4ux524dux68c0ux67e5}
+
+\begin{itemize}
+\tightlist
+\item
+  是否把 \passthrough{\lstinline!int!} 乘法提升成 \passthrough{\lstinline!1LL * a * b!}？
+\item
+  模数不是质数时是否误用了逆元？
+\item
+  \passthrough{\lstinline!vector!} 是否提前 \passthrough{\lstinline!reserve!}，递归深度是否可能爆栈？
+\item
+  图是否 0/1 下标一致，是否忘记反向边或重边？
+\item
+  二分边界是否满足``左闭右闭/左闭右开''约定？
+\item
+  多测是否清空邻接表、全局答案、标记数组、缓存？
+\item
+  几何是否统一使用 \passthrough{\lstinline!long double!} 与 \passthrough{\lstinline!eps!}，叉积是否溢出？
+\end{itemize}
+
+
