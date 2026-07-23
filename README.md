@@ -10,11 +10,17 @@
 | [banzi/板子.pdf](banzi/板子.pdf) | 区域赛现场速查版，七个稳定章节，含压缩错题附录 |
 | [banzi/板子_详细验证.pdf](banzi/板子_详细验证.pdf) | 详细解释与验证协议，共享同一套主模板 |
 | [banzi/板子_大版本.pdf](banzi/板子_大版本.pdf) | 原 269 页大版本的去重重排版，保留完整专题覆盖 |
+| [banzi/板子_大版本_含例题测试.pdf](banzi/板子_大版本_含例题测试.pdf) | 大版本当前验证稿，补入接口注释、完整题例和可执行测试矩阵 |
 | [banzi/板子.tex](banzi/板子.tex) | 现场版入口；章节源在 [remake/chapters](remake/chapters) |
 | [banzi/板子_大版本.tex](banzi/板子_大版本.tex) | 完整大版本入口；章节源在 [remake/large](remake/large) |
 | [remake/chapters/03_字符串.tex](remake/chapters/03_字符串.tex) | KMP、AC（总计数/逐模式计数）、SAM、后缀数组、PAM |
 | [tests/refactored_strings.cpp](tests/refactored_strings.cpp) | 高风险字符串模板的 C++17 回归测试 |
 | [tests/refactored_mst.cpp](tests/refactored_mst.cpp) | Kruskal 与 Kruskal 重构树的 C++17 回归测试 |
+| [tests/refactored_core.cpp](tests/refactored_core.cpp) | 基础、数学与常用数据结构的 C++17 回归测试 |
+| [tests/refactored_graph.cpp](tests/refactored_graph.cpp) | 图论与树上接口的 C++17 回归测试 |
+| [tests/refactored_dp_geometry.cpp](tests/refactored_dp_geometry.cpp) | 动态规划与几何接口的 C++17 回归测试 |
+| [tests/refactored_advanced.cpp](tests/refactored_advanced.cpp) | 线性基、扩展 CRT、矩阵、消元、主席树与李超树回归测试 |
+| [remake/large/13_例题与测试.tex](remake/large/13_例题与测试.tex) | 大版本的接口注释、正式题例与测试矩阵 |
 | [修改意见.md](修改意见.md) | 本次重构验收标准与取舍边界 |
 
 ## 重构后的目录
@@ -38,6 +44,10 @@
 g++ -std=c++17 -O2 -Wall muban.cpp
 g++ -std=c++17 -O2 -Wall tests/refactored_strings.cpp
 g++ -std=c++17 -O2 -Wall tests/refactored_mst.cpp
+g++ -std=c++17 -O2 -Wall tests/refactored_core.cpp
+g++ -std=c++17 -O2 -Wall tests/refactored_graph.cpp
+g++ -std=c++17 -O2 -Wall tests/refactored_dp_geometry.cpp
+g++ -std=c++17 -O2 -Wall tests/refactored_advanced.cpp
 xelatex -interaction=nonstopmode banzi/板子.tex
 xelatex -interaction=nonstopmode banzi/板子_详细验证.tex
 xelatex -interaction=nonstopmode -output-directory banzi banzi/板子_大版本.tex

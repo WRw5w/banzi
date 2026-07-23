@@ -47,6 +47,34 @@ MstResult kruskal(int n, vector<MstEdge> edges) {
     return ans;
 }
 
+// 接口：g 使用 0-based 无向邻接表；返回 {是否连通, MST 权值}。
+pair<bool, long long> prim(
+        const vector<vector<pair<int, long long>>> &g) {
+    int n = g.size();
+    if (n == 0) return {true, 0};
+    vector<long long> best(n, numeric_limits<long long>::max());
+    vector<char> used(n);
+    using State = pair<long long, int>;
+    priority_queue<State, vector<State>, greater<State>> pq;
+    best[0] = 0;
+    pq.push({0, 0});
+    long long cost = 0;
+    int cnt = 0;
+    while (!pq.empty()) {
+        auto [w, u] = pq.top();
+        pq.pop();
+        if (used[u]) continue;
+        used[u] = true;
+        cost += w;
+        ++cnt;
+        for (auto [v, c] : g[u]) if (!used[v] && c < best[v]) {
+            best[v] = c;
+            pq.push({c, v});
+        }
+    }
+    return {cnt == n, cost};
+}
+
 struct KruskalTree {
     struct Edge {
         int u, v;
@@ -150,6 +178,18 @@ int main() {
     auto forest = kruskal(4, vector<MstEdge>{{1, 2, 3}});
     assert(!forest.connected && forest.cost == 3 && forest.used == 1);
 
+    vector<vector<pair<int, long long>>> graph(3);
+    auto add = [&](int u, int v, long long w) {
+        graph[u].push_back({v, w});
+        graph[v].push_back({u, w});
+    };
+    add(0, 1, 3);
+    add(1, 2, 4);
+    add(0, 2, 10);
+    assert(prim(graph) == make_pair(true, 7LL));
+    graph.push_back({});
+    assert(prim(graph).first == false);
+
     KruskalTree tree;
     vector<KruskalTree::Edge> reconstruction_edges{
         {1, 2, 3}, {2, 3, 5}, {1, 3, 9}, {4, 5, 1}
@@ -161,5 +201,6 @@ int main() {
     assert(tree.component_size(1, 3) == 2);
     assert(tree.component_size(1, 5) == 3);
     assert(tree.component_size(4, 1) == 2);
+    cout << "mst templates: PASS\n";
     return 0;
 }

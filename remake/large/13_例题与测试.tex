@@ -1,0 +1,200 @@
+\chapter{完整例题、接口注释与可执行测试}
+
+本章把前面各章的“调用测试”落到可执行程序。测试文件不依赖 PDF 中偶然出现的全局变量，均从
+\texttt{muban.cpp} 的 C++17 地基开始追加；每个接口在代码旁写明输入含义、返回值、初始化和多测清空
+要求。运行某个测试文件时，所有断言通过才打印 \texttt{PASS}，断言失败会直接终止并给出行号。
+
+\section{统一卡片接口注释}
+
+每个板子接入题目时，先在 \texttt{solve()} 中完成以下四件事：
+
+\begin{enumerate}
+\item 读入题目数据，明确下标是 \(0\)-based 还是 \(1\)-based；
+\item 调用初始化接口（例如 \texttt{build/init/clear}），清空节点池、时间戳、懒标记和多测答案；
+\item 调用主接口，记录返回值或读取对象的查询接口；
+\item 输出题目要求的答案，不把上一次测试的全局状态带入下一组。
+\end{enumerate}
+
+代码中的接口注释统一采用下面的格式；复制模板时只需要把题目变量映射到这些字段：
+
+\begin{lstlisting}[language={C++}]
+// 接口：函数/对象的入口，参数含义和下标范围。
+// 前置：需要 build/init 的数据、值域限制和不变量。
+// 返回：答案含义；无解、不连通或空结构如何表示。
+// 清空：多测必须重置哪些数组、节点池、时间戳和懒标记。
+\end{lstlisting}
+
+若某个代码块没有自己的题面，使用测试文件中的调用测试；调用测试不是伪样例，而是直接对接口
+执行操作并用断言检查答案。正式题例则给出输入输出，便于把调用方式改写进题目的
+\texttt{solve()}。
+
+\section{测试矩阵与正式题例}
+
+\small
+\setlength{\tabcolsep}{2pt}
+\begin{longtable}[]{@{}p{0.16\textwidth}p{0.23\textwidth}p{0.22\textwidth}p{0.22\textwidth}@{}}
+\toprule
+领域 & 覆盖接口 & 测试文件（均在 \texttt{tests/}） & 正式题例 / 边界 \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+基础、数学、数据结构 &
+折半搜索、差分、二分答案、滑动窗口、单调结构、快速幂、扩展欧几里得、筛法、树状数组、线段树、01-Trie、回滚并查集、LIS &
+\texttt{core.cpp} &
+空集合、单点、整段更新、重复值、负更新、无可行解；可对照 P1177、P3368、P3372。\\
+图论与树 &
+BFS、0-1 BFS、Dijkstra、拓扑排序、二分图染色、SCC、桥、Kuhn、Dinic、LCA &
+\texttt{graph.cpp} &
+不可达点、零边、环、平行边、增广链、反向残量、根节点 LCA；可对照 P4779、P3387、P3388、P3376。\\
+字符串 &
+KMP、Z 函数、Manacher、Booth、AC、SAM、PAM、后缀数组与 LCP &
+\texttt{strings.cpp} &
+空串、重叠匹配、后缀模式、克隆状态、重复回文；可对照 P3375、P3796、P3804、P5496。\\
+最小生成树与重构树 &
+Kruskal、Prim、阈值连通块、瓶颈路 &
+\texttt{mst.cpp} &
+单点、重边、环、不连通、同权边、跨森林查询；可对照 P3366。\\
+动态规划与几何 &
+LIS、LCS、01/完全背包、区间/数位 DP、Nim、叉积、凸包、面积、线段相交 &
+\texttt{dp\_geometry.cpp} &
+重复值、容量为零、空区间、数字 4、重复点、共线点、端点相交；可对照 P1020、P1048、P1880、P2742。\\
+进阶数学与数据结构 &
+线性基、扩展 CRT、矩阵快速幂、高斯消元、主席树、李超树 &
+\texttt{advanced.cpp} &
+相关向量、非互质同余、无解方程、重复值、空直线集和交叉直线。\\
+\end{longtable}
+\normalsize
+
+表中的测试文件均位于仓库根目录的 \texttt{tests/}；完整文件名和编译命令见仓库
+\texttt{README.md}。
+
+\section{基础与数学：完整小题例}
+
+下面的题例与 \texttt{refactored\_core.cpp} 中的断言一一对应。把每行调用放入
+\texttt{solve()} 即可得到正式题解；返回值含义和边界处理写在函数上方的接口注释中。
+
+\subsection{子集和、区间加与二分答案}
+
+\begin{lstlisting}
+题例 A：给 n 个非负数和上界 limit，求不超过 limit 的最大子集和。
+输入
+4
+0 0
+1 6
+3 8 3 5 6
+4 9 8 1 4 4
+输出
+0
+0
+8
+9
+
+题例 B：把正数数组分成至多 k 段，最小化最大段和。
+输入
+2
+4 2
+7 2 5 10
+4 3
+1 2 3 4
+输出
+14
+4
+\end{lstlisting}
+
+\subsection{树状数组、线段树与回滚并查集}
+
+\begin{lstlisting}
+题例：初始数组 [1,2,3,4]，执行区间加和区间和查询。
+输入
+4 4
+1 2 3 4
+Q 1 4
+A 2 3 5
+Q 1 4
+Q 2 3
+输出
+10
+20
+15
+
+边界调用：
+Fenwick(1) 只更新 1；线段树整段懒标记后查询子区间；
+rollback(snapshot) 后，合并前的集合大小和连通性必须恢复。
+\end{lstlisting}
+
+\section{图论与树：完整小题例}
+
+\subsection{最短路、拓扑与最大流}
+
+\begin{lstlisting}
+题例：有向非负权图，从 1 号点求最短路。
+输入
+4 5
+1 2 5
+1 3 1
+3 2 1
+2 4 1
+3 4 4
+输出
+0 2 1 3
+
+题例：网络流的两条不相交路径。
+输入
+4 4
+1 2 3
+1 3 2
+2 4 3
+3 4 2
+输出
+5
+\end{lstlisting}
+
+不可达点输出 \texttt{INF}；拓扑排序若处理点数小于 \(n\) 必须报告有环；Dinic 每次分层后
+重置 \texttt{it}，增广时同步修改反向边。
+
+\subsection{SCC、桥、匹配与 LCA}
+
+\begin{lstlisting}
+调用测试：
+SCC: 1->2, 2->3, 3->1, 3->4       -> 2 个分量
+桥: 1-2 的平行边 + 2-3             -> 只有 2-3 是桥
+Kuhn: 左 1->{1,2}, 左 2->{2}       -> 匹配数 2
+LCA: 1-{2,3}, 3-{4,5}              -> lca(4,5)=3
+\end{lstlisting}
+
+\section{字符串、动态规划与几何：完整小题例}
+
+\begin{lstlisting}
+字符串：模式串 [a, ab, bab]，文本 abab
+总出现次数应为 5；逐模式次数应为 [2, 2, 1]。
+
+动态规划：物品重量 [2,3,4]、价值 [3,4,5]、容量 5
+01 背包答案为 7；容量 0 时答案为 0。
+
+几何：正方形 (0,0),(1,0),(1,1),(0,1)
+凸包顶点数为 4，面积为 1；两条对角线相交，平行的两条单位线段不相交。
+\end{lstlisting}
+
+\section{一键验收}
+
+在仓库根目录执行下列命令；每一行都必须输出 \texttt{PASS}，任一断言失败都应先修复模板
+或测试，而不是删掉断言：
+
+\begin{lstlisting}
+g++ -std=c++17 -O2 -Wall tests/refactored_core.cpp
+./a.out
+g++ -std=c++17 -O2 -Wall tests/refactored_graph.cpp
+./a.out
+g++ -std=c++17 -O2 -Wall tests/refactored_strings.cpp
+./a.out
+g++ -std=c++17 -O2 -Wall tests/refactored_mst.cpp
+./a.out
+g++ -std=c++17 -O2 -Wall tests/refactored_dp_geometry.cpp
+./a.out
+g++ -std=c++17 -O2 -Wall tests/refactored_advanced.cpp
+./a.out
+\end{lstlisting}
+
+这六个文件构成大版本当前的可执行冒烟集；章节中的边界清单仍然是扩展题目时的回归
+用例，新增变体必须先加入对应测试，再把接口注释和例题补到卡片。

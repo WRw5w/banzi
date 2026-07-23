@@ -5,10 +5,80 @@ using namespace std;
 #define int long long
 using i64 = long long;
 
+// 接口：返回 pattern 在 text 中所有 0-based 起点，允许重叠；pattern 必须非空。
+vector<int> kmp_find(const string &text, const string &pattern) {
+    vector<int> pi(pattern.size()), answer;
+    for (int i = 1; i < (int)pattern.size(); ++i) {
+        int j = pi[i - 1];
+        while (j && pattern[i] != pattern[j]) j = pi[j - 1];
+        if (pattern[i] == pattern[j]) ++j;
+        pi[i] = j;
+    }
+    for (int i = 0, j = 0; i < (int)text.size(); ++i) {
+        while (j && text[i] != pattern[j]) j = pi[j - 1];
+        if (text[i] == pattern[j]) ++j;
+        if (j == (int)pattern.size()) {
+            answer.push_back(i - j + 1);
+            j = pi[j - 1];
+        }
+    }
+    return answer;
+}
+
+// 接口：z[i] 是 s 与 s[i..] 的最长公共前缀长度；z[0]=|s|。
+vector<int> z_function(const string &s) {
+    int n = s.size();
+    vector<int> z(n);
+    if (n) z[0] = n;
+    for (int i = 1, l = 0, r = 0; i < n; ++i) {
+        if (i <= r) z[i] = min(r - i + 1, z[i - l]);
+        while (i + z[i] < n && s[z[i]] == s[i + z[i]]) ++z[i];
+        if (i + z[i] - 1 > r) l = i, r = i + z[i] - 1;
+    }
+    return z;
+}
+
+// 接口：返回字符串最长回文子串长度；空串返回 0。
+int manacher_longest(const string &s) {
+    string t = "^";
+    for (char c : s) t += '#', t += c;
+    t += "#$";
+    vector<int> p(t.size());
+    int center = 0, right = 0, answer = 0;
+    for (int i = 1; i + 1 < (int)t.size(); ++i) {
+        if (i < right) p[i] = min(right - i, p[2 * center - i]);
+        while (t[i + p[i] + 1] == t[i - p[i] - 1]) ++p[i];
+        if (i + p[i] > right) center = i, right = i + p[i];
+        answer = max(answer, p[i]);
+    }
+    return answer;
+}
+
+// 接口：返回字典序最小循环表示的 0-based 起点；空串返回 0。
+int booth(const string &s) {
+    int n = s.size();
+    if (!n) return 0;
+    string t = s + s;
+    int i = 0, j = 1, k = 0;
+    while (i < n && j < n && k < n) {
+        if (t[i + k] == t[j + k]) {
+            ++k;
+            continue;
+        }
+        if (t[i + k] > t[j + k]) i = i + k + 1;
+        else j = j + k + 1;
+        if (i == j) ++j;
+        k = 0;
+    }
+    return min(i, j);
+}
+
 struct AC {
     vector<array<int, 26>> go;
     vector<int> fail, terminal, output;
 
+    // 接口：init -> insert 所有模式串 -> build -> query_total；
+    // 逐模式计数还需对 fail 树做一次反向汇总。
     AC() { init(); }
     void init() {
         go.clear(); fail.clear(); terminal.clear(); output.clear();
@@ -81,6 +151,7 @@ struct SAM {
     vector<Node> st;
     int last = 1;
 
+    // 接口：init(原串长度) 后逐字符 extend；统计出现次数前调用 count_occurrence。
     void init(int n) {
         st.assign(2 * n + 5, Node{});
         st.resize(2);
@@ -133,6 +204,7 @@ struct PAM {
     vector<int> text;
     int last = 1, n = 0;
 
+    // 接口：init(max_len) 后逐字符 add；不同回文数为 tr.size()-2。
     void init(int max_len) {
         tr.clear(); tr.reserve(max_len + 2);
         text.clear(); text.reserve(max_len);
@@ -170,6 +242,7 @@ struct PAM {
     }
 };
 
+// 接口：返回后缀起点的字典序排列；空串返回空数组。
 vector<int> suffix_array(const string &s) {
     int n = s.size();
     if (!n) return {};
@@ -196,6 +269,7 @@ vector<int> suffix_array(const string &s) {
     return sa;
 }
 
+// 接口：sa 已按 suffix_array 排序；lcp[i] 是 sa[i] 与 sa[i-1] 的 LCP。
 vector<int> kasai_lcp(const string &s, const vector<int> &sa) {
     int n = s.size();
     vector<int> rank(n), lcp(n);
@@ -213,6 +287,13 @@ vector<int> kasai_lcp(const string &s, const vector<int> &sa) {
 }
 
 signed main() {
+    assert(kmp_find("aaaaa", "aaa") == vector<int>({0, 1, 2}));
+    assert(kmp_find("abc", "d").empty());
+    assert(z_function("aaaa") == vector<int>({4, 3, 2, 1}));
+    assert(manacher_longest("abacaba") == 7);
+    assert(manacher_longest("") == 0);
+    assert(booth("baca") == 3); // "abac"
+
     AC ac;
     vector<int> nodes;
     nodes.push_back(ac.insert("a"));
