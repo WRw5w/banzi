@@ -1,0 +1,57 @@
+\chapter{错题附录：最小反例与提交前检查}
+
+这一章只保留能在比赛中直接排错的信息。每条错误都使用“最小输入—错误原因—修复动作”的格式，不再写长篇复盘。
+
+\section{提交前固定检查}
+
+\begin{enumerate}
+\item 是否读对了测试组数、边数、字符串和空行；
+\item 所有乘法是否可能超过 \texttt{long long}，中间量是否需要 \texttt{i128}；
+\item \texttt{inf + w} 是否会溢出；
+\item 模数是否为质数，除法是否真的可以使用逆元；
+\item 下标是 0-based 还是 1-based，区间是闭区间还是半开区间；
+\item 多测时图、节点池、时间戳、全局答案和懒标记是否重建；
+\item 是否测试了 \(n=0,1,2\)、全相同、全负数、无解、不连通、重边和自环；
+\item 输出大小写、顺序、精度、无解标志是否符合题面。
+\end{enumerate}
+
+\section{最小反例表}
+
+\begin{tabular}{p{0.27\linewidth}|p{0.28\linewidth}|p{0.33\linewidth}}
+\textbf{模块} & \textbf{最小反例} & \textbf{主要检查}\\ \hline
+二分 & 数组 `[1]`，答案在端点 & 初始边界和返回位置\\
+差分 & 区间 `[1,n]` 加一次 & `r+1` 是否越界\\
+线段树 & 整段加后查询单点 & 是否下传懒标记\\
+并查集 & 重复合并同一对点 & 是否错误增加连通数\\
+Dijkstra & 旧堆项 + 不可达点 & 是否判断 `d != dist[u]`\\
+0-1 BFS & 一条 0 边和一条 1 边 & 0 边是否进队首\\
+MST & 不连通图 & 是否检查选边数 \(n-1\)\\
+桥 & 两条平行边 & 是否按边编号跳过父边\\
+KMP & `aaaaa` 与 `aaa` & 是否保留重叠前缀\\
+AC & `a,ab,bab` 与 `abab` & fail 后缀统计\\
+SAM & `aaaa`、`ab` & clone 和初始化\\
+DP & 单个负数 `[-5]` & 答案是否错误初始化为 0\\
+几何 & 重合点、相切圆 & eps 和退化分支
+\end{tabular}
+
+\section{对拍最小框架}
+
+\begin{lstlisting}[style=cpp]
+for (int seed = 1; ; ++seed) {
+    // gen 产生合法小数据
+    // brute 输出正确答案
+    // sol 输出待测答案
+    // 比较不同后立即保存输入并停止
+}
+\end{lstlisting}
+
+\begin{card}
+\textbf{错题卡只记录五项：}
+\begin{enumerate}
+\item 题号和模板；
+\item 最小错误输入；
+\item 第一个违反的不变量；
+\item 修改的关键行；
+\item 回归样例和正确输出。
+\end{enumerate}
+\end{card}

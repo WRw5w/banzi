@@ -1,0 +1,84 @@
+\input{preamble.tex}
+\renewcommand{\handbooktitle}{算法板子详细验证版}
+
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{5cm}
+{\Huge\bfseries 算法板子}\\[1.2cm]
+{\Large 详细解释与验证版}\\[1cm]
+{\large 与现场速查版共享同一份主模板}\\
+\vfill
+{\large 2026 年重构版}
+\end{titlepage}
+
+\tableofcontents
+\chapter*{如何验证一份板子}
+\addcontentsline{toc}{chapter}{如何验证一份板子}
+
+\section*{验证顺序}
+\addcontentsline{toc}{section}{验证顺序}
+
+一份板子必须经过四层检查：
+
+\begin{enumerate}
+\item 先编译：确认依赖、类型、数组和函数签名没有问题；
+\item 再跑样例：确认输入输出和题面映射一致；
+\item 再跑最小反例：覆盖空、单点、重复、边界和无解；
+\item 最后做压力测试：用暴力程序对拍小规模随机数据。
+\end{enumerate}
+
+\section*{代码地基约定}
+\addcontentsline{toc}{section}{代码地基约定}
+
+所有详细解释都以 `muban.cpp` 为基础，不另造一份基础头文件。这样现场复制时只有一个来源，避免 `INF`、类型宏和主函数版本漂移。
+
+\input{chapters/00_总览.tex}
+\input{chapters/01_基础数据结构.tex}
+\input{chapters/02_图论与树.tex}
+\input{chapters/03_字符串.tex}
+\input{chapters/04_数学与DP.tex}
+\input{chapters/05_银牌高频.tex}
+
+\chapter{专项验证记录}
+
+\section{AC 自动机}
+
+必须分别验证“总出现次数”和“每个模式串出现次数”，不能用一个 `out` 数组语义覆盖两种问题。
+
+\begin{tabular}{p{0.28\linewidth}|p{0.27\linewidth}|p{0.30\linewidth}}
+\textbf{测试} & \textbf{输入} & \textbf{检查}\\ \hline
+空模式集合 & 文本 `abc` & 根转移和答案初始化\\
+重复模式 & `a,a`，文本 `aaa` & 重复模式是否按题意计数\\
+后缀模式 & `a,ab,bab`，文本 `abab` & fail 链汇总\\
+多测重建 & 四组独立字符串 & 节点池和 fail 是否污染
+\end{tabular}
+
+\section{线段树}
+
+必须执行“整段标记后访问子区间”的测试。只查询整段不能验证 `push` 是否正确。
+
+\section{图论}
+
+最短路至少覆盖：
+
+\begin{itemize}
+\item 单点图；
+\item 不可达点；
+\item 重复堆项；
+\item 0 边；
+\item 负边或负环的禁用条件。
+\end{itemize}
+
+\section{发布前清单}
+
+\begin{enumerate}
+\item 两本手册都从同一份章节源生成；
+\item 现场版末尾有错题附录；
+\item 现场版没有未验证的超高难算法；
+\item 每张高风险模板卡片都有完整样例输入输出；
+\item 所有代码按 C++17 编译通过；
+\item 目录和页眉标题与文件名一致。
+\end{enumerate}
+
+\end{document}

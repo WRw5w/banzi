@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "编译 LaTeX",
+  "description": "保存 .tex 文件时自动用 XeLaTeX 编译两次（确保目录正确）",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "*.tex"
+    ]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "xelatex -synctex=1 -interaction=nonstopmode -file-line-error \"${file}\" && xelatex -synctex=1 -interaction=nonstopmode -file-line-error \"${file}\""
+  }
+}

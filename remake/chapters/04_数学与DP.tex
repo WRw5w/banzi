@@ -1,0 +1,199 @@
+\chapter{数学、动态规划与几何}
+
+\section{快速幂与组合数}
+
+\cardmeta{基础必会}{幂、组合数、取模}{快速幂 \(O(\log b)\)，组合数预处理 \(O(n)\)}{模数为质数且 \(n<\texttt{mod}\) 时使用阶乘逆元}
+
+\begin{lstlisting}[style=cpp]
+int qpow(int a, int b, int mod) {
+    // res 保存已经处理的二进制位贡献；a 每轮平方
+    int res = 1 % mod;
+    a %= mod;
+    while (b) {
+        // 当前最低位为 1，说明这一位的幂需要乘进答案
+        if (b & 1) res = res * a % mod;
+        a = a * a % mod;
+        b >>= 1;
+    }
+    return res;
+}
+
+struct Comb {
+    // fac[i]=i!，ifac[i]=(i!)^{-1}，均按 mod 取模
+    int mod;
+    vector<int> fac, ifac;
+    void init(int n, int p) {
+        mod = p;
+        fac.assign(n + 1, 1);
+        ifac.assign(n + 1, 1);
+        for (int i = 1; i <= n; ++i) fac[i] = fac[i - 1] * i % mod;
+        ifac[n] = qpow(fac[n], mod - 2, mod);
+        // 费马小定理求 n! 的逆元，再递推所有较小逆阶乘
+        for (int i = n; i; --i) ifac[i - 1] = ifac[i] * i % mod;
+    }
+    int C(int n, int k) const {
+        if (k < 0 || k > n) return 0;
+        return fac[n] * ifac[k] % mod * ifac[n - k] % mod;
+    }
+};
+\end{lstlisting}
+
+\begin{warnbox}
+模数不是质数时不能直接使用费马逆元；组合数下标超过模数时先查 Lucas 或非质数模数模板。
+\end{warnbox}
+
+\section{扩展欧几里得与扩展 CRT}
+
+\cardmeta{现场常用}{多个同余式、模数不互质、求最小非负解}{每次合并 \(O(\log m)\)}{无解时必须返回标志}
+
+\begin{lstlisting}[style=cpp]
+int exgcd(int a, int b, int &x, int &y) {
+    // 返回 gcd(a,b)，并求出 a*x+b*y=gcd(a,b)
+    if (!b) { x = 1; y = 0; return a; }
+    int x0, y0;
+    int g = exgcd(b, a % b, x0, y0);
+    x = y0;
+    y = x0 - (a / b) * y0;
+    return g;
+}
+
+// 合并 x = a1 (mod m1), x = a2 (mod m2)
+bool merge_crt(int a1, int m1, int a2, int m2, int &a, int &m) {
+    int x, y, g = exgcd(m1, m2, x, y);
+    int d = a2 - a1;
+    // 两式可合并的充要条件：差值能被 gcd(m1,m2) 整除
+    if (d % g) return false;
+    int lcm = m1 / g * m2;
+    int k = (i128)d / g * x % (m2 / g);
+    if (k < 0) k += m2 / g;
+    a = (a1 + (i128)m1 * k) % lcm;
+    if (a < 0) a += lcm;
+    m = lcm;
+    return true;
+}
+\end{lstlisting}
+
+\begin{card}
+\textbf{样例}\\
+\(x\equiv1\pmod4,\ x\equiv3\pmod6\) 的最小非负解为 \(9\pmod{12}\)。\\
+\(x\equiv0\pmod2,\ x\equiv1\pmod4\) 无解，必须输出题目规定的无解标志。
+\end{card}
+
+\section{矩阵快速幂}
+
+\cardmeta{现场常用}{线性递推、固定维度状态转移}{\(O(k^3\log n)\)}{矩阵维度必须很小}
+
+\begin{lstlisting}[style=cpp]
+struct Mat {
+    // a[i][j] 表示从状态 j 对第 i 个新状态的线性贡献
+    int n;
+    vector<vector<int>> a;
+    Mat(int n = 0, bool identity = false): n(n), a(n, vector<int>(n)) {
+        if (identity) for (int i = 0; i < n; ++i) a[i][i] = 1;
+    }
+};
+Mat operator*(const Mat &A, const Mat &B) {
+    Mat C(A.n);
+    // 普通矩阵乘法；i128 防止中间乘法溢出 long long
+    for (int i = 0; i < A.n; ++i)
+        for (int k = 0; k < A.n; ++k) if (A.a[i][k])
+            for (int j = 0; j < A.n; ++j)
+                C.a[i][j] = (C.a[i][j] +
+                    (i128)A.a[i][k] * B.a[k][j]) % 1000000007;
+    return C;
+}
+Mat mpow(Mat A, int e) {
+    // R 初始为单位矩阵，按 e 的二进制位做快速幂
+    Mat R(A.n, true);
+    while (e) {
+        if (e & 1) R = R * A;
+        A = A * A; e >>= 1;
+    }
+    return R;
+}
+\end{lstlisting}
+
+\section{数位 DP}
+
+\cardmeta{现场常用}{统计 \([0,R]\) 中满足数字限制的数}{状态数乘位数}{前导零、tight 和 \(L-1\) 是三大边界}
+
+\begin{lstlisting}[style=cpp]
+string s;
+// pos=当前位，tight=是否仍贴着上界，started=是否已经出现非前导零
+int memo[20][2][2];
+bool seen[20][2][2];
+
+int dfs(int pos, int tight, int started) {
+    // 到末尾代表构造出一个合法数字；这里把“0”也计入
+    if (pos == (int)s.size()) return 1;
+    if (seen[pos][tight][started]) return memo[pos][tight][started];
+    seen[pos][tight][started] = true;
+    int digit = s[pos] - '0';
+    int lim = tight ? digit : 9, ans = 0;
+    for (int d = 0; d <= lim; ++d) {
+        if (d == 4) continue;
+        // 只有仍贴着上界且 d 等于当前上界位时，下一层才 tight
+        ans += dfs(pos + 1, tight && d == digit, started || d != 0);
+    }
+    return memo[pos][tight][started] = ans;
+}
+\end{lstlisting}
+
+\begin{warnbox}
+正式代码中 `tight \&\& d == lim` 应写成与当前上界数字比较，而不是与固定 9 比较。统计 \([L,R]\) 时使用 `F(R)-F(L-1)`，并单独处理 \(L=0\)。
+\end{warnbox}
+
+\section{SOS DP}
+
+\cardmeta{现场常用}{子集和、超集和、位掩码统计}{\(O(n2^n)\)}{掩码位数通常不超过 20}
+
+\begin{lstlisting}[style=cpp]
+// f[mask] 初始为恰好 mask 的值；逐位把子集贡献累加到超集
+for (int bit = 0; bit < n; ++bit)
+    for (int mask = 0; mask < (1LL << n); ++mask)
+        if (mask & (1LL << bit))
+            f[mask] += f[mask ^ (1LL << bit)]; // 子集和
+\end{lstlisting}
+
+\section{Andrew 凸包}
+
+\cardmeta{现场常用}{凸包、极值点、旋转卡壳前处理}{排序 \(O(n\log n)\)}{重复点先去重；保留边界点时改叉积条件}
+
+\begin{lstlisting}[style=cpp]
+struct Point {
+    // 使用 long double 保存坐标，eps 来自 muban.cpp
+    long double x, y;
+    bool operator<(const Point &o) const {
+        return x != o.x ? x < o.x : y < o.y;
+    }
+};
+long double cross(Point a, Point b, Point c) {
+    // (b-a) x (c-a)：>0 左转，<0 右转，约等于 0 共线
+    return (b.x - a.x) * (c.y - a.y)
+         - (b.y - a.y) * (c.x - a.x);
+}
+vector<Point> convex_hull(vector<Point> p) {
+    // 先排序去重，再分别构造下凸壳和上凸壳
+    sort(p.begin(), p.end());
+    p.erase(unique(p.begin(), p.end(), [](Point a, Point b) {
+        return fabsl(a.x - b.x) < eps && fabsl(a.y - b.y) < eps;
+    }), p.end());
+    if (p.size() <= 1) return p;
+    vector<Point> h;
+    for (auto x : p) {
+        // 右转或共线时弹出中间点，保留外层边界
+        while (h.size() >= 2 &&
+               cross(h[h.size()-2], h.back(), x) <= eps) h.pop_back();
+        h.push_back(x);
+    }
+    int lower = h.size();
+    // lower 记录下凸壳结束位置，之后追加上凸壳
+    for (int i = (int)p.size() - 2; i >= 0; --i) {
+        while ((int)h.size() > lower &&
+               cross(h[h.size()-2], h.back(), p[i]) <= eps) h.pop_back();
+        h.push_back(p[i]);
+    }
+    h.pop_back();
+    return h;
+}
+\end{lstlisting}

@@ -1,0 +1,3415 @@
+\chapter{00. 总览、复杂度与学习路线}\label{ux603bux89c8ux590dux6742ux5ea6ux4e0eux5b66ux4e60ux8defux7ebf}
+
+\section{1. 先判断题目属于哪一类}\label{ux5148ux5224ux65adux9898ux76eeux5c5eux4e8eux54eaux4e00ux7c7b}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{静态数组/区间}：前缀和、差分、排序、双指针、二分、树状数组、线段树。
+\item
+  \textbf{图/网格可达性}：BFS、DFS、连通分量、拓扑、最短路、并查集。
+\item
+  \textbf{选择最优方案}：贪心（交换论证/单调性）或 DP（状态有重叠）。
+\item
+  \textbf{计数/取模}：组合数、容斥、DP、生成式递推、矩阵快速幂。
+\item
+  \textbf{字符串模式}：KMP/Z/哈希；多模式匹配用 AC，回文用 Manacher。
+\item
+  \textbf{树上问题}：先想 DFS 序、子树、倍增、LCA、树形 DP，再考虑重链/点分治。
+\item
+  \textbf{双方对抗/取石子}：先判无偏性与终止规则，再选 Win/Lose、SG 或 Minimax。
+\end{enumerate}
+
+\section{2. 复杂度速查（单次操作约 1 秒时的经验值）}\label{ux590dux6742ux5ea6ux901fux67e5ux5355ux6b21ux64cdux4f5cux7ea6-1-ux79d2ux65f6ux7684ux7ecfux9a8cux503c}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1646}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3797}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4557}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+规模
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+通常可接受
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+典型算法
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\passthrough{\lstinline!n ≤ 20!} & \passthrough{\lstinline!O(2\^n n)!} & 状压、子集枚举、折半搜索 \\
+\passthrough{\lstinline!n ≤ 40!} & \passthrough{\lstinline!O(2\^(n/2))!} & Meet-in-the-middle \\
+\passthrough{\lstinline!n ≤ 200!} & \passthrough{\lstinline!O(n³)!} & Floyd、区间 DP、矩阵转移 \\
+\passthrough{\lstinline!n ≤ 2000!} & \passthrough{\lstinline!O(n²)!} & 二维 DP、朴素 LIS、部分图算法 \\
+\passthrough{\lstinline!n ≤ 2e5!} & \passthrough{\lstinline!O(n log n)!} & 排序、堆、树状数组、线段树、Dijkstra \\
+\passthrough{\lstinline!n ≤ 1e6!} & \passthrough{\lstinline!O(n)!} 或 \passthrough{\lstinline!O(n log log n)!} & 线性扫描、线性筛、哈希 \\
+\passthrough{\lstinline!n ≤ 1e18!} & \passthrough{\lstinline!O(log n)!} / \passthrough{\lstinline!O(log² n)!} & 快速幂、矩阵快速幂、数论分块 \\
+\end{longtable}
+
+若题目有 \passthrough{\lstinline!T!} 组数据，先把所有规模相加；不要只看单组上限。
+
+\section{3. 分层路线}\label{ux5206ux5c42ux8defux7ebf}
+
+\subsection{L0：实现基本功}\label{l0ux5b9eux73b0ux57faux672cux529f}
+
+C++ 输入输出、引用/指针、\passthrough{\lstinline!vector/string/pair/tuple!}、排序比较器、lambda、\passthrough{\lstinline!lower\_bound!}、位运算、递归栈、\passthrough{\lstinline!long long!}、模运算规范。
+
+\subsection{L1：线性与排序}\label{l1ux7ebfux6027ux4e0eux6392ux5e8f}
+
+前缀和/差分 → 双指针/滑动窗口 → 二分查找/二分答案 → 离散化 → 排序贪心 → 单调栈/单调队列。
+
+\subsection{L2：基础图和数学}\label{l2ux57faux7840ux56feux548cux6570ux5b66}
+
+BFS/DFS/连通分量 → 拓扑 → 并查集 → Dijkstra/MST → 模运算、筛法、组合数、逆元。
+
+\subsection{L3：基础 DP 和经典数据结构}\label{l3ux57faux7840-dp-ux548cux7ecfux5178ux6570ux636eux7ed3ux6784}
+
+线性 DP、背包、区间 DP、树形 DP → 树状数组、线段树、ST 表、堆、Trie。
+
+\subsection{L4：字符串、树和提升题}\label{l4ux5b57ux7b26ux4e32ux6811ux548cux63d0ux5347ux9898}
+
+KMP/Z/哈希/Manacher → LCA/树上差分/直径 → SCC/割点桥/二分图匹配 → 0-1 BFS、差分约束、网络流。
+
+\subsection{L5：银牌常见进阶}\label{l5ux94f6ux724cux5e38ux89c1ux8fdbux9636}
+
+CDQ/整体二分、点分治、虚树、LCT/DSU on Tree、凸包与旋转卡壳、后缀数组/SAM/PAM、矩阵快速幂、状压与数位 DP 优化、基础博弈。
+
+\section{4. 赛场决策树}\label{ux8d5bux573aux51b3ux7b56ux6811}
+
+\begin{lstlisting}
+先读约束
+├─ n 很小（≤ 20/40）？→ 子集枚举 / 折半搜索 / 状压 DP
+├─ 需要连续区间？→ 前缀和 / 差分 / 双指针 / 单调队列
+├─ “最小的最大值/最大的最小值”？→ 二分答案 + 可行性检查
+├─ 图上可达/层数？→ BFS；有权最短路？→ 0-1 BFS / Dijkstra
+├─ 边权全为 1 且有状态？→ 分层 BFS / 乘积图
+├─ 选取若干对象最优？→ 先尝试贪心交换论证，再写 DP
+├─ 多次区间修改/查询？→ 差分 / 树状数组 / 线段树
+├─ 树上路径/子树？→ DFS 序、LCA、树上差分、重链或点分治
+└─ 字符串匹配/回文/多模式？→ KMP/Z、Manacher、AC 自动机
+\end{lstlisting}
+
+\section{5. 正确性证明的四种常用模板}\label{ux6b63ux786eux6027ux8bc1ux660eux7684ux56dbux79cdux5e38ux7528ux6a21ux677f}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{不变量}：循环/数据结构每一步都维持同一个性质，如 Dijkstra 已确定点的最短路不再改变。
+\item
+  \textbf{交换论证}：把任意最优解改造成贪心解而不变差，如按结束时间排序的区间调度。
+\item
+  \textbf{归纳/状态转移}：证明 DP 状态覆盖所有合法前缀，转移恰好枚举最后一步。
+\item
+  \textbf{势能/单调性}：证明每次操作让某个量单调变化，从而保证双指针、并查集、单调栈的线性复杂度。
+\end{itemize}
+
+\section{6. 提交前检查}\label{ux63d0ux4ea4ux524dux68c0ux67e5}
+
+\begin{itemize}
+\tightlist
+\item
+  是否把 \passthrough{\lstinline!int!} 乘法提升成 \passthrough{\lstinline!1LL * a * b!}？
+\item
+  模数不是质数时是否误用了逆元？
+\item
+  \passthrough{\lstinline!vector!} 是否提前 \passthrough{\lstinline!reserve!}，递归深度是否可能爆栈？
+\item
+  图是否 0/1 下标一致，是否忘记反向边或重边？
+\item
+  二分边界是否满足``左闭右闭/左闭右开''约定？
+\item
+  多测是否清空邻接表、全局答案、标记数组、缓存？
+\item
+  几何是否统一使用 \passthrough{\lstinline!long double!} 与 \passthrough{\lstinline!eps!}，叉积是否溢出？
+\end{itemize}
+
+\chapter{01. 基础、枚举、贪心与线性技巧}\label{ux57faux7840ux679aux4e3eux8d2aux5fc3ux4e0eux7ebfux6027ux6280ux5de7}
+
+\section{1. C++ 竞赛实现规范}\label{c-ux7adeux8d5bux5b9eux73b0ux89c4ux8303}
+
+\begin{lstlisting}[language={C++}]
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using u64 = unsigned long long;
+using i128 = __int128_t;
+constexpr int INF = 0x3f3f3f3f;
+constexpr i64 LINF = (1LL << 62);
+
+void print_i128(i128 x) { // 需要输出超出 long long 时使用
+    if (x < 0) { cout << '-'; x = -x; }
+    string s;
+    do { s.push_back('0' + x % 10); x /= 10; } while (x);
+    reverse(s.begin(), s.end()); cout << s;
+}
+\end{lstlisting}
+
+\begin{itemize}
+\tightlist
+\item
+  \passthrough{\lstinline!ios::sync\_with\_stdio(false); cin.tie(nullptr);!} 放在 \passthrough{\lstinline!main!} 开头。
+\item
+  需要修改容器元素时使用引用：\passthrough{\lstinline!for (auto \&x : a)!}。
+\item
+  大对象传参用 \passthrough{\lstinline!const vector<int>\&!}；避免递归中反复复制。
+\item
+  \passthrough{\lstinline!sort!} 比较器必须是严格弱序，不能写 \passthrough{\lstinline!<=!}。
+\item
+  计数、乘积、距离默认 \passthrough{\lstinline!long long!}；乘法可能达到 \passthrough{\lstinline!1e18!} 时显式 \passthrough{\lstinline!1LL!} 或 \passthrough{\lstinline!\_\_int128!}。
+\end{itemize}
+
+\section{2. 枚举与剪枝}\label{ux679aux4e3eux4e0eux526aux679d}
+
+\subsection{2.1 子集枚举}\label{ux5b50ux96c6ux679aux4e3e}
+
+\passthrough{\lstinline!for (int s = mask; s; s = (s - 1) \& mask)!} 枚举 \passthrough{\lstinline!mask!} 的所有非空子集，总复杂度是 \passthrough{\lstinline!O(3\^n)!}（对所有 \passthrough{\lstinline!mask!} 求子集时）。
+
+\begin{lstlisting}[language={C++}]
+for (int mask = 0; mask < (1 << n); ++mask) {
+    for (int sub = mask;; sub = (sub - 1) & mask) {
+        // 处理 sub；这里包含空集
+        if (sub == 0) break;
+    }
+}
+\end{lstlisting}
+
+\subsection{2.2 回溯剪枝}\label{ux56deux6eafux526aux679d}
+
+固定顺序、提前判非法、记录当前最优上界、相同状态记忆化。对排列/组合先排序再跳过相同元素：\passthrough{\lstinline!if (i > start \&\& a[i] == a[i-1]) continue;!}。
+
+\begin{lstlisting}[language={C++}]
+void dfs(int pos, long long sum) {
+    if (sum == target) { ++answer; return; }
+    if (pos == n || sum > target) return;
+    for (int i = pos; i < n; ++i) {
+        if (i > pos && a[i] == a[i - 1]) continue;
+        dfs(i + 1, sum + a[i]);
+    }
+}
+\end{lstlisting}
+
+\subsection{2.3 折半搜索（Meet-in-the-middle）}\label{ux6298ux534aux641cux7d22meet-in-the-middle}
+
+\passthrough{\lstinline!n ≤ 40!}、每个元素选/不选且目标为和/异或/最值时，把数组分两半枚举，排序一侧后二分或双指针，复杂度 \passthrough{\lstinline!O(2\^(n/2) log 2\^(n/2))!}。
+
+\begin{lstlisting}[language={C++}]
+vector<long long> gen(const vector<long long>& a, int l, int r) {
+    vector<long long> res{0};
+    for (int i = l; i < r; ++i) {
+        int old = (int)res.size();
+        for (int j = 0; j < old; ++j) res.push_back(res[j] + a[i]);
+    }
+    return res;
+}
+
+auto L = gen(a, 0, n / 2), R = gen(a, n / 2, n);
+sort(R.begin(), R.end());
+long long best = 0;
+for (long long x : L) {
+    auto it = upper_bound(R.begin(), R.end(), limit - x);
+    if (it != R.begin()) best = max(best, x + *prev(it));
+}
+\end{lstlisting}
+
+\section{3. 前缀和、差分与扫描}\label{ux524dux7f00ux548cux5deeux5206ux4e0eux626bux63cf}
+
+\subsection{一维前缀和}\label{ux4e00ux7ef4ux524dux7f00ux548c}
+
+\passthrough{\lstinline!pre[i+1] = pre[i] + a[i]!}，区间 \passthrough{\lstinline![l,r]!} 和为 \passthrough{\lstinline!pre[r+1]-pre[l]!}。二维前缀和使用容斥：
+
+\passthrough{\lstinline!S(x2,y2)-S(x1-1,y2)-S(x2,y1-1)+S(x1-1,y1-1)!}。
+
+\subsection{一维差分}\label{ux4e00ux7ef4ux5deeux5206}
+
+对 \passthrough{\lstinline![l,r]!} 加 \passthrough{\lstinline!v!}：\passthrough{\lstinline!d[l]+=v; d[r+1]-=v!}；最后累加 \passthrough{\lstinline!d!} 恢复数组。二维矩形加法在四个角标记，二维前缀恢复。
+
+\begin{lstlisting}[language={C++}]
+vector<long long> pre(n + 1), diff(n + 2);
+for (int i = 1; i <= n; ++i) pre[i] = pre[i - 1] + a[i];
+auto range_sum = [&](int l, int r) { return pre[r] - pre[l - 1]; };
+
+auto range_add = [&](int l, int r, long long v) {
+    diff[l] += v;
+    diff[r + 1] -= v;
+};
+for (auto [l, r, v] : updates) range_add(l, r, v);
+long long cur = 0;
+for (int i = 1; i <= n; ++i) {
+    cur += diff[i];
+    a[i] += cur;
+}
+\end{lstlisting}
+
+\subsection{扫描线思想}\label{ux626bux63cfux7ebfux601dux60f3}
+
+把``开始/结束''事件排序，按坐标推进并维护当前集合。矩形面积、区间覆盖、会议室数量都可转成事件；需要动态维护覆盖长度时配合线段树。
+
+\begin{lstlisting}[language={C++}]
+vector<pair<int, int>> event; // {坐标, +1 开始 / -1 结束}
+for (auto [l, r] : intervals)
+    event.push_back({l, 1}), event.push_back({r, -1});
+sort(event.begin(), event.end());
+int active = 0, peak = 0;
+for (auto [x, delta] : event) {
+    active += delta;
+    peak = max(peak, active);
+}
+\end{lstlisting}
+
+\section{4. 排序、二分、双指针}\label{ux6392ux5e8fux4e8cux5206ux53ccux6307ux9488}
+
+\subsection{4.1 二分查找}\label{ux4e8cux5206ux67e5ux627e}
+
+\passthrough{\lstinline!lower\_bound!} 找第一个 \passthrough{\lstinline!>= x!}，\passthrough{\lstinline!upper\_bound!} 找第一个 \passthrough{\lstinline!> x!}。手写时推荐半开区间 \passthrough{\lstinline![l,r)!}：
+
+\begin{lstlisting}[language={C++}]
+int l = 0, r = n;
+while (l < r) {
+    int m = l + (r - l) / 2;
+    if (a[m] < x) l = m + 1;
+    else r = m;
+}
+// l 是第一个 a[l] >= x 的位置，可能等于 n
+\end{lstlisting}
+
+\subsection{4.2 二分答案}\label{ux4e8cux5206ux7b54ux6848}
+
+当答案具有单调可行性 \passthrough{\lstinline!check(x)!} 时，在答案范围二分。先明确求``最小可行''还是``最大可行''，并把 \passthrough{\lstinline!check!} 写成无副作用函数。典型：最小最大分段和、最小速度、最大最小距离、满足容量的最少天数。
+
+\begin{lstlisting}[language={C++}]
+bool check(long long limit) {
+    int groups = 1;
+    long long sum = 0;
+    for (long long x : a) {
+        if (x > limit) return false;
+        if (sum + x > limit) sum = x, ++groups;
+        else sum += x;
+    }
+    return groups <= k;
+}
+
+long long l = *max_element(a.begin(), a.end());
+long long r = accumulate(a.begin(), a.end(), 0LL);
+while (l < r) {
+    long long mid = l + (r - l) / 2;
+    if (check(mid)) r = mid;
+    else l = mid + 1;
+}
+\end{lstlisting}
+
+\subsection{4.3 双指针/滑动窗口}\label{ux53ccux6307ux9488ux6ed1ux52a8ux7a97ux53e3}
+
+窗口右端只增不减，维护``当前窗口合法''不变量；若加入 \passthrough{\lstinline!r!} 使其非法，就移动 \passthrough{\lstinline!l!} 直到恢复。适用于正数和、至多/至少 \passthrough{\lstinline!k!} 个不同值、最长合法子串。含负数的和通常不能直接用双指针。
+
+\begin{lstlisting}[language={C++}]
+vector<int> cnt(alphabet);
+int distinct = 0, left = 0, answer = 0;
+for (int right = 0; right < n; ++right) {
+    if (cnt[s[right]]++ == 0) ++distinct;
+    while (distinct > k) {
+        if (--cnt[s[left++]] == 0) --distinct;
+    }
+    answer = max(answer, right - left + 1);
+}
+\end{lstlisting}
+
+\subsection{4.4 三分与凸性}\label{ux4e09ux5206ux4e0eux51f8ux6027}
+
+连续/离散单峰函数可三分；整数域更稳妥的做法是三分到很小区间后暴力。很多题可通过凸性改写为二分导数或斜率，不要盲目使用浮点三分。
+
+\begin{lstlisting}[language={C++}]
+while (r - l > 3) {
+    long long m1 = l + (r - l) / 3;
+    long long m2 = r - (r - l) / 3;
+    if (f(m1) < f(m2)) l = m1 + 1; // 求最大值
+    else r = m2 - 1;
+}
+long long ans = LLONG_MIN;
+for (long long x = l; x <= r; ++x) ans = max(ans, f(x));
+\end{lstlisting}
+
+\section{5. 贪心}\label{ux8d2aux5fc3}
+
+\subsection{5.1 典型证明模式}\label{ux5178ux578bux8bc1ux660eux6a21ux5f0f}
+
+\begin{itemize}
+\tightlist
+\item
+  区间调度：按右端点升序，选最早结束的可行区间；交换任意最优解的第一个区间即可证明。
+\item
+  最小生成树：割性质/环性质。
+\item
+  Huffman：每次合并最小的两个权值（最优前缀码、合并果子）。
+\item
+  任务排序：按截止时间、比值、边际收益排序，必须写出交换论证，不要凭直觉。
+\end{itemize}
+
+\begin{lstlisting}[language={C++}]
+sort(intervals.begin(), intervals.end(),
+     [](auto &x, auto &y) { return x.second < y.second; });
+int last = numeric_limits<int>::min(), chosen = 0;
+for (auto [l, r] : intervals) {
+    if (l >= last) last = r, ++chosen;
+}
+\end{lstlisting}
+
+\subsection{5.2 反悔贪心}\label{ux53cdux6094ux8d2aux5fc3}
+
+先按某个顺序加入方案，用堆保存可撤销元素；若当前超限，撤掉代价最大/收益最小者。常见于``最多完成多少任务''\,``带截止时间的作业选择''。
+
+\begin{lstlisting}[language={C++}]
+sort(jobs.begin(), jobs.end(),
+     [](auto &x, auto &y) { return x.deadline < y.deadline; });
+priority_queue<int> chosen;
+for (auto job : jobs) {
+    chosen.push(job.cost);
+    if ((int)chosen.size() > job.deadline) chosen.pop();
+}
+\end{lstlisting}
+
+\subsection{5.3 差分约束式贪心}\label{ux5deeux5206ux7ea6ux675fux5f0fux8d2aux5fc3}
+
+``每个位置至少/至多''\,``相邻差不超过''等限制有时可从左到右维护最小需求，再从右到左修正；若约束包含图上的环，转为最短路/最长路更可靠。
+
+\begin{lstlisting}[language={C++}]
+// x[v] <= x[u] + w；无解等价于存在可达负环
+struct Edge { int v, w; };
+vector<vector<Edge>> g(n);
+vector<long long> d(n, 0);
+vector<int> inq(n), pushed(n);
+queue<int> q;
+for (int s = 0; s < n; ++s) q.push(s), inq[s] = 1;
+bool ok = true;
+while (!q.empty() && ok) {
+    int u = q.front(); q.pop(); inq[u] = 0;
+    for (auto [v, w] : g[u]) if (d[v] > d[u] + w) {
+        d[v] = d[u] + w;
+        if (++pushed[v] > n) { ok = false; break; }
+        if (!inq[v]) q.push(v), inq[v] = 1;
+    }
+}
+\end{lstlisting}
+
+\section{6. 单调栈与单调队列}\label{ux5355ux8c03ux6808ux4e0eux5355ux8c03ux961fux5217}
+
+\subsection{单调栈}\label{ux5355ux8c03ux6808}
+
+维护栈内下标对应值单调。遇到更小/更大元素时弹栈，弹出元素的右侧第一个更小/更大位置被确定。应用：下一个更大元素、柱状图最大矩形、最大子矩形、贡献法统计子数组最小值。
+
+\begin{lstlisting}[language={C++}]
+vector<int> nextGreater(n, -1), st;
+for (int i = 0; i < n; ++i) {
+    while (!st.empty() && a[st.back()] < a[i])
+        nextGreater[st.back()] = i, st.pop_back();
+    st.push_back(i);
+}
+\end{lstlisting}
+
+\subsection{单调队列}\label{ux5355ux8c03ux961fux5217}
+
+队首始终是窗口最优值，队尾删除不可能成为最优的元素。应用：滑动窗口最值、DP 转移 \passthrough{\lstinline!dp[i]=min(dp[j])+w(i)!}、有长度限制的最短/最长子数组。
+
+\begin{lstlisting}[language={C++}]
+deque<int> q;
+for (int i = 0; i < n; ++i) {
+    while (!q.empty() && q.front() <= i - k) q.pop_front();
+    while (!q.empty() && a[q.back()] <= a[i]) q.pop_back();
+    q.push_back(i);
+    if (i >= k - 1) answer.push_back(a[q.front()]);
+}
+\end{lstlisting}
+
+\section{7. 离散化与坐标压缩}\label{ux79bbux6563ux5316ux4e0eux5750ux6807ux538bux7f29}
+
+收集所有会出现的坐标，排序去重，用 \passthrough{\lstinline!lower\_bound!} 映射。若区间端点表示连续长度，通常还要把 \passthrough{\lstinline!x!} 与 \passthrough{\lstinline!x+1!} 或相邻端点间距保留，避免把长区间压成一个点。值域大、操作数小的线段树/树状数组必须先离散化。
+
+\begin{lstlisting}[language={C++}]
+vector<long long> xs = coordinates;
+sort(xs.begin(), xs.end());
+xs.erase(unique(xs.begin(), xs.end()), xs.end());
+auto id = [&](long long x) {
+    return int(lower_bound(xs.begin(), xs.end(), x) - xs.begin()) + 1;
+};
+\end{lstlisting}
+
+\section{8. 位运算与异或}\label{ux4f4dux8fd0ux7b97ux4e0eux5f02ux6216}
+
+\begin{itemize}
+\tightlist
+\item
+  \passthrough{\lstinline!x \& -x!}：最低位的 \passthrough{\lstinline!1!}；Fenwick 跳跃依赖此性质。
+\item
+  \passthrough{\lstinline!\_\_builtin\_popcountll(x)!}：1 的个数。
+\item
+  枚举子集：\passthrough{\lstinline!sub=(sub-1)\&mask!}。
+\item
+  异或满足交换律、结合律、自反性；``除一个数外都出现两次''直接全体异或。
+\item
+  线性基：维护若干最高位不同的向量，支持最大异或、判断可表示、计数不同异或值；见 \href{08-进阶专题.md}{08-进阶专题}。
+\end{itemize}
+
+\section{9. 常见构造套路}\label{ux5e38ux89c1ux6784ux9020ux5957ux8def}
+
+\begin{itemize}
+\tightlist
+\item
+  先处理奇偶、余数、最大值/最小值等不变量。
+\item
+  需要构造排列时，优先考虑循环移位、两端放置、按奇偶分组。
+\item
+  证明``无解''时找模数、颜色、度数、连通性或总和不变量。
+\item
+  证明``总能构造''时给出明确操作顺序，并说明每一步都保持前置条件。
+\end{itemize}
+
+\begin{lstlisting}[language={C++}]
+// 常见构造：把 1..n 按奇偶分组输出
+vector<int> ans;
+for (int x = 1; x <= n; x += 2) ans.push_back(x);
+for (int x = 2; x <= n; x += 2) ans.push_back(x);
+\end{lstlisting}
+
+\chapter{02. 数学与数论}\label{ux6570ux5b66ux4e0eux6570ux8bba}
+
+\section{1. 模运算与快速幂}\label{ux6a21ux8fd0ux7b97ux4e0eux5febux901fux5e42}
+
+对质数/任意模数都成立：\passthrough{\lstinline!(a+b)\%p!}、\passthrough{\lstinline!(a-b+p)\%p!}、\passthrough{\lstinline!a*b\%p!}。除法不能直接取模，必须证明逆元存在。
+
+\begin{lstlisting}[language={C++}]
+long long qpow(long long a, long long e, long long mod) {
+    a %= mod; long long r = 1 % mod;
+    while (e) {
+        if (e & 1) r = (__int128)r * a % mod;
+        a = (__int128)a * a % mod; e >>= 1;
+    }
+    return r;
+}
+\end{lstlisting}
+
+\section{2. 最大公约数、扩展欧几里得与同余}\label{ux6700ux5927ux516cux7ea6ux6570ux6269ux5c55ux6b27ux51e0ux91ccux5f97ux4e0eux540cux4f59}
+
+\begin{lstlisting}[language={C++}]
+long long exgcd(long long a, long long b, long long &x, long long &y) {
+    if (!b) { x = 1; y = 0; return a; }
+    long long x1, y1, g = exgcd(b, a % b, x1, y1);
+    x = y1; y = x1 - (a / b) * y1; return g;
+}
+\end{lstlisting}
+
+解 \passthrough{\lstinline!ax ≡ b (mod m)!}：令 \passthrough{\lstinline!g=gcd(a,m)!}，若 \passthrough{\lstinline"b\%g!=0"} 无解；否则约去 \passthrough{\lstinline!g!}，用扩展欧几里得求一个解，通解模 \passthrough{\lstinline!m/g!}。
+
+中国剩余定理（互质模数）：\passthrough{\lstinline!x = Σ ai * Mi * inv(Mi mod mi) mod M!}。非互质模数用``合并两个同余方程''：检查差值能否被 \passthrough{\lstinline!gcd!} 整除，再扩展欧几里得求增量。
+
+\section{3. 质数与筛法}\label{ux8d28ux6570ux4e0eux7b5bux6cd5}
+
+\subsection{3.1 试除与质因数分解}\label{ux8bd5ux9664ux4e0eux8d28ux56e0ux6570ux5206ux89e3}
+
+试除到 \passthrough{\lstinline!i*i<=n!}，每次除尽；单个 \passthrough{\lstinline!n≤1e12!} 适用。若只需判质数，复杂度 \passthrough{\lstinline!O(√n)!}。
+
+\begin{lstlisting}[language={C++}]
+vector<pair<long long, int>> factor(long long n) {
+    vector<pair<long long, int>> res;
+    for (long long p = 2; p * p <= n; ++p) {
+        if (n % p) continue;
+        int e = 0;
+        while (n % p == 0) n /= p, ++e;
+        res.push_back({p, e});
+    }
+    if (n > 1) res.push_back({n, 1});
+    return res;
+}
+\end{lstlisting}
+
+\subsection{3.2 埃氏筛与线性筛}\label{ux57c3ux6c0fux7b5bux4e0eux7ebfux6027ux7b5b}
+
+埃氏筛复杂度 \passthrough{\lstinline!O(n log log n)!}；线性筛保证每个合数只被最小质因子筛一次，复杂度 \passthrough{\lstinline!O(n)!}，可同时求 \passthrough{\lstinline!phi!}、莫比乌斯等积性函数。
+
+\begin{lstlisting}[language={C++}]
+vector<int> primes, lp(N), phi(N);
+phi[1] = 1;
+for (int i = 2; i < N; ++i) {
+    if (!lp[i]) lp[i] = i, primes.push_back(i), phi[i] = i - 1;
+    for (int p : primes) {
+        if (p > lp[i] || 1LL * i * p >= N) break;
+        lp[i * p] = p;
+        if (p == lp[i]) phi[i * p] = phi[i] * p;
+        else phi[i * p] = phi[i] * (p - 1);
+    }
+}
+\end{lstlisting}
+
+\subsection{3.3 约数枚举与整除分块}\label{ux7ea6ux6570ux679aux4e3eux4e0eux6574ux9664ux5206ux5757}
+
+枚举约数成对出现，\passthrough{\lstinline!O(√n)!}。对 \passthrough{\lstinline!floor(n/i)!} 的求和，商相同的 \passthrough{\lstinline!i!} 区间为 \passthrough{\lstinline![i, n/(n/i)]!}，可在 \passthrough{\lstinline!O(√n)!} 个块内完成（数论分块）。
+
+\begin{lstlisting}[language={C++}]
+for (long long l = 1, r; l <= n; l = r + 1) {
+    long long quotient = n / l;
+    r = n / quotient;
+    // [l, r] 内 n / i 都等于 quotient
+    answer += (r - l + 1) * quotient;
+}
+\end{lstlisting}
+
+\section{4. 欧拉函数、莫比乌斯与积性函数}\label{ux6b27ux62c9ux51fdux6570ux83abux6bd4ux4e4cux65afux4e0eux79efux6027ux51fdux6570}
+
+\passthrough{\lstinline!φ(n)=n∏(1-1/p)!}。求单点先分解；求前缀用线性筛。
+
+莫比乌斯函数：\passthrough{\lstinline!μ(1)=1!}，含平方因子为 0，否则质因数个数奇偶决定 ±1。常见反演：若 \passthrough{\lstinline!f(n)=Σ\_\{d|n\}g(d)!}，则 \passthrough{\lstinline!g(n)=Σ\_\{d|n\} μ(d)f(n/d)!}。
+
+\begin{lstlisting}[language={C++}]
+vector<int> primes, lp(N), phi(N), mu(N);
+phi[1] = mu[1] = 1;
+for (int i = 2; i < N; ++i) {
+    if (!lp[i]) lp[i] = i, primes.push_back(i), phi[i] = i - 1, mu[i] = -1;
+    for (int p : primes) {
+        if (1LL * i * p >= N) break;
+        lp[i * p] = p;
+        if (p == lp[i]) {
+            phi[i * p] = phi[i] * p;
+            mu[i * p] = 0;
+            break;
+        }
+        phi[i * p] = phi[i] * (p - 1);
+        mu[i * p] = -mu[i];
+    }
+}
+\end{lstlisting}
+
+\section{5. 组合数与阶乘}\label{ux7ec4ux5408ux6570ux4e0eux9636ux4e58}
+
+\subsection{\texorpdfstring{5.1 质数模且 \texttt{n} 不大}{5.1 质数模且 n 不大}}\label{ux8d28ux6570ux6a21ux4e14-n-ux4e0dux5927}
+
+预处理 \passthrough{\lstinline!fac[i]!}、\passthrough{\lstinline!ifac[i]!}，\passthrough{\lstinline!C(n,k)=fac[n]ifac[k]ifac[n-k]!}，预处理 \passthrough{\lstinline!O(N)!}，查询 \passthrough{\lstinline!O(1)!}。
+
+\begin{lstlisting}[language={C++}]
+const long long MOD = 998244353;
+vector<long long> fac(N), ifac(N);
+fac[0] = 1;
+for (int i = 1; i < N; ++i) fac[i] = fac[i - 1] * i % MOD;
+ifac[N - 1] = qpow(fac[N - 1], MOD - 2, MOD);
+for (int i = N - 1; i; --i) ifac[i - 1] = ifac[i] * i % MOD;
+auto C = [&](int n, int k) -> long long {
+    if (k < 0 || k > n) return 0;
+    return fac[n] * ifac[k] % MOD * ifac[n - k] % MOD;
+};
+\end{lstlisting}
+
+\subsection{5.2 卢卡斯定理}\label{ux5362ux5361ux65afux5b9aux7406}
+
+质数 \passthrough{\lstinline!p!} 下：\passthrough{\lstinline!C(n,k) ≡ ∏ C(n\_i,k\_i) (mod p)!}，其中 \passthrough{\lstinline!n\_i,k\_i!} 是 \passthrough{\lstinline!p!} 进制位。适用于 \passthrough{\lstinline!n!} 很大、\passthrough{\lstinline!p!} 较小。
+
+\begin{lstlisting}[language={C++}]
+long long Csmall(long long n, long long k, long long p) {
+    if (k < 0 || k > n) return 0;
+    long long ans = 1;
+    for (long long i = 1; i <= k; ++i) {
+        ans = ans * (n - i + 1) % p;
+        ans = ans * qpow(i, p - 2, p) % p;
+    }
+    return ans;
+}
+long long lucas(long long n, long long k, long long p) {
+    if (!k) return 1;
+    return Csmall(n % p, k % p, p) * lucas(n / p, k / p, p) % p;
+}
+\end{lstlisting}
+
+\subsection{5.3 非质数模}\label{ux975eux8d28ux6570ux6a21}
+
+分解模数的质数幂，计算每个质数幂下的阶乘（跳过 \passthrough{\lstinline!p!} 因子），再用 CRT 合并。实现复杂且容易错，只有题目明确需要时使用。
+
+\begin{lstlisting}[language={C++}]
+// 合并 x = a1 (mod m1), x = a2 (mod m2)，允许模数不互质
+bool merge_congruence(long long a1, long long m1,
+                      long long a2, long long m2,
+                      long long &a, long long &m) {
+    long long x, y, g = exgcd(m1, m2, x, y);
+    long long d = a2 - a1;
+    if (d % g) return false;
+    long long mod = m2 / g;
+    long long t = (__int128)(d / g) * x % mod;
+    if (t < 0) t += mod;
+    m = m1 / g * m2;
+    a = (a1 + (__int128)m1 * t) % m;
+    if (a < 0) a += m;
+    return true;
+}
+\end{lstlisting}
+
+\section{6. 矩阵与线性递推}\label{ux77e9ux9635ux4e0eux7ebfux6027ux9012ux63a8}
+
+线性递推 \passthrough{\lstinline!f(n)=c1 f(n-1)+...+ck f(n-k)!} 可转为 \passthrough{\lstinline!k×k!} 矩阵快速幂，复杂度 \passthrough{\lstinline!O(k³ log n)!}；Fibonacci 为 \passthrough{\lstinline!2×2!}。矩阵乘法注意模乘溢出。
+
+\begin{lstlisting}[language={C++}]
+struct Mat {
+    int n; vector<vector<long long>> a;
+    Mat(int n, bool ident = false): n(n), a(n, vector<long long>(n)) {
+        if (ident) for (int i = 0; i < n; ++i) a[i][i] = 1;
+    }
+};
+Mat operator*(const Mat& A, const Mat& B) {
+    Mat C(A.n);
+    for (int i = 0; i < A.n; ++i)
+        for (int k = 0; k < A.n; ++k) if (A.a[i][k])
+            for (int j = 0; j < A.n; ++j)
+                C.a[i][j] = (C.a[i][j] + (__int128)A.a[i][k] * B.a[k][j]) % MOD;
+    return C;
+}
+Mat mpow(Mat a, long long e) {
+    Mat r(a.n, true);
+    while (e) { if (e & 1) r = r * a; a = a * a; e >>= 1; }
+    return r;
+}
+\end{lstlisting}
+
+\section{7. 容斥与组合计数}\label{ux5bb9ux65a5ux4e0eux7ec4ux5408ux8ba1ux6570}
+
+全集计数减去至少一个坏条件。\passthrough{\lstinline!n≤20!} 时枚举子集：
+
+\passthrough{\lstinline!ans = Σ (-1)\^\{|S|\} count(同时满足 S 中条件)!}。
+
+条件独立/按质因子分解时可用容斥；条件数量大时优先找补集、莫比乌斯反演或 DP。
+
+\begin{lstlisting}[language={C++}]
+long long ans = 0;
+for (int mask = 0; mask < (1 << m); ++mask) {
+    int bits = __builtin_popcount((unsigned)mask);
+    long long ways = count_satisfying(mask); // 同时满足 mask 中条件
+    ans += (bits & 1) ? -ways : ways;
+}
+\end{lstlisting}
+
+\section{8. 概率与期望}\label{ux6982ux7387ux4e0eux671fux671b}
+
+\begin{itemize}
+\tightlist
+\item
+  期望线性：\passthrough{\lstinline!E[X+Y]=E[X]+E[Y]!}，即使不独立也成立。
+\item
+  终止状态递推：\passthrough{\lstinline!E[state]=1+Σ p\_i E[next\_i]!}；若有自环移项并检查系数非零。
+\item
+  取模概率需要模逆；分母与模数不互质时不能直接除。
+\end{itemize}
+
+\begin{lstlisting}[language={C++}]
+double expected_dag(int u) {
+    if (vis[u]) return E[u];
+    vis[u] = true;
+    E[u] = 1.0; // 走一步
+    for (auto [v, p] : transitions[u]) E[u] += p * expected_dag(v);
+    return E[u];
+}
+\end{lstlisting}
+
+\section{9. 常见数列与技巧}\label{ux5e38ux89c1ux6570ux5217ux4e0eux6280ux5de7}
+
+\begin{itemize}
+\tightlist
+\item
+  等差/等比求和、前缀异或（周期 4）、\passthrough{\lstinline!1 xor ... xor n!}。
+\item
+  \passthrough{\lstinline!gcd(a,b)=gcd(a,b-a)!}；\passthrough{\lstinline!lcm(a,b)=a/gcd(a,b)*b!}。
+\item
+  斐波那契 gcd：\passthrough{\lstinline!gcd(F\_m,F\_n)=F\_gcd(m,n)!}（用于识别构造题）。
+\item
+  反复应用 \passthrough{\lstinline!x -> x/gcd(x,a)!} 时，质因数分解通常比模拟更快。
+\end{itemize}
+
+\begin{lstlisting}[language={C++}]
+long long xor_prefix(long long n) {
+    switch (n & 3) {
+        case 0: return n;
+        case 1: return 1;
+        case 2: return n + 1;
+        default: return 0;
+    }
+}
+
+pair<long long, long long> fib(long long n) { // (F_n, F_{n+1})
+    if (!n) return {0, 1};
+    auto [a, b] = fib(n >> 1);
+    long long c = a * (2 * b - a);
+    long long d = a * a + b * b;
+    return (n & 1) ? pair{d, c + d} : pair{c, d};
+}
+\end{lstlisting}
+
+\section{10. 生成函数基础}\label{ux751fux6210ux51fdux6570ux57faux7840}
+
+把数列 \passthrough{\lstinline!a\_n!} 视为形式幂级数 \passthrough{\lstinline!A(x)=Σa\_n x\^n!}。加法对应逐项相加，乘法对应卷积；\passthrough{\lstinline!1/(1-x)!} 是全 1 数列，\passthrough{\lstinline!1/(1-x)\^k!} 的系数是 \passthrough{\lstinline!C(n+k-1,k-1)!}。小规模直接卷积，规模大时换 NTT。
+
+\begin{lstlisting}[language={C++}]
+using Poly = vector<long long>;
+Poly multiply(const Poly& a, const Poly& b, long long MOD) {
+    Poly c(a.size() + b.size() - 1);
+    for (int i = 0; i < (int)a.size(); ++i)
+        for (int j = 0; j < (int)b.size(); ++j)
+            c[i + j] = (c[i + j] + a[i] * b[j]) % MOD;
+    return c;
+}
+
+// (1 + x + ... + x^m)^k 的系数：重复卷积或用 NTT 加速
+Poly ways(Poly base, int k, long long MOD) {
+    Poly ans{1};
+    while (k) {
+        if (k & 1) ans = multiply(ans, base, MOD);
+        k >>= 1;
+        if (k) base = multiply(base, base, MOD);
+    }
+    return ans;
+}
+\end{lstlisting}
+
+\section{11. Burnside / Pólya}\label{burnside-puxf3lya}
+
+Burnside 引理：轨道数等于所有群作用下不动点数的平均值。对``颜色数为 \passthrough{\lstinline!c!}、置换 \passthrough{\lstinline!p!} 作用于位置''的染色问题，不动点数为 \passthrough{\lstinline!c\^\{cycles(p)\}!}；模数需要能除以群大小。
+
+\begin{lstlisting}[language={C++}]
+long long mod_pow(long long a, long long e, long long mod) {
+    long long r = 1;
+    for (; e; e >>= 1, a = a * a % mod) if (e & 1) r = r * a % mod;
+    return r;
+}
+long long burnside(const vector<vector<int>>& group, int colors, long long MOD) {
+    long long sum = 0;
+    for (const auto& perm : group) {
+        int n = perm.size(), cycles = 0;
+        vector<char> vis(n);
+        for (int i = 0; i < n; ++i) if (!vis[i]) {
+            ++cycles;
+            for (int u = i; !vis[u]; u = perm[u]) vis[u] = true;
+        }
+        sum = (sum + mod_pow(colors, cycles, MOD)) % MOD;
+    }
+    return sum * mod_pow(group.size(), MOD - 2, MOD) % MOD;
+}
+\end{lstlisting}
+
+\section{12. Prüfer 序列与矩阵树定理}\label{pruxfcfer-ux5e8fux5217ux4e0eux77e9ux9635ux6811ux5b9aux7406}
+
+Prüfer 序列长度为 \passthrough{\lstinline!n-2!}，每棵标号树与一个序列一一对应；度数满足 \passthrough{\lstinline!deg[v]=出现次数+1!}。矩阵树定理把拉普拉斯矩阵删去一行一列后的行列式作为生成树数量。
+
+\begin{lstlisting}[language={C++}]
+vector<int> prufer_encode(const vector<vector<int>>& g) {
+    int n = g.size() - 1;
+    vector<int> deg(n + 1), code;
+    priority_queue<int, vector<int>, greater<int>> leaves;
+    for (int u = 1; u <= n; ++u) {
+        deg[u] = g[u].size();
+        if (deg[u] == 1) leaves.push(u);
+    }
+    for (int step = 0; step < n - 2; ++step) {
+        int leaf = leaves.top(); leaves.pop();
+        int v = 0;
+        for (int x : g[leaf]) if (deg[x]) { v = x; break; }
+        code.push_back(v);
+        if (--deg[v] == 1) leaves.push(v);
+        deg[leaf] = 0;
+    }
+    return code;
+}
+
+vector<pair<int, int>> prufer_decode(const vector<int>& code) {
+    int n = code.size() + 2;
+    vector<int> deg(n + 1, 1);
+    for (int x : code) ++deg[x];
+    priority_queue<int, vector<int>, greater<int>> leaves;
+    for (int i = 1; i <= n; ++i) if (deg[i] == 1) leaves.push(i);
+    vector<pair<int, int>> edges;
+    for (int x : code) {
+        int u = leaves.top(); leaves.pop(); edges.push_back({u, x});
+        if (--deg[x] == 1) leaves.push(x);
+    }
+    edges.push_back({leaves.top(), leaves.top()});
+    int u = leaves.top(); leaves.pop(); int v = leaves.top();
+    edges.back() = {u, v};
+    return edges;
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language={C++}]
+long long tree_count(vector<vector<long long>> lap, long long MOD) {
+    int n = lap.size(); long long det = 1;
+    for (int col = 0; col < n; ++col) {
+        int pivot = col;
+        while (pivot < n && lap[pivot][col] % MOD == 0) ++pivot;
+        if (pivot == n) return 0;
+        if (pivot != col) swap(lap[pivot], lap[col]), det = (MOD - det) % MOD;
+        det = det * (lap[col][col] % MOD + MOD) % MOD;
+        long long inv = mod_pow((lap[col][col] % MOD + MOD) % MOD, MOD - 2, MOD);
+        for (int i = col + 1; i < n; ++i) {
+            long long factor = lap[i][col] % MOD * inv % MOD;
+            for (int j = col; j < n; ++j)
+                lap[i][j] = (lap[i][j] - factor * lap[col][j]) % MOD;
+        }
+    }
+    return (det + MOD) % MOD;
+}
+// 调用时传入删除一行一列后的拉普拉斯矩阵。
+\end{lstlisting}
+
+\section{13. 二次剩余}\label{ux4e8cux6b21ux5269ux4f59}
+
+Legendre 符号判断 \passthrough{\lstinline!a!} 是否为模奇素数 \passthrough{\lstinline!p!} 的二次剩余；Tonelli--Shanks 在存在平方根时以 \passthrough{\lstinline!O(log²p)!} 求出一个根。
+
+\begin{lstlisting}[language={C++}]
+long long legendre(long long a, long long p) {
+    a %= p; if (a < 0) a += p;
+    if (!a) return 0;
+    long long x = mod_pow(a, (p - 1) / 2, p);
+    return x == 1 ? 1 : -1;
+}
+
+long long tonelli_shanks(long long n, long long p) {
+    n %= p; if (!n) return 0;
+    if (p == 2) return n;
+    if (legendre(n, p) != 1) return -1;
+    if (p % 4 == 3) return mod_pow(n, (p + 1) / 4, p);
+    long long q = p - 1, s = 0;
+    while (!(q & 1)) q >>= 1, ++s;
+    long long z = 2;
+    while (legendre(z, p) != -1) ++z;
+    long long c = mod_pow(z, q, p), x = mod_pow(n, (q + 1) / 2, p);
+    long long t = mod_pow(n, q, p), m = s;
+    while (t != 1) {
+        long long i = 1, tt = t * t % p;
+        while (tt != 1) tt = tt * tt % p, ++i;
+        long long b = mod_pow(c, 1LL << (m - i - 1), p);
+        x = x * b % p; c = b * b % p; t = t * c % p; m = i;
+    }
+    return x;
+}
+\end{lstlisting}
+
+费马小定理：\passthrough{\lstinline!a\^(p-1) ≡ 1 (mod p)!}（\passthrough{\lstinline!p!} 质数且 \passthrough{\lstinline"p !| a"}），逆元为 \passthrough{\lstinline!a\^(p-2)!}。欧拉定理推广到 \passthrough{\lstinline!gcd(a,m)=1!}：\passthrough{\lstinline!a\^φ(m) ≡ 1 (mod m)!}。
+
+\chapter{03. 数据结构}\label{ux6570ux636eux7ed3ux6784}
+
+\section{1. STL 必会组件}\label{stl-ux5fc5ux4f1aux7ec4ux4ef6}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+需求 & 容器/算法 & 复杂度 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+动态数组 & \passthrough{\lstinline!vector!} & 末尾均摊 \passthrough{\lstinline!O(1)!}，随机访问 \passthrough{\lstinline!O(1)!} \\
+双端队列 & \passthrough{\lstinline!deque!} & 两端 \passthrough{\lstinline!O(1)!} \\
+栈/队列 & \passthrough{\lstinline!stack!} / \passthrough{\lstinline!queue!} & \passthrough{\lstinline!O(1)!} \\
+优先队列 & \passthrough{\lstinline!priority\_queue!} & 插入/删除顶 \passthrough{\lstinline!O(log n)!} \\
+有序集合 & \passthrough{\lstinline!set!} / \passthrough{\lstinline!multiset!} & 增删查 \passthrough{\lstinline!O(log n)!} \\
+有序键值 & \passthrough{\lstinline!map!} & \passthrough{\lstinline!O(log n)!} \\
+哈希键值 & \passthrough{\lstinline!unordered\_map!} & 期望 \passthrough{\lstinline!O(1)!}，最坏可能退化 \\
+去重/计数 & \passthrough{\lstinline!sort!} + \passthrough{\lstinline!unique!} / \passthrough{\lstinline!map!} & \passthrough{\lstinline!O(n log n)!} \\
+\end{longtable}
+
+\passthrough{\lstinline!set!} 的 \passthrough{\lstinline!lower\_bound!}、\passthrough{\lstinline!priority\_queue<pair<...>>!} 的字典序比较必须熟练。
+
+\passthrough{\lstinline!multiset::erase(iterator)!} 与 \passthrough{\lstinline!erase(value)!} 的差别也要注意。
+
+\begin{lstlisting}[language={C++}]
+vector<int> a = input;
+sort(a.begin(), a.end());
+a.erase(unique(a.begin(), a.end()), a.end());
+priority_queue<pair<int, int>> pq;
+for (int i = 0; i < n; ++i) pq.push({value[i], i});
+while (!pq.empty()) {
+    auto [value, id] = pq.top(); pq.pop();
+    // 处理当前最大值；必要时用 version[id] 判断是否过期
+}
+\end{lstlisting}
+
+\section{2. 并查集（DSU）}\label{ux5e76ux67e5ux96c6dsu}
+
+维护若干不相交集合，支持合并和查询连通性。路径压缩 + 按大小合并后，单次摊销 \passthrough{\lstinline!O(α(n))!}。
+
+可扩展：维护集合大小、权值和、到父亲的距离/奇偶、撤销栈。带权并查集常用于维护 \passthrough{\lstinline!dist[x]-dist[y]=w!} 或敌友关系。
+
+\begin{lstlisting}[language={C++}]
+struct DSU {
+    vector<int> p, sz;
+    DSU(int n): p(n + 1), sz(n + 1, 1) { iota(p.begin(), p.end(), 0); }
+    int find(int x) { return p[x] == x ? x : p[x] = find(p[x]); }
+    bool unite(int a, int b) {
+        a = find(a); b = find(b); if (a == b) return false;
+        if (sz[a] < sz[b]) swap(a, b);
+        p[b] = a; sz[a] += sz[b]; return true;
+    }
+};
+\end{lstlisting}
+
+Kruskal、离线加边、连通块统计、最小生成树、带限制的图连通性都优先考虑 DSU。
+
+\section{3. 树状数组（Fenwick）}\label{ux6811ux72b6ux6570ux7ec4fenwick}
+
+支持单点加、前缀和、区间和，\passthrough{\lstinline!O(log n)!}；空间 \passthrough{\lstinline!O(n)!}。通过差分可支持区间加/单点查；两棵树可支持区间加/区间和。下标必须从 1 开始。
+
+\begin{lstlisting}[language={C++}]
+struct BIT {
+    int n; vector<long long> t;
+    BIT(int n): n(n), t(n + 1) {}
+    void add(int x, long long v) { for (; x <= n; x += x & -x) t[x] += v; }
+    long long sum(int x) const { long long r = 0; for (; x; x -= x & -x) r += t[x]; return r; }
+    long long range(int l, int r) const { return sum(r) - sum(l - 1); }
+};
+\end{lstlisting}
+
+应用：逆序对、动态排名、离线矩形计数、二维偏序（配合 CDQ/排序）、第 k 个值（二进制提升）。
+
+\section{4. 线段树}\label{ux7ebfux6bb5ux6811}
+
+支持任意可合并区间信息。节点存区间答案，\passthrough{\lstinline!push\_up!} 合并左右儿子；区间修改要有懒标记并在访问子节点前 \passthrough{\lstinline!push\_down!}。
+
+\subsection{4.1 常见维护}\label{ux5e38ux89c1ux7ef4ux62a4}
+
+\begin{itemize}
+\tightlist
+\item
+  区间和 + 区间加：标记加法，子节点和增加 \passthrough{\lstinline!tag * len!}。
+\item
+  区间和 + 区间乘/加：标记为仿射变换 \passthrough{\lstinline!x -> mul*x+add!}，下传时 \passthrough{\lstinline!add = add*mul\_parent + add\_parent!}。
+\item
+  区间最值 + 区间加：维护最大/最小值及懒加。
+\item
+  区间赋值：赋值标记覆盖旧加法；标记优先级必须明确。
+\item
+  扫描线：维护每个离散小区间是否被覆盖，保存 \passthrough{\lstinline!cover!} 与 \passthrough{\lstinline!len!}。
+\end{itemize}
+
+复杂度：建树 \passthrough{\lstinline!O(n)!}，单次查询/修改 \passthrough{\lstinline!O(log n)!}。只要操作满足结合律，可把节点信息设计成结构体。
+
+\begin{lstlisting}[language={C++}]
+struct SegTree {
+    int n; vector<long long> sum, lazy;
+    SegTree(int n): n(n), sum(4 * n + 4), lazy(4 * n + 4) {}
+    void apply(int p, int l, int r, long long v) {
+        sum[p] += v * (r - l + 1); lazy[p] += v;
+    }
+    void push(int p, int l, int r) {
+        if (!lazy[p] || l == r) return;
+        int m = (l + r) / 2;
+        apply(p * 2, l, m, lazy[p]);
+        apply(p * 2 + 1, m + 1, r, lazy[p]);
+        lazy[p] = 0;
+    }
+    void add(int p, int l, int r, int ql, int qr, long long v) {
+        if (ql <= l && r <= qr) return apply(p, l, r, v);
+        push(p, l, r); int m = (l + r) / 2;
+        if (ql <= m) add(p * 2, l, m, ql, qr, v);
+        if (qr > m) add(p * 2 + 1, m + 1, r, ql, qr, v);
+        sum[p] = sum[p * 2] + sum[p * 2 + 1];
+    }
+    long long query(int p, int l, int r, int ql, int qr) {
+        if (ql <= l && r <= qr) return sum[p];
+        push(p, l, r); int m = (l + r) / 2; long long ans = 0;
+        if (ql <= m) ans += query(p * 2, l, m, ql, qr);
+        if (qr > m) ans += query(p * 2 + 1, m + 1, r, ql, qr);
+        return ans;
+    }
+};
+\end{lstlisting}
+
+\subsection{4.2 线段树上的二分}\label{ux7ebfux6bb5ux6811ux4e0aux7684ux4e8cux5206}
+
+维护区间和/最大值时，可从根向下找``第一个满足条件的位置''，每层只走一个孩子，\passthrough{\lstinline!O(log n)!}，比外层二分 + 查询更快。
+
+\begin{lstlisting}[language={C++}]
+int first_at_least(int p, int l, int r, long long x) {
+    if (tree[p] < x) return -1;
+    if (l == r) return l;
+    int m = (l + r) / 2;
+    if (tree[p * 2] >= x) return first_at_least(p * 2, l, m, x);
+    return first_at_least(p * 2 + 1, m + 1, r, x);
+}
+
+## 5. Sparse Table（ST 表）
+
+静态数组的幂等运算（min/max/gcd/and/or）预处理 `O(n log n)`，查询 `O(1)`：
+
+`k=floor(log2(len))`，答案为 `merge(st[k][l], st[k][r-2^k+1])`。不可用于 sum 这类非幂等运算（重叠会重复计数）。
+
+```cpp
+int K = __lg(n);
+vector<vector<int>> st(K + 1, vector<int>(n));
+st[0] = a;
+for (int j = 1; j <= K; ++j)
+    for (int i = 0; i + (1 << j) <= n; ++i)
+        st[j][i] = min(st[j - 1][i], st[j - 1][i + (1 << (j - 1))]);
+auto range_min = [&](int l, int r) {
+    int k = __lg(r - l + 1);
+    return min(st[k][l], st[k][r - (1 << k) + 1]);
+};
+\end{lstlisting}
+
+\section{6. 堆与可并堆思想}\label{ux5806ux4e0eux53efux5e76ux5806ux601dux60f3}
+
+\passthrough{\lstinline!priority\_queue!} 用于每步取最小/最大。双堆维护中位数（小根维护大半边，大根维护小半边）。懒删除：堆中保留旧值，弹出时与当前版本/计数比对。
+
+左偏树/可并堆支持两个堆合并，合并复杂度 \passthrough{\lstinline!O(log n)!}；题目要求``合并集合并取最值''时考虑。斜堆实现更短但无严格最坏保证。
+
+\begin{lstlisting}[language={C++}]
+priority_queue<int> low; // 小的一半，堆顶是最大值
+priority_queue<int, vector<int>, greater<int>> high;
+void add_number(int x) {
+    if (low.empty() || x <= low.top()) low.push(x); else high.push(x);
+    if (low.size() > high.size() + 1) high.push(low.top()), low.pop();
+    if (high.size() > low.size()) low.push(high.top()), high.pop();
+}
+int median() { return low.top(); }
+\end{lstlisting}
+
+\section{7. 单调结构与差分约束}\label{ux5355ux8c03ux7ed3ux6784ux4e0eux5deeux5206ux7ea6ux675f}
+
+单调栈/队列见 \href{01-基础与实现规范.md}{01-基础与实现规范}。双端队列还能实现 0-1 BFS：边权 0 从队首加入，边权 1 从队尾加入。
+
+\begin{lstlisting}[language={C++}]
+vector<int> dist(n, INF);
+deque<int> q;
+dist[s] = 0; q.push_front(s);
+while (!q.empty()) {
+    int u = q.front(); q.pop_front();
+    for (auto [v, w] : g[u]) {
+        if (dist[v] <= dist[u] + w) continue;
+        dist[v] = dist[u] + w;
+        if (w == 0) q.push_front(v);
+        else q.push_back(v);
+    }
+}
+\end{lstlisting}
+
+\section{8. Trie 与字典树}\label{trie-ux4e0eux5b57ux5178ux6811}
+
+字符集固定时数组儿子最快；动态字符集用 \passthrough{\lstinline!map!}。插入/查询长度 \passthrough{\lstinline!L!} 的字符串均为 \passthrough{\lstinline!O(L)!}。二进制 Trie 支持最大异或、区间内最大异或（结合持久化或离线前缀）。
+
+\begin{lstlisting}[language={C++}]
+struct BinaryTrie {
+    int ch[200000][2]{}, cnt[200000]{}, nodes = 1;
+    void insert(int x) {
+        int u = 1; ++cnt[u];
+        for (int b = 30; b >= 0; --b) {
+            int bit = (x >> b) & 1;
+            if (!ch[u][bit]) ch[u][bit] = ++nodes;
+            u = ch[u][bit]; ++cnt[u];
+        }
+    }
+    int max_xor(int x) {
+        int u = 1, ans = 0;
+        for (int b = 30; b >= 0; --b) {
+            int bit = (x >> b) & 1;
+            if (ch[u][bit ^ 1] && cnt[ch[u][bit ^ 1]])
+                ans |= 1 << b, u = ch[u][bit ^ 1];
+            else u = ch[u][bit];
+        }
+        return ans;
+    }
+};
+\end{lstlisting}
+
+\section{9. 可持久化数据结构}\label{ux53efux6301ux4e45ux5316ux6570ux636eux7ed3ux6784}
+
+每次修改只复制从根到叶子的 \passthrough{\lstinline!O(log n)!} 个节点，旧版本仍可查询。主席树（可持久化权值线段树）用于静态区间第 k 小：\passthrough{\lstinline!root[r] - root[l-1]!} 在树上同步下行，\passthrough{\lstinline!O(log V)!}。注意节点池容量约为 \passthrough{\lstinline!版本数 × log V!}。
+
+\begin{lstlisting}[language={C++}]
+struct Node { int l = 0, r = 0, sum = 0; } tr[4000000];
+int tot = 0;
+int update(int old, int l, int r, int pos) {
+    int now = ++tot; tr[now] = tr[old]; ++tr[now].sum;
+    if (l != r) {
+        int m = (l + r) / 2;
+        if (pos <= m) tr[now].l = update(tr[old].l, l, m, pos);
+        else tr[now].r = update(tr[old].r, m + 1, r, pos);
+    }
+    return now;
+}
+int kth(int u, int v, int l, int r, int k) {
+    if (l == r) return l;
+    int left_count = tr[tr[v].l].sum - tr[tr[u].l].sum;
+    int m = (l + r) / 2;
+    if (k <= left_count) return kth(tr[u].l, tr[v].l, l, m, k);
+    return kth(tr[u].r, tr[v].r, m + 1, r, k - left_count);
+}
+\end{lstlisting}
+
+\section{10. 分块与莫队}\label{ux5206ux5757ux4e0eux83abux961f}
+
+\subsection{10.1 块状数组}\label{ux5757ux72b6ux6570ux7ec4}
+
+把数组分成 \passthrough{\lstinline!√n!} 块，块内暴力、块间整块处理；区间加/区间和约 \passthrough{\lstinline!O(√n)!}。适合操作复杂、难以线段树维护的信息。
+
+\begin{lstlisting}[language={C++}]
+int B = max(1, (int)sqrt(n));
+vector<long long> a(n), tag((n + B - 1) / B);
+void add(int l, int r, long long v) {
+    int bl = l / B, br = r / B;
+    if (bl == br) { for (int i = l; i <= r; ++i) a[i] += v; return; }
+    for (int i = l; i < (bl + 1) * B; ++i) a[i] += v;
+    for (int b = bl + 1; b < br; ++b) tag[b] += v;
+    for (int i = br * B; i <= r; ++i) a[i] += v;
+}
+\end{lstlisting}
+
+\subsection{10.2 莫队}\label{ux83abux961f}
+
+离线排序询问的左右端点，维护当前区间并增删元素；移动总复杂度约 \passthrough{\lstinline!O((n+q)√n)!}。需要可逆的 \passthrough{\lstinline!add/remove!}，如频次、不同数个数、答案贡献。带修改莫队多一个时间维，块大小约 \passthrough{\lstinline!n\^(2/3)!}。
+
+\begin{lstlisting}[language={C++}]
+int block;
+struct Query { int l, r, id; };
+sort(qs.begin(), qs.end(), [&](const Query& x, const Query& y) {
+    int bx = x.l / block, by = y.l / block;
+    if (bx != by) return bx < by;
+    return (bx & 1) ? x.r > y.r : x.r < y.r;
+});
+int L = 0, R = -1, distinct = 0;
+auto add = [&](int p) { if (++cnt[a[p]] == 1) ++distinct; };
+auto remove = [&](int p) { if (--cnt[a[p]] == 0) --distinct; };
+for (auto qu : qs) {
+    while (L > qu.l) add(--L); while (R < qu.r) add(++R);
+    while (L < qu.l) remove(L++); while (R > qu.r) remove(R--);
+    answer[qu.id] = distinct;
+}
+\end{lstlisting}
+
+\section{11. 平衡树思想（了解 Treap）}\label{ux5e73ux8861ux6811ux601dux60f3ux4e86ux89e3-treap}
+
+随机优先级的 BST，支持按键插入、删除、排名、第 k 小、分裂/合并，期望 \passthrough{\lstinline!O(log n)!}。无序序列维护时使用 FHQ Treap，节点存子树大小、区间反转标记、区间和/最大值。需要严格稳定最坏复杂度时优先线段树或 \passthrough{\lstinline!std::set!}。
+
+\begin{lstlisting}[language={C++}]
+struct Node { int l, r, key, pri, sz; } tr[MAXN];
+int root, tot;
+int size(int u) { return u ? tr[u].sz : 0; }
+void pull(int u) { tr[u].sz = size(tr[u].l) + size(tr[u].r) + 1; }
+void split(int u, int key, int &x, int &y) {
+    if (!u) return x = y = 0, void();
+    if (tr[u].key <= key) split(tr[u].r, key, tr[u].r, y), x = u;
+    else split(tr[u].l, key, x, tr[u].l), y = u;
+    pull(u);
+}
+int merge(int x, int y) {
+    if (!x || !y) return x ? x : y;
+    if (tr[x].pri > tr[y].pri) return tr[x].r = merge(tr[x].r, y), pull(x), x;
+    return tr[y].l = merge(x, tr[y].l), pull(y), y;
+}
+\end{lstlisting}
+
+\section{12. 撤销与可回滚结构}\label{ux64a4ux9500ux4e0eux53efux56deux6edaux7ed3ux6784}
+
+不做路径压缩的 DSU 可用栈记录每次修改，支持回滚到快照 \passthrough{\lstinline!O(log n)!} 合并、\passthrough{\lstinline!O(1)!} 回滚；配合线段树分治时间解决``边在一段时间内存在''的动态连通性。
+
+\begin{lstlisting}[language={C++}]
+struct RollbackDSU {
+    vector<int> p, sz; vector<pair<int, int>> hist;
+    RollbackDSU(int n): p(n + 1), sz(n + 1, 1) { iota(p.begin(), p.end(), 0); }
+    int find(int x) { while (x != p[x]) x = p[x]; return x; }
+    int snapshot() { return hist.size(); }
+    bool unite(int a, int b) {
+        a = find(a); b = find(b); if (a == b) return false;
+        if (sz[a] < sz[b]) swap(a, b);
+        hist.push_back({b, sz[a]}); p[b] = a; sz[a] += sz[b]; return true;
+    }
+    void rollback(int snap) {
+        while ((int)hist.size() > snap) {
+            auto [b, old] = hist.back(); hist.pop_back();
+            sz[p[b]] = old; p[b] = b;
+        }
+    }
+};
+\end{lstlisting}
+
+\section{13. 李超线段树}\label{ux674eux8d85ux7ebfux6bb5ux6811}
+
+维护直线集合在离散/整数横坐标上的最值。每个节点保存当前区间中在中点最优的直线，递归把另一条直线送入可能胜出的子区间；插入和查询均为 \passthrough{\lstinline!O(log V)!}。
+
+\begin{lstlisting}[language={C++}]
+struct LiChao {
+    using ll = long long;
+    struct Line {
+        ll k = 0, b = (ll)4e18;
+        ll get(ll x) const { return k * x + b; }
+    };
+    int L, R;
+    vector<Line> tr;
+    LiChao(int L, int R): L(L), R(R), tr(4 * (R - L + 1)) {}
+
+    void add_line(Line nw, int p, int l, int r) {
+        int m = (l + r) / 2;
+        bool lef = nw.get(l) < tr[p].get(l);
+        bool mid = nw.get(m) < tr[p].get(m);
+        if (mid) swap(nw, tr[p]);
+        if (l == r) return;
+        if (lef != mid) add_line(nw, p * 2, l, m);
+        else add_line(nw, p * 2 + 1, m + 1, r);
+    }
+    void add_line(ll k, ll b) { add_line({k, b}, 1, L, R); }
+
+    ll query(ll x, int p, int l, int r) const {
+        ll ans = tr[p].get(x);
+        if (l == r) return ans;
+        int m = (l + r) / 2;
+        if (x <= m) return min(ans, query(x, p * 2, l, m));
+        return min(ans, query(x, p * 2 + 1, m + 1, r));
+    }
+    ll query(ll x) const { return query(x, 1, L, R); }
+};
+\end{lstlisting}
+
+求最大值时把比较符号整体反向；若横坐标不是连续整数，先离散化所有查询点。
+
+\section{14. Segment Tree Beats}\label{segment-tree-beats}
+
+``区间取 \passthrough{\lstinline!min!} + 区间和/最大值''不能用普通懒标记，因为只有当前最大值会被压低。维护最大值、次大值、最大值出现次数和区间和；当 \passthrough{\lstinline!x!} 严格大于次大值时可以整段打标记。
+
+\begin{lstlisting}[language={C++}]
+struct SegBeats {
+    using ll = long long;
+    static constexpr ll NEG = -(1LL << 60);
+    int n;
+    vector<ll> sum, mx, second_mx;
+    vector<int> cnt_mx;
+    SegBeats(const vector<ll>& a): n((int)a.size() - 1),
+        sum(4 * n + 4), mx(4 * n + 4), second_mx(4 * n + 4),
+        cnt_mx(4 * n + 4) { build(1, 1, n, a); }
+
+    void pull(int p) {
+        sum[p] = sum[p * 2] + sum[p * 2 + 1];
+        if (mx[p * 2] == mx[p * 2 + 1]) {
+            mx[p] = mx[p * 2]; cnt_mx[p] = cnt_mx[p * 2] + cnt_mx[p * 2 + 1];
+            second_mx[p] = max(second_mx[p * 2], second_mx[p * 2 + 1]);
+        } else {
+            int x = p * 2, y = p * 2 + 1;
+            if (mx[x] < mx[y]) swap(x, y);
+            mx[p] = mx[x]; cnt_mx[p] = cnt_mx[x];
+            second_mx[p] = max(second_mx[x], mx[y]);
+        }
+    }
+    void build(int p, int l, int r, const vector<ll>& a) {
+        if (l == r) {
+            sum[p] = mx[p] = a[l]; second_mx[p] = NEG; cnt_mx[p] = 1;
+            return;
+        }
+        int m = (l + r) / 2;
+        build(p * 2, l, m, a); build(p * 2 + 1, m + 1, r, a); pull(p);
+    }
+    void apply_chmin(int p, ll x) {
+        if (x >= mx[p]) return;
+        sum[p] -= (mx[p] - x) * cnt_mx[p];
+        mx[p] = x;
+    }
+    void push(int p) {
+        if (mx[p * 2] > mx[p]) apply_chmin(p * 2, mx[p]);
+        if (mx[p * 2 + 1] > mx[p]) apply_chmin(p * 2 + 1, mx[p]);
+    }
+    void chmin(int p, int l, int r, int ql, int qr, ll x) {
+        if (qr < l || r < ql || x >= mx[p]) return;
+        if (ql <= l && r <= qr && x > second_mx[p]) return apply_chmin(p, x);
+        push(p); int m = (l + r) / 2;
+        chmin(p * 2, l, m, ql, qr, x);
+        chmin(p * 2 + 1, m + 1, r, ql, qr, x); pull(p);
+    }
+    ll query_sum(int p, int l, int r, int ql, int qr) {
+        if (qr < l || r < ql) return 0;
+        if (ql <= l && r <= qr) return sum[p];
+        push(p); int m = (l + r) / 2;
+        return query_sum(p * 2, l, m, ql, qr)
+             + query_sum(p * 2 + 1, m + 1, r, ql, qr);
+    }
+    void chmin(int l, int r, ll x) { chmin(1, 1, n, l, r, x); }
+    ll query_sum(int l, int r) { return query_sum(1, 1, n, l, r); }
+};
+\end{lstlisting}
+
+\chapter{04. 图论}\label{ux56feux8bba}
+
+\section{1. 图的表示与基础遍历}\label{ux56feux7684ux8868ux793aux4e0eux57faux7840ux904dux5386}
+
+稀疏图用邻接表，边结构保存 \passthrough{\lstinline!to, weight, id!}；需要删除/反向边时给每条有向边保存反向边下标。无向边应添加两条边。网格可把 \passthrough{\lstinline!(x,y)!} 映射为 \passthrough{\lstinline!x*m+y!}，或直接四方向 BFS。
+
+DFS 可求连通块、染色、子树大小、DFS 序、树高；BFS 求无权最短路和层数。递归 DFS 在 \passthrough{\lstinline!n≈2e5!} 时可能爆栈，改手写栈或提高栈空间。
+
+\begin{lstlisting}[language={C++}]
+vector<vector<int>> g(n);
+vector<int> dist(n, -1);
+queue<int> q;
+dist[s] = 0; q.push(s);
+while (!q.empty()) {
+    int u = q.front(); q.pop();
+    for (int v : g[u]) if (dist[v] == -1)
+        dist[v] = dist[u] + 1, q.push(v);
+}
+\end{lstlisting}
+
+\section{2. 拓扑排序与 DAG}\label{ux62d3ux6251ux6392ux5e8fux4e0e-dag}
+
+Kahn：把入度为 0 的点入队，删除出边；处理点数小于 \passthrough{\lstinline!V!} 说明有环。DFS 三色标记也能判环。DAG 上按拓扑序做最长路/最短路、路径计数、DP；多源最短路可把所有源同时入队。
+
+关键路径：\passthrough{\lstinline!earliest[v] = max(earliest[v], earliest[u]+w)!}。若要恢复方案，保存前驱；同一最优值的多条路径计数要注意模数。
+
+\begin{lstlisting}[language={C++}]
+queue<int> q;
+for (int u = 0; u < n; ++u) if (!indeg[u]) q.push(u);
+vector<int> topo;
+while (!q.empty()) {
+    int u = q.front(); q.pop(); topo.push_back(u);
+    for (auto [v, w] : g[u]) if (--indeg[v] == 0) q.push(v);
+}
+if ((int)topo.size() != n) throw runtime_error("cycle");
+\end{lstlisting}
+
+\section{3. 最短路}\label{ux6700ux77edux8def}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+条件 & 算法 & 复杂度 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+无权 & BFS & \passthrough{\lstinline!O(V+E)!} \\
+边权 0/1 & 0-1 BFS & \passthrough{\lstinline!O(V+E)!} \\
+非负权 & Dijkstra + 堆 & \passthrough{\lstinline!O((V+E)log V)!} \\
+允许负边、单源 & Bellman-Ford & \passthrough{\lstinline!O(VE)!} \\
+DAG & 拓扑 DP & \passthrough{\lstinline!O(V+E)!} \\
+全源、\passthrough{\lstinline!V≤500!} & Floyd & \passthrough{\lstinline!O(V³)!} \\
+\end{longtable}
+
+Dijkstra 的核心前提是所有边权非负；堆中允许重复状态，弹出时若距离不是当前 \passthrough{\lstinline!dist[u]!} 就跳过。多源时将所有起点距离设为 0。
+
+负环检测：Bellman-Ford 第 \passthrough{\lstinline!V!} 轮仍有更新即存在从源可达负环；SPFA 可做队列优化但最坏仍为 \passthrough{\lstinline!O(VE)!}，不要无条件依赖。
+
+差分约束：不等式 \passthrough{\lstinline!x\_v ≤ x\_u + w!} 建 \passthrough{\lstinline!u→v!} 权 \passthrough{\lstinline!w!}，求最短路；若存在负环则无解。求最大下界时改写方向/用最长路。
+
+\begin{lstlisting}[language={C++}]
+using P = pair<long long, int>;
+vector<long long> dist(n, INF);
+priority_queue<P, vector<P>, greater<P>> pq;
+dist[s] = 0; pq.push({0, s});
+while (!pq.empty()) {
+    auto [du, u] = pq.top(); pq.pop();
+    if (du != dist[u]) continue;
+    for (auto [v, w] : g[u]) if (dist[v] > du + w) {
+        dist[v] = du + w;
+        pq.push({dist[v], v});
+    }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language={C++}]
+deque<int> q;
+vector<int> d(n, INF); d[s] = 0; q.push_front(s);
+while (!q.empty()) {
+    int u = q.front(); q.pop_front();
+    for (auto [v, w] : zero_one_graph[u]) if (d[v] > d[u] + w) {
+        d[v] = d[u] + w;
+        if (w == 0) q.push_front(v); else q.push_back(v);
+    }
+}
+\end{lstlisting}
+
+\section{4. 最小生成树}\label{ux6700ux5c0fux751fux6210ux6811}
+
+\subsection{Kruskal}\label{kruskal}
+
+按边权排序，用 DSU 合并不同连通块；恰好选 \passthrough{\lstinline!V-1!} 条边则图连通。复杂度 \passthrough{\lstinline!O(E log E)!}。可用于``最小化最大边''\,``第二小生成树''的基础。
+
+\subsection{Prim}\label{prim}
+
+从任意点出发，每次选未加入点中连接代价最小者，堆优化 \passthrough{\lstinline!O(E log V)!}；稠密图可用朴素 \passthrough{\lstinline!O(V²)!}。
+
+MST 性质：若一条非树边加入形成环，环上最大边被替换可得到候选；用于瓶颈路径、边权敏感性、树上倍增求环上最大值。
+
+\begin{lstlisting}[language={C++}]
+sort(edges.begin(), edges.end(),
+     [](auto &a, auto &b) { return a.w < b.w; });
+DSU dsu(n); long long cost = 0; int used = 0;
+for (auto e : edges) if (dsu.unite(e.u, e.v)) {
+    cost += e.w; ++used;
+}
+bool connected = (used == n - 1);
+\end{lstlisting}
+
+\begin{lstlisting}[language={C++}]
+vector<long long> best(n, INF); vector<char> used_prim(n);
+priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<>> pq2;
+best[0] = 0; pq2.push({0, 0}); long long mst = 0;
+while (!pq2.empty()) {
+    auto [w, u] = pq2.top(); pq2.pop();
+    if (used_prim[u]) continue;
+    used_prim[u] = true; mst += w;
+    for (auto [v, c] : weighted_graph[u]) if (!used_prim[v] && c < best[v])
+        best[v] = c, pq2.push({c, v});
+}
+\end{lstlisting}
+
+\section{5. 强连通分量与缩点}\label{ux5f3aux8fdeux901aux5206ux91cfux4e0eux7f29ux70b9}
+
+Tarjan：DFS 维护 \passthrough{\lstinline!dfn/low!} 与栈，\passthrough{\lstinline!low[u]==dfn[u]!} 时弹出一个 SCC，\passthrough{\lstinline!O(V+E)!}。Kosaraju：正图后序 + 反图 DFS，代码更直观。SCC 缩成 DAG 后做 DP、计数、可达性。缩点后不要把同一分量内的边当作 DAG 边。
+
+\begin{lstlisting}[language={C++}]
+int timer = 0; vector<int> dfn(n), low(n), stk, in(n), comp(n); int cc = 0;
+void tarjan(int u) {
+    dfn[u] = low[u] = ++timer; stk.push_back(u); in[u] = 1;
+    for (int v : g[u]) {
+        if (!dfn[v]) tarjan(v), low[u] = min(low[u], low[v]);
+        else if (in[v]) low[u] = min(low[u], dfn[v]);
+    }
+    if (low[u] != dfn[u]) return;
+    ++cc;
+    while (true) {
+        int v = stk.back(); stk.pop_back(); in[v] = 0; comp[v] = cc;
+        if (v == u) break;
+    }
+}
+\end{lstlisting}
+
+\section{6. 割点、桥、双连通}\label{ux5272ux70b9ux6865ux53ccux8fdeux901a}
+
+无向图 Tarjan：\passthrough{\lstinline!low[v] >= dfn[u]!} 时，\passthrough{\lstinline!u!} 是割点分隔子树；\passthrough{\lstinline!low[v] > dfn[u]!} 时 \passthrough{\lstinline!(u,v)!} 是桥。根节点成为割点的条件是 DFS 子树数大于 1。边有重边时必须用边 id 判断父边，不能只判断父节点。
+
+点双/边双连通可在 Tarjan 过程中用边栈或 DSU 缩桥。桥树上路径问题常转为树上 LCA/差分。
+
+\begin{lstlisting}[language={C++}]
+int timer = 0; vector<int> dfn(n), low(n); vector<pair<int, int>> bridges;
+void dfs(int u, int parent_edge) {
+    dfn[u] = low[u] = ++timer;
+    for (auto [v, id] : g[u]) {
+        if (id == parent_edge) continue;
+        if (!dfn[v]) {
+            dfs(v, id); low[u] = min(low[u], low[v]);
+            if (low[v] > dfn[u]) bridges.push_back({u, v});
+        } else low[u] = min(low[u], dfn[v]);
+    }
+}
+\end{lstlisting}
+
+\section{7. 二分图}\label{ux4e8cux5206ux56fe}
+
+\subsection{染色判定}\label{ux67d3ux8272ux5224ux5b9a}
+
+BFS/DFS 交替染色；发现相邻同色则不是二分图。每个连通块可独立选择两种颜色，计数时乘法合并。
+
+\begin{lstlisting}[language={C++}]
+vector<int> color(n, -1);
+bool ok = true;
+for (int s = 0; s < n; ++s) if (color[s] < 0) {
+    queue<int> q; q.push(s); color[s] = 0;
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        for (int v : g[u]) {
+            if (color[v] < 0) color[v] = color[u] ^ 1, q.push(v);
+            else if (color[v] == color[u]) ok = false;
+        }
+    }
+}
+\end{lstlisting}
+
+\subsection{最大匹配}\label{ux6700ux5927ux5339ux914d}
+
+\begin{itemize}
+\tightlist
+\item
+  匈牙利 DFS：适合 \passthrough{\lstinline!V,E≤几千!}，复杂度 \passthrough{\lstinline!O(VE)!}。
+\item
+  Hopcroft--Karp：分层增广，\passthrough{\lstinline!O(E√V)!}，适合更大二分图。
+\item
+  二分图最小点覆盖 = 最大匹配（Kőnig）；最大独立集 = \passthrough{\lstinline!V - 最大匹配!}。
+\end{itemize}
+
+\begin{lstlisting}[language={C++}]
+vector<int> matchR(n, -1), vis(n);
+bool aug(int u) {
+    for (int v : g[u]) if (vis[v] != stamp) {
+        vis[v] = stamp;
+        if (matchR[v] == -1 || aug(matchR[v]))
+            return matchR[v] = u, true;
+    }
+    return false;
+}
+int matching = 0;
+for (int u = 0; u < left_n; ++u) ++stamp, matching += aug(u);
+\end{lstlisting}
+
+\subsection{带权匹配}\label{ux5e26ux6743ux5339ux914d}
+
+KM 算法求完备二分图最大权匹配，通常约 \passthrough{\lstinline!O(n³)!}；需要处理负权时整体平移或按模板维护顶标。
+
+\section{8. 网络流}\label{ux7f51ux7edcux6d41}
+
+\subsection{建模}\label{ux5efaux6a21}
+
+容量表示资源上限，源点连供应端，需求端连汇点。拆点处理点容量；上下界流增加下界需求并用超级源汇检查可行性。
+
+\subsection{Dinic}\label{dinic}
+
+BFS 建层次图，DFS 在层次递增的图上发送阻塞流；一般题目规模足够使用，二分图匹配也可套用。每条边要维护反向边 \passthrough{\lstinline!cap!}。
+
+\begin{lstlisting}[language={C++}]
+struct Edge { int to, rev; long long cap; };
+vector<vector<Edge>> fg;
+vector<int> level, it;
+void add_edge(int u, int v, long long c) {
+    Edge a{v, (int)fg[v].size(), c}, b{u, (int)fg[u].size(), 0};
+    fg[u].push_back(a); fg[v].push_back(b);
+}
+bool bfs(int s, int t) {
+    fill(level.begin(), level.end(), -1); queue<int> q;
+    level[s] = 0; q.push(s);
+    while (!q.empty()) { int u = q.front(); q.pop();
+        for (auto &e : fg[u]) if (e.cap && level[e.to] < 0)
+            level[e.to] = level[u] + 1, q.push(e.to);
+    }
+    return level[t] >= 0;
+}
+long long dfs(int u, int t, long long f) {
+    if (u == t) return f;
+    for (int &i = it[u]; i < (int)fg[u].size(); ++i) {
+        Edge &e = fg[u][i];
+        if (e.cap && level[e.to] == level[u] + 1) {
+            long long got = dfs(e.to, t, min(f, e.cap));
+            if (got) { e.cap -= got; fg[e.to][e.rev].cap += got; return got; }
+        }
+    }
+    return 0;
+}
+\end{lstlisting}
+
+最大流最小割：最大流值等于最小割容量；割边可由残量网络中从源可达的点集确定。最小割常用于``选/不选且有冲突代价''的闭合图建模。
+
+\subsection{费用流}\label{ux8d39ux7528ux6d41}
+
+增广最短路（势能 + Dijkstra 或 SPFA）反复找最小费用路径；适合规模较小的带费用匹配/运输，注意负边与势能初始化。
+
+\begin{lstlisting}[language={C++}]
+struct MCEdge { int to, rev, cap, cost; };
+vector<vector<MCEdge>> mg(n);
+void add_edge(int u, int v, int cap, int cost) {
+    MCEdge a{v, (int)mg[v].size(), cap, cost};
+    MCEdge b{u, (int)mg[u].size(), 0, -cost};
+    mg[u].push_back(a); mg[v].push_back(b);
+}
+pair<int, long long> min_cost_flow(int s, int t, int need) {
+    int flow = 0; long long cost = 0;
+    vector<long long> pot(n), dist(n);
+    vector<int> pv(n), pe(n);
+    while (flow < need) {
+        fill(dist.begin(), dist.end(), (long long)4e18);
+        priority_queue<pair<long long, int>, vector<pair<long long, int>>,
+                       greater<>> pq;
+        dist[s] = 0; pq.push({0, s});
+        while (!pq.empty()) {
+            auto [du, u] = pq.top(); pq.pop();
+            if (du != dist[u]) continue;
+            for (int i = 0; i < (int)mg[u].size(); ++i) {
+                auto const &e = mg[u][i];
+                if (!e.cap) continue;
+                long long nd = du + e.cost + pot[u] - pot[e.to];
+                if (nd < dist[e.to])
+                    dist[e.to] = nd, pv[e.to] = u, pe[e.to] = i,
+                    pq.push({nd, e.to});
+            }
+        }
+        if (dist[t] == (long long)4e18) break;
+        for (int v = 0; v < n; ++v) if (dist[v] < (long long)4e18) pot[v] += dist[v];
+        int add = need - flow;
+        for (int v = t; v != s; v = pv[v]) add = min(add, mg[pv[v]][pe[v]].cap);
+        for (int v = t; v != s; v = pv[v]) {
+            auto &e = mg[pv[v]][pe[v]];
+            e.cap -= add; mg[v][e.rev].cap += add; cost += 1LL * add * e.cost;
+        }
+        flow += add;
+    }
+    return {flow, cost};
+}
+\end{lstlisting}
+
+\section{9. 树上算法}\label{ux6811ux4e0aux7b97ux6cd5}
+
+\subsection{9.1 DFS 序与子树}\label{dfs-ux5e8fux4e0eux5b50ux6811}
+
+\passthrough{\lstinline!tin[u]!}、\passthrough{\lstinline!tout[u]!} 使子树变成连续区间 \passthrough{\lstinline![tin[u], tout[u]]!}。子树加/和直接用树状数组或线段树；路径则还需 LCA/重链。
+
+\begin{lstlisting}[language={C++}]
+int timer = 0; vector<int> tin(n), tout(n), depth(n), euler(n + 1);
+void dfs(int u, int p) {
+    tin[u] = ++timer; euler[timer] = u;
+    for (int v : tree[u]) if (v != p)
+        depth[v] = depth[u] + 1, dfs(v, u);
+    tout[u] = timer;
+}
+\end{lstlisting}
+
+\subsection{9.2 LCA 倍增}\label{lca-ux500dux589e}
+
+预处理 \passthrough{\lstinline!up[u][j]!} 与深度，查询时先抬高深度差，再从大到小跳；预处理 \passthrough{\lstinline!O(V log V)!}，查询 \passthrough{\lstinline!O(log V)!}。同时可维护路径最小/最大/和。
+
+\begin{lstlisting}[language={C++}]
+const int LOG = 20;
+int up[MAXN][LOG], dep[MAXN];
+void init_lca(int u, int p) {
+    up[u][0] = p;
+    for (int j = 1; j < LOG; ++j) up[u][j] = up[up[u][j - 1]][j - 1];
+    for (int v : tree[u]) if (v != p) dep[v] = dep[u] + 1, init_lca(v, u);
+}
+int lca(int u, int v) {
+    if (dep[u] < dep[v]) swap(u, v);
+    int d = dep[u] - dep[v];
+    for (int j = 0; j < LOG; ++j) if (d >> j & 1) u = up[u][j];
+    if (u == v) return u;
+    for (int j = LOG - 1; j >= 0; --j)
+        if (up[u][j] != up[v][j]) u = up[u][j], v = up[v][j];
+    return up[u][0];
+}
+\end{lstlisting}
+
+\subsection{9.3 树上差分}\label{ux6811ux4e0aux5deeux5206}
+
+点路径 \passthrough{\lstinline!(u,v)!} 加一：\passthrough{\lstinline!d[u]++, d[v]++, d[lca]--, d[parent(lca)]--!}；边路径把 \passthrough{\lstinline!d[lca] -= 2!}。后序累加得到每点/边被经过次数。
+
+\begin{lstlisting}[language={C++}]
+void add_path(int u, int v) {
+    int w = lca(u, v);
+    ++diff[u]; ++diff[v]; --diff[w];
+    if (up[w][0]) --diff[up[w][0]];
+}
+void collect(int u, int p) {
+    for (int v : tree[u]) if (v != p)
+        collect(v, u), diff[u] += diff[v];
+}
+\end{lstlisting}
+
+\subsection{9.4 直径与重心}\label{ux76f4ux5f84ux4e0eux91cdux5fc3}
+
+树直径：从任一点 BFS/DFS 找最远 \passthrough{\lstinline!s!}，再从 \passthrough{\lstinline!s!} 找最远 \passthrough{\lstinline!t!}；\passthrough{\lstinline!dist(s,t)!} 为直径。带权树同理（边权非负）。重心：删除后最大连通块最小的点，可由子树大小判断。
+
+\begin{lstlisting}[language={C++}]
+pair<int, long long> farthest(int s) {
+    vector<long long> d(n, -1); queue<int> q;
+    d[s] = 0; q.push(s);
+    int best = s;
+    while (!q.empty()) { int u = q.front(); q.pop();
+        if (d[u] > d[best]) best = u;
+        for (auto [v, w] : weighted_tree[u]) if (d[v] < 0)
+            d[v] = d[u] + w, q.push(v);
+    }
+    return {best, d[best]};
+}
+\end{lstlisting}
+
+\subsection{9.5 树形 DP}\label{ux6811ux5f62-dp}
+
+先子树后父亲。常见状态：选/不选（独立集）、子树颜色、背包合并、最大匹配、距离和。换根 DP：第一次 DFS 求根答案，第二次用父节点答案推出子节点答案。
+
+\begin{lstlisting}[language={C++}]
+void tree_dp(int u, int p) {
+    dp[u][0] = 0; dp[u][1] = weight[u];
+    for (int v : tree[u]) if (v != p) {
+        tree_dp(v, u);
+        dp[u][0] += max(dp[v][0], dp[v][1]);
+        dp[u][1] += dp[v][0];
+    }
+}
+\end{lstlisting}
+
+\subsection{9.6 重链剖分（HLD）}\label{ux91cdux94feux5256ux5206hld}
+
+把每条重链映射到数组，路径拆成 \passthrough{\lstinline!O(log V)!} 个连续区间，配合线段树实现路径/子树修改查询，复杂度 \passthrough{\lstinline!O(log² V)!}。先求 \passthrough{\lstinline!size, heavy!}，再求 \passthrough{\lstinline!top, dfn!}。
+
+\begin{lstlisting}[language={C++}]
+void dfs1(int u, int p) {
+    parent[u] = p; size[u] = 1; heavy[u] = 0;
+    for (int v : tree[u]) if (v != p) {
+        dep[v] = dep[u] + 1; dfs1(v, u); size[u] += size[v];
+        if (!heavy[u] || size[v] > size[heavy[u]]) heavy[u] = v;
+    }
+}
+void dfs2(int u, int topf) {
+    top[u] = topf; dfn[u] = ++timer;
+    if (heavy[u]) dfs2(heavy[u], topf);
+    for (int v : tree[u]) if (v != parent[u] && v != heavy[u]) dfs2(v, v);
+}
+long long path_sum(int u, int v) {
+    long long ans = 0;
+    while (top[u] != top[v]) {
+        if (dep[top[u]] < dep[top[v]]) swap(u, v);
+        ans += seg.query(dfn[top[u]], dfn[u]); u = parent[top[u]];
+    }
+    if (dep[u] > dep[v]) swap(u, v);
+    return ans + seg.query(dfn[u], dfn[v]);
+}
+\end{lstlisting}
+
+\subsection{9.7 点分治（入门）}\label{ux70b9ux5206ux6cbbux5165ux95e8}
+
+以重心分治树，统计跨重心的路径信息，递归处理子树；每层总计 \passthrough{\lstinline!O(V)!}，深度 \passthrough{\lstinline!O(log V)!}，常见复杂度 \passthrough{\lstinline!O(V log V)!}。适用于树上距离小于/等于 k 的点对计数、距离最小值。
+
+\begin{lstlisting}[language={C++}]
+int get_size(int u, int p) {
+    sz[u] = 1;
+    for (int v : tree[u]) if (v != p && !removed[v]) sz[u] += get_size(v, u);
+    return sz[u];
+}
+int get_centroid(int u, int p, int total) {
+    for (int v : tree[u]) if (v != p && !removed[v])
+        if (sz[v] * 2 > total) return get_centroid(v, u, total);
+    return u;
+}
+void divide(int entry) {
+    int c = get_centroid(entry, 0, get_size(entry, 0));
+    removed[c] = true;
+    // 统计经过 c 的贡献
+    for (int v : tree[c]) if (!removed[v]) divide(v);
+}
+\end{lstlisting}
+
+\subsection{9.8 DSU on Tree（树上启发式合并）}\label{dsu-on-treeux6811ux4e0aux542fux53d1ux5f0fux5408ux5e76}
+
+先求子树大小和重儿子；轻儿子递归后清空，重儿子保留统计结果，再把所有轻子树合并进来。每个节点被清除/加入的次数受重轻性质控制，总复杂度通常为 \passthrough{\lstinline!O(V log V)!}。
+
+\begin{lstlisting}[language={C++}]
+vector<int> sz(n + 1), heavy(n + 1), color(n + 1), freq(MAXC);
+vector<int> answer(n + 1);
+int distinct = 0;
+
+void dfs_size(int u, int p) {
+    sz[u] = 1;
+    for (int v : tree[u]) if (v != p) {
+        dfs_size(v, u); sz[u] += sz[v];
+        if (!heavy[u] || sz[v] > sz[heavy[u]]) heavy[u] = v;
+    }
+}
+void add_subtree(int u, int p, int delta) {
+    if (delta == 1 && freq[color[u]]++ == 0) ++distinct;
+    if (delta == -1 && --freq[color[u]] == 0) --distinct;
+    for (int v : tree[u]) if (v != p) add_subtree(v, u, delta);
+}
+void dsu_on_tree(int u, int p, bool keep) {
+    for (int v : tree[u]) if (v != p && v != heavy[u]) dsu_on_tree(v, u, false);
+    if (heavy[u]) dsu_on_tree(heavy[u], u, true);
+    for (int v : tree[u]) if (v != p && v != heavy[u]) add_subtree(v, u, 1);
+    if (freq[color[u]]++ == 0) ++distinct;
+    answer[u] = distinct; // 换成题目所需的当前子树统计量
+    if (!keep) add_subtree(u, p, -1);
+}
+\end{lstlisting}
+
+\subsection{9.9 长链剖分}\label{ux957fux94feux5256ux5206}
+
+长链剖分按``向下最长深度''而不是子树大小选重儿子，适合树上深度/祖先方向的 DP 优化和长链合并。它和 HLD 的选重标准不同，不能混用复杂度证明。
+
+\begin{lstlisting}[language={C++}]
+vector<int> parent2(n + 1), depth2(n + 1), heavy_len(n + 1);
+vector<int> heavy2(n + 1), top2(n + 1);
+void long_chain_dfs1(int u, int p) {
+    parent2[u] = p; heavy_len[u] = 1;
+    for (int v : tree[u]) if (v != p) {
+        depth2[v] = depth2[u] + 1;
+        long_chain_dfs1(v, u);
+        if (!heavy2[u] || heavy_len[v] > heavy_len[heavy2[u]]) heavy2[u] = v;
+    }
+    if (heavy2[u]) heavy_len[u] = heavy_len[heavy2[u]] + 1;
+}
+void long_chain_dfs2(int u, int topf) {
+    top2[u] = topf;
+    if (heavy2[u]) long_chain_dfs2(heavy2[u], topf);
+    for (int v : tree[u])
+        if (v != parent2[u] && v != heavy2[u]) long_chain_dfs2(v, v);
+}
+\end{lstlisting}
+
+\subsection{9.10 Link-Cut Tree（LCT）}\label{link-cut-treelct}
+
+LCT 用 splay 维护动态森林，支持 \passthrough{\lstinline!link/cut!}、换根和路径聚合。下面模板维护路径和；将 \passthrough{\lstinline!pull!} 中的 \passthrough{\lstinline!sum!} 换成结构体即可维护最大值、异或等可合并信息。
+
+\begin{lstlisting}[language={C++}]
+struct LCT {
+    struct Node { int ch[2]{}, fa{}; long long val{}, sum{}; bool rev{}; };
+    vector<Node> t;
+    LCT(int n): t(n + 1) {}
+    bool is_root(int x) const {
+        int f = t[x].fa;
+        return !f || (t[f].ch[0] != x && t[f].ch[1] != x);
+    }
+    void pull_sum(int x) { t[x].sum = t[x].val + t[t[x].ch[0]].sum + t[t[x].ch[1]].sum; }
+    void apply_rev(int x) { if (!x) return; swap(t[x].ch[0], t[x].ch[1]); t[x].rev ^= 1; }
+    void push(int x) { if (t[x].rev) apply_rev(t[x].ch[0]), apply_rev(t[x].ch[1]), t[x].rev = false; }
+    void rotate(int x) {
+        int y = t[x].fa, z = t[y].fa, dx = (t[y].ch[1] == x), b = t[x].ch[dx ^ 1];
+        if (!is_root(y)) t[z].ch[t[z].ch[1] == y] = x;
+        t[x].fa = z; t[x].ch[dx ^ 1] = y; t[y].fa = x; t[y].ch[dx] = b;
+        if (b) t[b].fa = y; pull_sum(y); pull_sum(x);
+    }
+    void splay(int x) {
+        vector<int> st{ x };
+        for (int y = x; !is_root(y); y = t[y].fa) st.push_back(t[y].fa);
+        while (!st.empty()) push(st.back()), st.pop_back();
+        while (!is_root(x)) {
+            int y = t[x].fa, z = t[y].fa;
+            if (!is_root(y)) ((t[y].ch[0] == x) ^ (t[z].ch[0] == y)) ? rotate(x) : rotate(y);
+            rotate(x);
+        }
+    }
+    void access(int x) {
+        for (int y = 0; x; x = t[y = x].fa) splay(x), t[x].ch[1] = y, pull_sum(x);
+    }
+    void makeroot(int x) { access(x); splay(x); apply_rev(x); }
+    int findroot(int x) {
+        access(x); splay(x);
+        while (t[x].ch[0]) push(x), x = t[x].ch[0];
+        splay(x); return x;
+    }
+    void split(int x, int y) { makeroot(x); access(y); splay(y); }
+    void link(int x, int y) { makeroot(x); if (findroot(y) != x) t[x].fa = y; }
+    void cut(int x, int y) {
+        split(x, y);
+        if (t[y].ch[0] == x && !t[x].ch[1]) t[y].ch[0] = t[x].fa = 0, pull_sum(y);
+    }
+    long long path_sum(int x, int y) { split(x, y); return t[y].sum; }
+};
+\end{lstlisting}
+
+\section{10. 欧拉路、欧拉回路与哈密顿误区}\label{ux6b27ux62c9ux8defux6b27ux62c9ux56deux8defux4e0eux54c8ux5bc6ux987fux8befux533a}
+
+无向图存在欧拉回路当且仅当非零度点连通且所有度为偶；欧拉路径有且仅有 0 或 2 个奇度点。有向图对应入度=出度，路径起点出度比入度多 1、终点相反。Hierholzer 用栈在线性时间构造。哈密顿路径一般是 NP-hard，不要把两者混淆。
+
+\begin{lstlisting}[language={C++}]
+vector<int> ptr(n), euler;
+void hierholzer(int u) {
+    while (ptr[u] < (int)g[u].size()) {
+        auto [v, id] = g[u][ptr[u]++];
+        if (used[id]) continue;
+        used[id] = true; hierholzer(v);
+    }
+    euler.push_back(u);
+}
+\end{lstlisting}
+
+\section{11. 图论组合套路}\label{ux56feux8bbaux7ec4ux5408ux5957ux8def}
+
+\begin{itemize}
+\tightlist
+\item
+  ``删掉一些边使图满足条件''常考虑 MST、割、桥、最小割。
+\item
+  ``两点之间经过某类边最少''常做分层图/状态图。
+\item
+  ``最多经过 k 次特殊边''建 \passthrough{\lstinline!k+1!} 层节点。
+\item
+  ``必须恰好经过/使用''常用流、DP 或矩阵，不要只跑最短路。
+\item
+  DAG + 计数要同时维护 \passthrough{\lstinline!ways[v]!}，相同最优值时累加、更新更优时覆盖。
+\end{itemize}
+
+\chapter{05. 动态规划}\label{ux52a8ux6001ux89c4ux5212}
+
+\section{1. DP 四问法}\label{dp-ux56dbux95eeux6cd5}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  状态表示什么最小信息？
+\item
+  最后一步/最后一个决策是什么？
+\item
+  转移是否覆盖且不重复所有情况？
+\item
+  初值、遍历顺序、答案位置是什么？
+\end{enumerate}
+
+先写朴素正确版本，再按状态数量、转移数量、内存逐层优化。\passthrough{\lstinline!dp!} 数组含义要写在代码注释里。
+
+\section{2. 线性 DP}\label{ux7ebfux6027-dp}
+
+\begin{itemize}
+\tightlist
+\item
+  LIS：\passthrough{\lstinline!O(n log n)!} 维护每个长度的最小结尾。
+\item
+  严格递增用 \passthrough{\lstinline!lower\_bound!}，非降用 \passthrough{\lstinline!upper\_bound!}。
+\item
+  最长公共子序列：\passthrough{\lstinline!dp[i][j]!} 看前缀；滚动到一维时保存左上角旧值。
+\item
+  最大子段和：\passthrough{\lstinline!bestEnding = max(a[i], bestEnding+a[i])!}，也可用前缀最小值。
+\item
+  计数 DP：同一状态的方案相加，注意顺序是否导致重复计数。
+\end{itemize}
+
+\begin{lstlisting}[language={C++}]
+vector<int> tail;
+for (int x : a) {
+    auto it = lower_bound(tail.begin(), tail.end(), x); // 非降改 upper_bound
+    if (it == tail.end()) tail.push_back(x);
+    else *it = x;
+}
+int lis = tail.size();
+
+long long bestEnding = a[0], maxSubarray = a[0];
+for (int i = 1; i < n; ++i) {
+    bestEnding = max(a[i], bestEnding + a[i]);
+    maxSubarray = max(maxSubarray, bestEnding);
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language={C++}]
+vector<vector<int>> lcs(n + 1, vector<int>(m + 1));
+for (int i = 1; i <= n; ++i)
+    for (int j = 1; j <= m; ++j)
+        lcs[i][j] = (a[i - 1] == b[j - 1])
+            ? lcs[i - 1][j - 1] + 1
+            : max(lcs[i - 1][j], lcs[i][j - 1]);
+\end{lstlisting}
+
+\section{3. 背包}\label{ux80ccux5305}
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+类型 & 状态/遍历 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0/1 背包 & \passthrough{\lstinline!dp[j]=max(dp[j],dp[j-w]+v)!}，\passthrough{\lstinline!j!} 从大到小 \\
+完全背包 & 同式，\passthrough{\lstinline!j!} 从小到大 \\
+多重背包 & 二进制拆分或单调队列优化 \\
+分组背包 & 每组只能选一个，组内倒序并用上一层状态 \\
+依赖背包 & 树形 DP/附件分组 \\
+计数背包 & 把 \passthrough{\lstinline!max!} 换成加法，模数下处理重复顺序 \\
+\end{longtable}
+
+容量 \passthrough{\lstinline!W≤1e5!} 时常用 \passthrough{\lstinline!O(nW)!}；物品价值小则把``最小重量''作为状态；\passthrough{\lstinline!n≤40!} 可折半搜索。
+
+\begin{lstlisting}[language={C++}]
+vector<long long> dp(W + 1, 0);
+for (auto [w, v] : items)
+    for (int j = W; j >= w; --j)
+        dp[j] = max(dp[j], dp[j - w] + v); // 0/1 背包
+for (auto [w, v] : items)
+    for (int j = w; j <= W; ++j)
+        dp[j] = max(dp[j], dp[j - w] + v); // 完全背包
+\end{lstlisting}
+
+\section{4. 区间 DP}\label{ux533aux95f4-dp}
+
+按区间长度递增，枚举分割点：\passthrough{\lstinline!dp[l][r] = min/max(dp[l][k]+dp[k+1][r]+cost)!}。典型：石子合并、矩阵链乘、括号匹配、回文分割。若代价满足四边形不等式/决策单调性，可用四边形不等式优化，但先验证条件。
+
+\begin{lstlisting}[language={C++}]
+for (int len = 2; len <= n; ++len)
+    for (int l = 1; l + len - 1 <= n; ++l) {
+        int r = l + len - 1;
+        dp[l][r] = INF;
+        for (int k = l; k < r; ++k)
+            dp[l][r] = min(dp[l][r], dp[l][k] + dp[k + 1][r] + cost(l, r));
+    }
+\end{lstlisting}
+
+\section{5. 树形 DP与换根 DP}\label{ux6811ux5f62-dpux4e0eux6362ux6839-dp}
+
+树上没有环，后序即可保证子树状态已知。独立集：\passthrough{\lstinline!f[u][0]=Σmax(f[v][0],f[v][1])!}，\passthrough{\lstinline!f[u][1]=w[u]+Σf[v][0]!}。换根时先从任意根求子树贡献，再将父亲的答案传给儿子，常见于``每个点到其他点距离和''。
+
+\begin{lstlisting}[language={C++}]
+void reroot1(int u, int p) {
+    sz[u] = 1; down[u] = 0;
+    for (int v : tree[u]) if (v != p)
+        reroot1(v, u), sz[u] += sz[v], down[u] += down[v] + sz[v];
+}
+void reroot2(int u, int p) {
+    for (int v : tree[u]) if (v != p) {
+        ans[v] = ans[u] - sz[v] + (n - sz[v]);
+        reroot2(v, u);
+    }
+}
+\end{lstlisting}
+
+\section{6. DAG DP与路径计数}\label{dag-dpux4e0eux8defux5f84ux8ba1ux6570}
+
+拓扑序内转移；最长路用 \passthrough{\lstinline!-INF!} 初始化，最短路用 \passthrough{\lstinline!INF!}。若有多个源，把所有源初始化；要恢复路径保存 \passthrough{\lstinline!pre!}。在模数下统计方案时不要把不可达状态的 \passthrough{\lstinline!0!} 与真实方案混淆。
+
+\begin{lstlisting}[language={C++}]
+for (int u : topo) if (ways[u])
+    for (auto [v, w] : dag[u]) {
+        dp[v] = max(dp[v], dp[u] + w);
+        ways[v] = (ways[v] + ways[u]) % MOD;
+    }
+\end{lstlisting}
+
+\section{7. 状压 DP}\label{ux72b6ux538b-dp}
+
+\passthrough{\lstinline!mask!} 表示已选集合，转移 \passthrough{\lstinline!mask | (1<<i)!}。\passthrough{\lstinline!n≤20!} 的旅行商、集合覆盖、配对、棋盘放置都适用。优化：预处理 \passthrough{\lstinline!popcount!}、子集和、可行转移；枚举子集总复杂度 \passthrough{\lstinline!O(3\^n)!}。
+
+\begin{lstlisting}[language={C++}]
+vector<vector<long long>> dp(1 << n, vector<long long>(n, INF));
+dp[1][0] = 0;
+for (int mask = 1; mask < (1 << n); ++mask)
+    for (int u = 0; u < n; ++u) if (mask >> u & 1)
+        for (int v = 0; v < n; ++v) if (!(mask >> v & 1))
+            dp[mask | (1 << v)][v] = min(dp[mask | (1 << v)][v], dp[mask][u] + w[u][v]);
+\end{lstlisting}
+
+\section{8. 数位 DP}\label{ux6570ux4f4d-dp}
+
+按高位到低位处理，状态通常为 \passthrough{\lstinline!(pos, tight, started, remainder/计数)!}。\passthrough{\lstinline!tight!} 表示前缀是否贴合上界，\passthrough{\lstinline!started!} 区分前导零。求 \passthrough{\lstinline![L,R]!} 用 \passthrough{\lstinline!F(R)-F(L-1)!}。先写``不限制上界''的转移，再加入 tight。
+
+\begin{lstlisting}[language={C++}]
+long long memo[20][2][2][11];
+string digits;
+long long solve_digit(int pos, int tight, int started, int rem) {
+    if (pos == (int)digits.size()) return started && rem == 0;
+    long long &res = memo[pos][tight][started][rem];
+    if (!tight && res != -1) return res;
+    res = 0;
+    int lim = tight ? digits[pos] - '0' : 9;
+    for (int d = 0; d <= lim; ++d)
+        res += solve_digit(pos + 1, tight && d == lim, started || d,
+                           (rem * 10 + d) % mod);
+    return res;
+}
+\end{lstlisting}
+
+\section{9. 概率 DP与期望 DP}\label{ux6982ux7387-dpux4e0eux671fux671b-dp}
+
+状态转移可能含当前状态自身：整理成 \passthrough{\lstinline!E = (1 + other)/(1-p\_self)!}。马尔可夫链有限状态可高斯消元；若转移无环则按拓扑/记忆化直接递推。概率取模时乘逆元，浮点题要保留足够精度。
+
+\begin{lstlisting}[language={C++}]
+// 无环状态图上的期望：先按题意保证 next[u] 都比 u 更靠后
+vector<double> E(n, 0.0);
+for (int u = n - 1; u >= 0; --u) {
+    E[u] = 1.0;
+    for (auto [v, p] : transitions[u]) E[u] += p * E[v];
+}
+\end{lstlisting}
+
+\section{10. 记忆化搜索}\label{ux8bb0ux5fc6ux5316ux641cux7d22}
+
+当状态图是 DAG 或状态数量可控时，用 DFS + cache 比显式排序更自然。必须保证每个状态的所有后继已计算，含环问题不能直接记忆化递归。
+
+\begin{lstlisting}[language={C++}]
+int memo[MAXN];
+int solve(int u) {
+    int &res = memo[u];
+    if (res != -1) return res;
+    res = 0;
+    for (int v : next[u]) res = max(res, solve(v) + gain[u][v]);
+    return res;
+}
+\end{lstlisting}
+
+\section{11. DP 优化}\label{dp-ux4f18ux5316}
+
+\subsection{滚动数组}\label{ux6edaux52a8ux6570ux7ec4}
+
+只依赖上一层时把二维压一维；确认本轮不会读到已更新的状态，遍历方向是关键。
+
+\begin{lstlisting}[language={C++}]
+vector<long long> prev(m + 1), cur(m + 1);
+for (int i = 1; i <= n; ++i) {
+    cur[0] = 0;
+    for (int j = 1; j <= m; ++j)
+        cur[j] = transition(prev[j], cur[j - 1], a[i], b[j]);
+    swap(prev, cur);
+}
+\end{lstlisting}
+
+\subsection{单调队列优化}\label{ux5355ux8c03ux961fux5217ux4f18ux5316}
+
+形如 \passthrough{\lstinline!dp[i]=base(i)+min/max(dp[j]+g(j))!} 且 \passthrough{\lstinline!j!} 的合法范围滑动时，维护候选队列。若 \passthrough{\lstinline!g!} 可分离且窗口固定，复杂度从 \passthrough{\lstinline!O(nk)!} 降到 \passthrough{\lstinline!O(n)!}。
+
+\begin{lstlisting}[language={C++}]
+deque<int> q;
+for (int i = 0; i <= n; ++i) {
+    while (!q.empty() && q.front() < i - k) q.pop_front();
+    dp[i] = base[i] + (q.empty() ? INF : value(q.front()));
+    while (!q.empty() && value(q.back()) >= value(i)) q.pop_back();
+    q.push_back(i);
+}
+\end{lstlisting}
+
+\subsection{斜率优化（凸包 Trick）}\label{ux659cux7387ux4f18ux5316ux51f8ux5305-trick}
+
+转移能化为 \passthrough{\lstinline!dp[i]=x\_i*k\_j+b\_j!}，把每个 \passthrough{\lstinline!j!} 看作直线，按斜率/查询单调性维护凸包。斜率不单调时用 Li Chao 树；确认除法比较不溢出，必要时用 \passthrough{\lstinline!\_\_int128!}。
+
+\begin{lstlisting}[language={C++}]
+struct Line { long long k, b; long long get(long long x) const { return k * x + b; } };
+deque<Line> hull;
+bool bad(Line a, Line b, Line c) {
+    return (__int128)(b.b - a.b) * (b.k - c.k)
+         >= (__int128)(c.b - b.b) * (a.k - b.k);
+}
+void add_line(Line x) {
+    while (hull.size() >= 2 && bad(hull[hull.size() - 2], hull.back(), x)) hull.pop_back();
+    hull.push_back(x);
+}
+\end{lstlisting}
+
+\subsection{分治优化}\label{ux5206ux6cbbux4f18ux5316}
+
+若最优决策点单调，\passthrough{\lstinline!dp[i][j]!} 在分治递归中只枚举决策区间的一部分，常见 \passthrough{\lstinline!O(kn log n)!}。先证明四边形不等式或决策单调性。
+
+\begin{lstlisting}[language={C++}]
+void solve(int l, int r, int optl, int optr) {
+    if (l > r) return;
+    int mid = (l + r) / 2, best = optl;
+    for (int k = optl; k <= min(mid, optr); ++k)
+        if (cost(k, mid) < cost(best, mid)) best = k;
+    dp[mid] = cost(best, mid);
+    solve(l, mid - 1, optl, best);
+    solve(mid + 1, r, best, optr);
+}
+\end{lstlisting}
+
+\section{12. 组合游戏 DP}\label{ux7ec4ux5408ux6e38ux620f-dp}
+
+无环游戏状态标记胜负：存在一个后继为必败则当前必胜；所有后继必胜则当前必败。将多个独立游戏的 Grundy 值 xor。棋盘/取石子题先找周期或 SG。
+
+\begin{lstlisting}[language={C++}]
+int grundy(int x) {
+    if (memo[x] != -1) return memo[x];
+    bool seen[MAXG] = {};
+    for (int y : moves[x]) seen[grundy(y)] = true;
+    int g = 0; while (seen[g]) ++g;
+    return memo[x] = g;
+}
+\end{lstlisting}
+
+\section{13. 常见 DP 误区}\label{ux5e38ux89c1-dp-ux8befux533a}
+
+\begin{itemize}
+\tightlist
+\item
+  用``最后一个元素''定义状态，却漏掉了影响未来的最小信息。
+\item
+  把排列计数当组合计数，循环顺序写反。
+\item
+  区间 DP 长度顺序错误。
+\item
+  负权最大化仍用 \passthrough{\lstinline!0!} 初始化，导致不可达状态污染答案。
+\item
+  取模减法忘记加模；概率 DP 把浮点误差当精确相等。
+\end{itemize}
+
+\chapter{06. 字符串算法}\label{ux5b57ux7b26ux4e32ux7b97ux6cd5}
+
+\section{1. 选择算法}\label{ux9009ux62e9ux7b97ux6cd5}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+需求 & 算法 & 复杂度 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+单模式匹配 & KMP / Z & \passthrough{\lstinline!O(n+m)!} \\
+多模式匹配 & AC 自动机 & \passthrough{\lstinline!O(text + 总模式长)!} \\
+子串相等、二分答案 & 双哈希 & 期望 \passthrough{\lstinline!O(1)!} 查询 \\
+最长回文子串 & Manacher & \passthrough{\lstinline!O(n)!} \\
+所有后缀排序/不同子串 & 后缀数组 + LCP & \passthrough{\lstinline!O(n log n)!} \\
+子串出现次数/自动机 & SAM & \passthrough{\lstinline!O(n)!} \\
+\end{longtable}
+
+\section{2. KMP}\label{kmp}
+
+\passthrough{\lstinline!nxt[i]!} 表示模式前缀 \passthrough{\lstinline!p[0..i]!} 的最长真前后缀长度。匹配失败时跳到 \passthrough{\lstinline!nxt[j-1]!}，不回退文本指针；可求出现位置、最小周期、前缀函数树。
+
+最小周期：若 \passthrough{\lstinline!n \% (n - pi[n-1]) == 0!}，周期为 \passthrough{\lstinline!n-pi[n-1]!}，否则为 \passthrough{\lstinline!n!}。
+
+\begin{lstlisting}[language={C++}]
+vector<int> prefix_function(const string& s) {
+    vector<int> pi(s.size());
+    for (int i = 1; i < (int)s.size(); ++i) {
+        int j = pi[i - 1];
+        while (j && s[i] != s[j]) j = pi[j - 1];
+        if (s[i] == s[j]) ++j;
+        pi[i] = j;
+    }
+    return pi;
+}
+vector<int> kmp(const string& text, const string& pat) {
+    string t = pat + '#' + text; vector<int> pi = prefix_function(t), pos;
+    for (int i = pat.size() + 1; i < (int)t.size(); ++i)
+        if (pi[i] == (int)pat.size()) pos.push_back(i - 2 * pat.size());
+    return pos;
+}
+\end{lstlisting}
+
+\section{3. Z 函数}\label{z-ux51fdux6570}
+
+\passthrough{\lstinline!z[i]!} 是 \passthrough{\lstinline!s[i..]!} 与 \passthrough{\lstinline!s[0..]!} 的最长公共前缀。维护当前最右匹配段 \passthrough{\lstinline![l,r)!}，落在段内时先继承 \passthrough{\lstinline!z[i-l]!}。把 \passthrough{\lstinline!pattern + '\#' + text!} 拼起来即可匹配。
+
+\begin{lstlisting}[language={C++}]
+vector<int> z_function(const string& s) {
+    int n = s.size(), l = 0, r = 0; vector<int> z(n);
+    for (int i = 1; i < n; ++i) {
+        if (i < r) z[i] = min(r - i, z[i - l]);
+        while (i + z[i] < n && s[z[i]] == s[i + z[i]]) ++z[i];
+        if (i + z[i] > r) l = i, r = i + z[i];
+    }
+    return z;
+}
+\end{lstlisting}
+
+\section{4. 字符串哈希}\label{ux5b57ux7b26ux4e32ux54c8ux5e0c}
+
+前缀哈希 \passthrough{\lstinline!H[i+1]=H[i]*B+s[i]!}，子串哈希：\passthrough{\lstinline!H[r]-H[l]*powB[r-l]!}。双模数或 64 位自然溢出降低碰撞；随机底数并不能提供形式化保证。比较子串、二分最长公共前缀、回文判定都可用。
+
+\begin{lstlisting}[language={C++}]
+const unsigned long long BASE = 911382323ull;
+vector<unsigned long long> h(n + 1), pw(n + 1, 1);
+for (int i = 0; i < n; ++i)
+    h[i + 1] = h[i] * BASE + (unsigned char)s[i], pw[i + 1] = pw[i] * BASE;
+auto get_hash = [&](int l, int r) { return h[r] - h[l] * pw[r - l]; }; // [l,r)
+\end{lstlisting}
+
+\section{5. Manacher}\label{manacher}
+
+把字符串改为 \passthrough{\lstinline!\^\#a\#b\#$!}，求每个中心向外的回文半径 \passthrough{\lstinline!p[i]!}；维护最右回文段 \passthrough{\lstinline!(center,right)!}，线性求最长回文。若不想处理奇偶，也可分别对原串做奇/偶中心版本。
+
+\begin{lstlisting}[language={C++}]
+string t = "^#";
+for (char c : s) t += c, t += '#';
+t += '$';
+vector<int> p(t.size()); int center = 0, right = 0;
+for (int i = 1; i + 1 < (int)t.size(); ++i) {
+    int mir = 2 * center - i;
+    if (i < right) p[i] = min(right - i, p[mir]);
+    while (t[i + 1 + p[i]] == t[i - 1 - p[i]]) ++p[i];
+    if (i + p[i] > right) center = i, right = i + p[i];
+}
+\end{lstlisting}
+
+\section{6. Trie 与 AC 自动机}\label{trie-ux4e0e-ac-ux81eaux52a8ux673a}
+
+Trie 每个节点保存儿子、终止次数。AC 自动机用 BFS 建 fail：节点的 fail 指向最长真后缀状态，匹配时沿 fail 转移；把输出计数沿 fail 累加可统计所有模式出现次数。模式集合固定后一次建树、多次查询。
+
+\begin{lstlisting}[language={C++}]
+struct AC {
+    int ch[MAXN][26]{}, fail[MAXN]{}, out[MAXN]{}, tot = 0;
+    void insert(const string& s) {
+        int u = 0;
+        for (char c : s) {
+            int x = c - 'a';
+            if (!ch[u][x]) ch[u][x] = ++tot;
+            u = ch[u][x];
+        }
+        ++out[u];
+    }
+    void build() {
+        queue<int> q;
+        for (int c = 0; c < 26; ++c) if (ch[0][c]) q.push(ch[0][c]);
+        while (!q.empty()) {
+            int u = q.front(); q.pop(); out[u] += out[fail[u]];
+            for (int c = 0; c < 26; ++c) {
+                int &v = ch[u][c];
+                if (v) fail[v] = ch[fail[u]][c], q.push(v);
+                else v = ch[fail[u]][c];
+            }
+        }
+    }
+    int query(const string& s) {
+        int u = 0, ans = 0;
+        for (char c : s) u = ch[u][c - 'a'], ans += out[u];
+        return ans;
+    }
+};
+\end{lstlisting}
+
+\section{7. 后缀数组与 LCP}\label{ux540eux7f00ux6570ux7ec4ux4e0e-lcp}
+
+倍增排序：按 \passthrough{\lstinline!(rank[i], rank[i+k])!} 对后缀排序，重复 \passthrough{\lstinline!O(log n)!} 次，复杂度 \passthrough{\lstinline!O(n log²n)!}（用计数排序可到 \passthrough{\lstinline!O(n log n)!}）。Kasai 求相邻后缀 LCP，RMQ 查询任意两个后缀 LCP。常见应用：不同子串数 \passthrough{\lstinline!n(n+1)/2 - ΣLCP!}、最长重复子串、字典序第 k 个子串。
+
+\begin{lstlisting}[language={C++}]
+vector<int> suffix_array(string s) {
+    s.push_back(0); int n = s.size();
+    vector<int> sa(n), r(n), nr(n);
+    iota(sa.begin(), sa.end(), 0);
+    for (int i = 0; i < n; ++i) r[i] = (unsigned char)s[i];
+    for (int k = 1;; k <<= 1) {
+        sort(sa.begin(), sa.end(), [&](int i, int j) {
+            if (r[i] != r[j]) return r[i] < r[j];
+            int ri = i + k < n ? r[i + k] : -1;
+            int rj = j + k < n ? r[j + k] : -1;
+            return ri < rj;
+        });
+        nr[sa[0]] = 0;
+        for (int i = 1; i < n; ++i)
+            nr[sa[i]] = nr[sa[i - 1]] +
+                (r[sa[i - 1]] != r[sa[i]] ||
+                 (sa[i - 1] + k < n ? r[sa[i - 1] + k] : -1) !=
+                 (sa[i] + k < n ? r[sa[i] + k] : -1));
+        r.swap(nr); if (r[sa.back()] == n - 1) break;
+    }
+    sa.erase(sa.begin()); return sa;
+}
+\end{lstlisting}
+
+\section{8. 后缀自动机 SAM}\label{ux540eux7f00ux81eaux52a8ux673a-sam}
+
+在线加入字符，状态保存 \passthrough{\lstinline!len!}、\passthrough{\lstinline!link!}、转移；每个状态代表一组 endpos 相同的子串。状态数最多 \passthrough{\lstinline!2n-1!}。按 \passthrough{\lstinline!len!} 降序累加出现次数，可求每个子串出现频次、不同子串数 \passthrough{\lstinline!Σ(len[v]-len[link[v]])!}。转移字符集大时用 \passthrough{\lstinline!map!}，小字符集用数组。
+
+\begin{lstlisting}[language={C++}]
+struct SAM {
+    struct Node { int next[26]{}, link = -1, len = 0, occ = 0; } st[2 * MAXN];
+    int last = 0, sz = 1;
+    void extend(char c) {
+        int cur = sz++, p = last; st[cur].len = st[last].len + 1; st[cur].occ = 1;
+        while (p >= 0 && !st[p].next[c - 'a']) st[p].next[c - 'a'] = cur, p = st[p].link;
+        if (p < 0) st[cur].link = 0;
+        else {
+            int q = st[p].next[c - 'a'];
+            if (st[p].len + 1 == st[q].len) st[cur].link = q;
+            else {
+                int clone = sz++; st[clone] = st[q]; st[clone].len = st[p].len + 1; st[clone].occ = 0;
+                while (p >= 0 && st[p].next[c - 'a'] == q) st[p].next[c - 'a'] = clone, p = st[p].link;
+                st[q].link = st[cur].link = clone;
+            }
+        }
+        last = cur;
+    }
+};
+\end{lstlisting}
+
+\section{9. 回文自动机（PAM，了解）}\label{ux56deux6587ux81eaux52a8ux673apamux4e86ux89e3}
+
+每个节点代表一个不同回文串，fail 指向最长回文后缀；在线插入字符即可统计不同回文子串、每个前缀的回文后缀。代码比 Manacher 长，只有在``动态加入/回文后缀结构''时使用。
+
+\begin{lstlisting}[language={C++}]
+struct PAM {
+    int next[MAXN][26], fail[MAXN], len[MAXN], s[MAXN], occ[MAXN];
+    int last, n, tot;
+    void init() {
+        memset(next, 0, sizeof(next)); memset(occ, 0, sizeof(occ));
+        n = 0; tot = 1; last = 0; s[0] = -1;
+        len[0] = 0; len[1] = -1; fail[0] = fail[1] = 1;
+    }
+    int get_fail(int u) {
+        while (s[n - len[u] - 1] != s[n]) u = fail[u];
+        return u;
+    }
+    void add(char c) {
+        s[++n] = c - 'a'; int u = get_fail(last);
+        if (!next[u][s[n]]) {
+            int v = ++tot; len[v] = len[u] + 2;
+            fail[v] = next[get_fail(fail[u])][s[n]];
+            next[u][s[n]] = v;
+        }
+        last = next[u][s[n]]; ++occ[last];
+    }
+    int build(const string& str) {
+        init();
+        for (char c : str) add(c);
+        for (int v = tot; v >= 2; --v) occ[fail[v]] += occ[v];
+        return tot - 1; // 不同非空回文子串数量
+    }
+};
+\end{lstlisting}
+
+\section{10. 字符串常见组合}\label{ux5b57ux7b26ux4e32ux5e38ux89c1ux7ec4ux5408}
+
+\begin{itemize}
+\tightlist
+\item
+  子串出现次数：KMP 的前缀函数树或 SAM 的 endpos 计数。
+\item
+  多个模式在文本中出现：AC 自动机；需要撤销/动态模式时考虑 fail 树 + 树状数组。
+\item
+  比较循环字符串：最小表示法（Booth）\passthrough{\lstinline!O(n)!}。
+\item
+  最短覆盖/最小表示：先判周期，再用 KMP/哈希做边界验证。
+\end{itemize}
+
+\begin{lstlisting}[language={C++}]
+int min_rotation(const string& s) {
+    string t = s + s; int i = 0, j = 1, n = s.size();
+    while (i < n && j < n) {
+        int k = 0;
+        while (k < n && t[i + k] == t[j + k]) ++k;
+        if (k == n) break;
+        if (t[i + k] > t[j + k]) i += k + 1, i += (i == j);
+        else j += k + 1, j += (i == j);
+    }
+    return min(i, j);
+}
+\end{lstlisting}
+
+\chapter{07. 计算几何与计算技巧}\label{ux8ba1ux7b97ux51e0ux4f55ux4e0eux8ba1ux7b97ux6280ux5de7}
+
+\section{1. 浮点规范}\label{ux6d6eux70b9ux89c4ux8303}
+
+整数坐标优先用 \passthrough{\lstinline!long long!} 叉积，乘法可能到 \passthrough{\lstinline!1e18!} 时用 \passthrough{\lstinline!\_\_int128!}。实数几何统一 \passthrough{\lstinline!long double!}，比较用 \passthrough{\lstinline!sgn(x) = (x>eps)-(x<-eps)!}，不要直接 \passthrough{\lstinline!==!}。
+
+\begin{lstlisting}[language={C++}]
+using Real = long double;
+const Real EPS = 1e-12L;
+struct Point { Real x, y;
+    Point operator+(Point b) const { return {x + b.x, y + b.y}; }
+    Point operator-(Point b) const { return {x - b.x, y - b.y}; }
+    Point operator*(Real k) const { return {x * k, y * k}; }
+};
+Real cross(Point a, Point b) { return a.x * b.y - a.y * b.x; }
+Real dot(Point a, Point b) { return a.x * b.x + a.y * b.y; }
+int sgn(Real x) { return (x > EPS) - (x < -EPS); }
+\end{lstlisting}
+
+\section{2. 向量与叉积}\label{ux5411ux91cfux4e0eux53c9ux79ef}
+
+\passthrough{\lstinline!cross(a,b)=a.x*b.y-a.y*b.x!}：正为逆时针，负为顺时针，0 共线。点 \passthrough{\lstinline!p!} 在有向线段 \passthrough{\lstinline!ab!} 左侧当且仅当 \passthrough{\lstinline!cross(b-a,p-a)>0!}。
+
+点积判断投影/夹角：\passthrough{\lstinline!dot(a,b)>0!} 锐角，\passthrough{\lstinline!<0!} 钝角；距离平方尽量不开放平方根。
+
+\begin{lstlisting}[language={C++}]
+Real dist2(Point a, Point b) { Point d = a - b; return dot(d, d); }
+bool left_of(Point a, Point b, Point p) { return sgn(cross(b - a, p - a)) > 0; }
+\end{lstlisting}
+
+\section{3. 直线、线段与交点}\label{ux76f4ux7ebfux7ebfux6bb5ux4e0eux4ea4ux70b9}
+
+线段相交：先做包围盒快速排除，再判断四个方向叉积；共线时检查投影是否重叠。求交点用参数方程：\passthrough{\lstinline!a + t(b-a)!}，分母是两方向向量叉积；平行/重合要单独处理。
+
+点到直线距离：\passthrough{\lstinline!abs(cross(b-a,p-a))/|b-a|!}；点到线段要先看投影是否落在段内，否则取端点距离。
+
+\begin{lstlisting}[language={C++}]
+bool on_segment(Point a, Point b, Point p) {
+    return sgn(cross(b - a, p - a)) == 0 && sgn(dot(p - a, p - b)) <= 0;
+}
+bool intersect(Point a, Point b, Point c, Point d) {
+    Real c1 = cross(b - a, c - a), c2 = cross(b - a, d - a);
+    Real c3 = cross(d - c, a - c), c4 = cross(d - c, b - c);
+    if (sgn(c1) == 0 && on_segment(a, b, c)) return true;
+    if (sgn(c2) == 0 && on_segment(a, b, d)) return true;
+    return sgn(c1) * sgn(c2) < 0 && sgn(c3) * sgn(c4) < 0;
+}
+\end{lstlisting}
+
+\subsection{圆几何}\label{ux5706ux51e0ux4f55}
+
+直线与圆交点先投影到直线，再根据圆心到直线的距离判断交点数；两圆交点用圆心连线方向分解。判别相切时仍使用 \passthrough{\lstinline!EPS!}。
+
+\begin{lstlisting}[language={C++}]
+struct Circle { Point o; Real r; };
+vector<Point> line_circle(Point a, Point b, Circle c) {
+    Point d = b - a;
+    Real dd = dot(d, d), t = dot(c.o - a, d) / dd;
+    Point foot = a + d * t;
+    Real h2 = c.r * c.r - dist2(foot, c.o);
+    if (h2 < -EPS) return {};
+    if (h2 <= EPS) return {foot};
+    Point unit = d * (sqrtl(h2 / dd));
+    return {foot - unit, foot + unit};
+}
+
+vector<Point> circle_circle(Circle a, Circle b) {
+    Point d = b.o - a.o; Real dd = dot(d, d), dis = sqrtl(dd);
+    if (dis < EPS || dis > a.r + b.r + EPS || dis < fabsl(a.r - b.r) - EPS) return {};
+    Real x = (a.r * a.r - b.r * b.r + dd) / (2 * dis);
+    Real h2 = max((Real)0, a.r * a.r - x * x);
+    Point base = a.o + d * (x / dis);
+    Point perp{-d.y / dis, d.x / dis};
+    if (h2 <= EPS) return {base};
+    Point off = perp * sqrtl(h2);
+    return {base - off, base + off};
+}
+\end{lstlisting}
+
+\section{4. 多边形}\label{ux591aux8fb9ux5f62}
+
+\begin{itemize}
+\tightlist
+\item
+  有向面积：\passthrough{\lstinline!Σ cross(p[i], p[(i+1)\%n]) / 2!}。
+\item
+  点在多边形：射线法（奇偶交点）或绕数法；边界先单独判定。
+\item
+  凸多边形内点可二分扇区，查询 \passthrough{\lstinline!O(log n)!}；一般多边形射线法 \passthrough{\lstinline!O(n)!}。
+\item
+  Pick 定理：格点多边形 \passthrough{\lstinline!A = I + B/2 - 1!}，其中 \passthrough{\lstinline!B=Σgcd(|dx|,|dy|)!}。
+\end{itemize}
+
+\begin{lstlisting}[language={C++}]
+Real area2(const vector<Point>& p) {
+    Real s = 0;
+    for (int i = 0; i < (int)p.size(); ++i)
+        s += cross(p[i], p[(i + 1) % p.size()]);
+    return s;
+}
+\end{lstlisting}
+
+\section{5. 凸包（Andrew）}\label{ux51f8ux5305andrew}
+
+点按 \passthrough{\lstinline!(x,y)!} 排序去重；维护下凸/上凸，若 \passthrough{\lstinline!cross <= 0!} 弹出可得到不保留共线点的凸包，若要保留边界改为 \passthrough{\lstinline!<0!}。复杂度 \passthrough{\lstinline!O(n log n)!}。周长、面积、最远点对都以凸包为输入。
+
+\begin{lstlisting}[language={C++}]
+vector<Point> convex_hull(vector<Point> p) {
+    sort(p.begin(), p.end(), [](Point a, Point b) {
+        return a.x < b.x || (a.x == b.x && a.y < b.y);
+    });
+    p.erase(unique(p.begin(), p.end(), [](Point a, Point b) {
+        return a.x == b.x && a.y == b.y;
+    }), p.end());
+    vector<Point> h;
+    for (Point x : p) {
+        while (h.size() >= 2 && cross(h.back() - h[h.size() - 2], x - h.back()) <= 0) h.pop_back();
+        h.push_back(x);
+    }
+    int lower = h.size();
+    for (int i = (int)p.size() - 2; i >= 0; --i) {
+        while ((int)h.size() > lower && cross(h.back() - h[h.size() - 2], p[i] - h.back()) <= 0) h.pop_back();
+        h.push_back(p[i]);
+    }
+    if (h.size() > 1) h.pop_back();
+    return h;
+}
+\end{lstlisting}
+
+\section{6. 旋转卡壳}\label{ux65cbux8f6cux5361ux58f3}
+
+在凸包上用一个单调指针寻找对踵点，求直径（最远点对）\passthrough{\lstinline!O(h)!}；也可求最大三角形面积、两凸多边形距离。指针前进依据叉积面积是否增大，不要用浮点角度比较。
+
+\begin{lstlisting}[language={C++}]
+long double diameter2(const vector<Point>& p) {
+    int n = p.size(), j = 1; long double ans = 0;
+    for (int i = 0; i < n; ++i) {
+        int ni = (i + 1) % n;
+        while (fabsl(cross(p[ni] - p[i], p[(j + 1) % n] - p[i])) >
+               fabsl(cross(p[ni] - p[i], p[j] - p[i]))) j = (j + 1) % n;
+        ans = max(ans, max(dist2(p[i], p[j]), dist2(p[ni], p[j])));
+    }
+    return ans;
+}
+\end{lstlisting}
+
+\section{7. 扫描线}\label{ux626bux63cfux7ebf}
+
+矩形并面积：按 x 端点事件排序，y 区间用线段树维护覆盖长度，当前面积增量为 \passthrough{\lstinline!covered\_y * Δx!}。坐标压缩要保留相邻坐标差，节点代表小区间而非点。
+
+\begin{lstlisting}[language={C++}]
+struct Event { long long x, y1, y2; int delta; };
+sort(events.begin(), events.end(), [](auto a, auto b) { return a.x < b.x; });
+long long area = 0, last_x = events[0].x;
+for (auto e : events) {
+    area += covered_length() * (e.x - last_x);
+    update(y1_id(e.y1), y2_id(e.y2) - 1, e.delta);
+    last_x = e.x;
+}
+\end{lstlisting}
+
+\section{8. 最近点对}\label{ux6700ux8fd1ux70b9ux5bf9}
+
+分治按 x 排序，递归求左右最小距离，只检查中线附近按 y 排序的常数个点，复杂度 \passthrough{\lstinline!O(n log n)!}。若只需竞赛常见规模，网格哈希也可用，但要证明桶大小与最小距离的关系。
+
+\begin{lstlisting}[language={C++}]
+long double closest(vector<Point>& p, int l, int r) {
+    if (r - l <= 3) {
+        long double ans = 1e100L;
+        for (int i = l; i < r; ++i) for (int j = l; j < i; ++j) ans = min(ans, dist2(p[i], p[j]));
+        sort(p.begin() + l, p.begin() + r, [](Point a, Point b) { return a.y < b.y; });
+        return ans;
+    }
+    int m = (l + r) / 2; Real mid = p[m].x;
+    Real ans = min(closest(p, l, m), closest(p, m, r));
+    vector<Point> strip;
+    for (int i = l; i < r; ++i) if ((p[i].x - mid) * (p[i].x - mid) < ans) strip.push_back(p[i]);
+    for (int i = 0; i < (int)strip.size(); ++i)
+        for (int j = i + 1; j < (int)strip.size() && strip[j].y - strip[i].y < sqrtl(ans); ++j)
+            ans = min(ans, dist2(strip[i], strip[j]));
+    return ans;
+}
+\end{lstlisting}
+
+\section{9. 半平面交（了解）}\label{ux534aux5e73ux9762ux4ea4ux4e86ux89e3}
+
+把每个半平面写成有向直线左侧，按极角排序并用双端队列维护交集；处理平行情形和角度相等是难点。若题目只问凸多边形裁剪，优先用逐边 Sutherland--Hodgman。
+
+\begin{lstlisting}[language={C++}]
+vector<Point> clip(const vector<Point>& poly, Point a, Point b) {
+    vector<Point> out;
+    for (int i = 0; i < (int)poly.size(); ++i) {
+        Point p = poly[i], q = poly[(i + 1) % poly.size()];
+        Real cp = cross(b - a, p - a), cq = cross(b - a, q - a);
+        if (cp >= -EPS) out.push_back(p);
+        if ((cp >= 0) != (cq >= 0)) {
+            Real t = cp / (cp - cq);
+            out.push_back(p + (q - p) * t);
+        }
+    }
+    return out;
+}
+\end{lstlisting}
+
+下面是``有向直线左侧为合法半平面''的真正半平面交模板；返回空集表示交集无界或为空时需结合题目另行处理，常规竞赛题通常会额外给一个大矩形作边界。
+
+\begin{lstlisting}[language={C++}]
+struct HalfPlane { Point p, v; Real ang; };
+Point line_inter(HalfPlane a, HalfPlane b) {
+    Real t = cross(b.p - a.p, b.v) / cross(a.v, b.v);
+    return a.p + a.v * t;
+}
+bool outside(HalfPlane h, Point p) { return sgn(cross(h.v, p - h.p)) < 0; }
+
+vector<Point> half_plane_intersection(vector<HalfPlane> h) {
+    for (auto &x : h) x.ang = atan2l(x.v.y, x.v.x);
+    sort(h.begin(), h.end(), [](const HalfPlane& a, const HalfPlane& b) {
+        return a.ang < b.ang;
+    });
+    deque<HalfPlane> q;
+    for (auto cur : h) {
+        while (q.size() >= 2 && outside(cur, line_inter(q[q.size() - 2], q.back()))) q.pop_back();
+        while (q.size() >= 2 && outside(cur, line_inter(q[0], q[1]))) q.pop_front();
+        if (!q.empty() && sgn(cross(q.back().v, cur.v)) == 0) {
+            if (outside(cur, q.back().p)) q.back() = cur;
+        } else q.push_back(cur);
+    }
+    while (q.size() >= 3 && outside(q.front(), line_inter(q[q.size() - 2], q.back()))) q.pop_back();
+    while (q.size() >= 3 && outside(q.back(), line_inter(q[0], q[1]))) q.pop_front();
+    if (q.size() < 3) return {};
+    vector<Point> poly;
+    for (int i = 0; i < (int)q.size(); ++i)
+        poly.push_back(line_inter(q[i], q[(i + 1) % q.size()]));
+    return poly;
+}
+\end{lstlisting}
+
+\section{10. 随机化与哈希技巧}\label{ux968fux673aux5316ux4e0eux54c8ux5e0cux6280ux5de7}
+
+\begin{itemize}
+\tightlist
+\item
+  随机 \passthrough{\lstinline!shuffle!} + 快速选择求期望线性第 k 小。
+\item
+  64 位随机哈希表示集合，支持多重集合差异的高概率比较；严谨题目用排序/Trie/计数。
+\item
+  Treap 随机优先级避免退化；不要把 \passthrough{\lstinline!rand()!} 作为高质量随机源，使用 \passthrough{\lstinline!mt19937\_64!}。
+\end{itemize}
+
+\begin{lstlisting}[language={C++}]
+mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
+shuffle(a.begin(), a.end(), rng);
+nth_element(a.begin(), a.begin() + k, a.end());
+int answer = a[k];
+uint64_t random_hash = rng();
+\end{lstlisting}
+
+\section{11. 位集优化}\label{ux4f4dux96c6ux4f18ux5316}
+
+\passthrough{\lstinline!std::bitset!} 将 64/机器字并行，适合传递闭包（布尔矩阵）、集合交并、子集计数；\passthrough{\lstinline!bitset!} 大小需编译期常量，动态场景使用 \passthrough{\lstinline!vector<unsigned long long>!}。
+
+\begin{lstlisting}[language={C++}]
+const int N = 2000;
+bitset<N> reach[N];
+for (int k = 0; k < n; ++k)
+    for (int i = 0; i < n; ++i)
+        if (reach[i][k]) reach[i] |= reach[k];
+\end{lstlisting}
+
+\section{12. 快速小技巧}\label{ux5febux901fux5c0fux6280ux5de7}
+
+\begin{itemize}
+\tightlist
+\item
+  \passthrough{\lstinline!std::gcd!}、\passthrough{\lstinline!std::lcm!}（C++17）。
+\item
+  \passthrough{\lstinline!\_\_builtin\_ctzll!} 只对非零数调用。
+\item
+  排序后用 \passthrough{\lstinline!unique!} 去重，差异数组用 \passthrough{\lstinline!adjacent\_difference!}。
+\item
+  大量模乘、叉积、斜率比较时先判断上界，必要时统一 \passthrough{\lstinline!\_\_int128!}。
+\end{itemize}
+
+\begin{lstlisting}[language={C++}]
+long long g = std::gcd(a, b);
+long long l = a / g * b;
+sort(v.begin(), v.end());
+v.erase(unique(v.begin(), v.end()), v.end());
+long long lowbit = x & -x; // x != 0
+long long safe_product = (long long)((__int128)x * y % MOD);
+\end{lstlisting}
+
+\chapter{08. 银牌常见进阶与生僻板子}\label{ux94f6ux724cux5e38ux89c1ux8fdbux9636ux4e0eux751fux50fbux677fux5b50}
+
+这些算法不一定单独构成 2200 以下题，但经常作为区域赛银牌题的关键子步骤。需要时直接查本页和 \passthrough{\lstinline!templates/competitive.hpp!}。
+
+\section{1. 线性基（XOR Basis）}\label{ux7ebfux6027ux57faxor-basis}
+
+维护最高位不同的向量。插入时从高位向下消元；最大异或值从高位贪心尝试。可扩展为求第 k 小异或、判断异或方程组是否有解、求线性空间维数。
+
+\begin{lstlisting}[language={C++}]
+struct LinearBasis {
+    long long b[61]{};
+    bool insert(long long x) {
+        for (int i = 60; i >= 0; --i) if (x >> i & 1) {
+            if (!b[i]) { b[i] = x; return true; }
+            x ^= b[i];
+        }
+        return false;
+    }
+    long long maximum(long long x = 0) const {
+        for (int i = 60; i >= 0; --i) x = max(x, x ^ b[i]);
+        return x;
+    }
+};
+\end{lstlisting}
+
+\section{2. CDQ 分治}\label{cdq-ux5206ux6cbb}
+
+把三维偏序/带时间的 DP 按一维分治，左侧贡献右侧，第三维用树状数组维护，处理完后撤销修改。典型复杂度 \passthrough{\lstinline!O(n log²n)!}；重点是``只让左半影响右半''和清空 BIT。
+
+\begin{lstlisting}[language={C++}]
+struct Point3D { int x, y, z, id; long long ans = 0; };
+vector<Point3D> pts, buf;
+struct BIT {
+    vector<int> t;
+    BIT(int n): t(n + 1) {}
+    void add(int x, int v) { for (; x < (int)t.size(); x += x & -x) t[x] += v; }
+    int sum(int x) const { int r = 0; for (; x; x -= x & -x) r += t[x]; return r; }
+} bit(MAXZ);
+
+// 统计每个点左下方（x,y,z 均 <=）的点数；初始 pts 必须按 x,y,z 排序
+void cdq(int l, int r) {
+    if (l == r) return;
+    int m = (l + r) / 2;
+    cdq(l, m); cdq(m + 1, r); // 此时左右段分别按 y 有序
+    int i = l;
+    for (int j = m + 1; j <= r; ++j) {
+        while (i <= m && pts[i].y <= pts[j].y) bit.add(pts[i++].z, 1);
+        pts[j].ans += bit.sum(pts[j].z);
+    }
+    for (int k = l; k < i; ++k) bit.add(pts[k].z, -1);
+    inplace_merge(pts.begin() + l, pts.begin() + m + 1,
+                  pts.begin() + r + 1,
+                  [](const Point3D& a, const Point3D& b) { return a.y < b.y; });
+}
+
+sort(pts.begin(), pts.end(), [](const Point3D& a, const Point3D& b) {
+    return tie(a.x, a.y, a.z) < tie(b.x, b.y, b.z);
+});
+cdq(0, (int)pts.size() - 1);
+\end{lstlisting}
+
+\section{3. 整体二分}\label{ux6574ux4f53ux4e8cux5206}
+
+多个询问同时二分答案；对当前值域中点，把所有操作/询问按时间递归，使用树状数组或线段树统计 \passthrough{\lstinline!check!}。适合``第 k 次出现/第 k 小''且操作可离线，复杂度常为 \passthrough{\lstinline!O((n+q)log V log n)!}。
+
+\begin{lstlisting}[language={C++}]
+void solve(vector<int> ids, int lo, int hi) {
+    if (ids.empty()) return;
+    if (lo == hi) { for (int id : ids) answer[id] = lo; return; }
+    int mid = (lo + hi) / 2; vector<int> left, right;
+    apply_operations(mid);
+    for (int id : ids) (check(query[id]) ? left : right).push_back(id);
+    rollback_to_start_of_round();
+    solve(left, lo, mid); solve(right, mid + 1, hi);
+}
+\end{lstlisting}
+
+\section{4. 线段树分治时间}\label{ux7ebfux6bb5ux6811ux5206ux6cbbux65f6ux95f4}
+
+把每条边/每个事件存在的时间区间加入线段树节点，DFS 线段树时用回滚 DSU 维护当前时间点状态，离开节点回滚。解决动态连通性、区间激活约束。
+
+\begin{lstlisting}[language={C++}]
+void solve_time(int p, int l, int r) {
+    int snap = dsu.snapshot();
+    for (auto [u, v] : seg[p]) dsu.unite(u, v);
+    if (l == r) answer[l] = dsu.connected(query[l].u, query[l].v);
+    else {
+        int m = (l + r) / 2;
+        solve_time(p * 2, l, m); solve_time(p * 2 + 1, m + 1, r);
+    }
+    dsu.rollback(snap);
+}
+\end{lstlisting}
+
+\section{5. 点分治}\label{ux70b9ux5206ux6cbb}
+
+每层找重心，把跨重心的路径贡献按子树统计并容斥，递归子树。统计距离、颜色、路径权值时要设计可合并的信息；重心分解树还能支持在线修改/查询。
+
+\begin{lstlisting}[language={C++}]
+int get_centroid(int u, int p, int total) {
+    for (int v : tree[u]) if (v != p && !removed[v])
+        if (sz[v] * 2 > total) return get_centroid(v, u, total);
+    return u;
+}
+void decompose(int entry) {
+    int c = get_centroid(entry, 0, calc_size(entry, 0));
+    removed[c] = true;
+    for (int v : tree[c]) if (!removed[v]) decompose(v);
+}
+\end{lstlisting}
+
+\section{6. 虚树}\label{ux865aux6811}
+
+给定树上少量关键点，只保留关键点及其两两相邻 LCA。按 DFS 序排序并用栈建边，节点数 \passthrough{\lstinline!O(k)!}；在虚树上做 DP，常用于多次询问的``关键点之间代价''。
+
+\begin{lstlisting}[language={C++}]
+sort(key.begin(), key.end(), [&](int a, int b) { return tin[a] < tin[b]; });
+vector<int> nodes = key;
+for (int i = 0, m = key.size(); i + 1 < m; ++i) nodes.push_back(lca(key[i], key[i + 1]));
+sort(nodes.begin(), nodes.end(), [&](int a, int b) { return tin[a] < tin[b]; });
+nodes.erase(unique(nodes.begin(), nodes.end()), nodes.end());
+vector<pair<int, int>> virtual_edges;
+vector<int> st;
+for (int u : nodes) {
+    while (!st.empty() && !is_ancestor(st.back(), u)) st.pop_back();
+    if (!st.empty()) virtual_edges.push_back({st.back(), u});
+    st.push_back(u);
+}
+\end{lstlisting}
+
+\section{7. 斯坦纳树（了解）}\label{ux65afux5766ux7eb3ux6811ux4e86ux89e3}
+
+终端点数量 \passthrough{\lstinline!k!} 较小时，\passthrough{\lstinline!dp[mask][v]!} 表示连接 mask 终端且以 v 为根的最小代价；子集合并后跑最短路。复杂度约 \passthrough{\lstinline!O(3\^k V + 2\^k E log V)!}。
+
+\begin{lstlisting}[language={C++}]
+for (int mask = 1; mask < (1 << k); ++mask) {
+    for (int sub = (mask - 1) & mask; sub; sub = (sub - 1) & mask)
+        for (int v = 0; v < n; ++v)
+            dp[mask][v] = min(dp[mask][v], dp[sub][v] + dp[mask ^ sub][v]);
+    dijkstra_on_state(mask); // 用图的边松弛 dp[mask][*]
+}
+\end{lstlisting}
+
+\section{8. 2-SAT}\label{sat}
+
+每个布尔变量两个节点，子句 \passthrough{\lstinline!(a||b)!} 建 \passthrough{\lstinline!¬a→b!}、\passthrough{\lstinline!¬b→a!}；SCC 后若变量与其否定同 SCC 则无解，否则按 SCC 拓扑序赋值。适合``二选一且两者不能同时为假''的约束。
+
+\begin{lstlisting}[language={C++}]
+auto add_clause = [&](int a, bool va, int b, bool vb) {
+    int x = 2 * a + va, y = 2 * b + vb;
+    g[x ^ 1].push_back(y); g[y ^ 1].push_back(x);
+};
+// (x_a == va) OR (x_b == vb)
+for (int i = 0; i < vars; ++i) {
+    if (scc[2 * i] == scc[2 * i + 1]) impossible = true;
+    else assignment[i] = scc[2 * i] > scc[2 * i + 1];
+}
+\end{lstlisting}
+
+\section{9. 区间最小值/最大值的笛卡尔树}\label{ux533aux95f4ux6700ux5c0fux503cux6700ux5927ux503cux7684ux7b1bux5361ux5c14ux6811}
+
+以数组最小值为根，左/右递归构成笛卡尔树；单调栈 \passthrough{\lstinline!O(n)!} 构造。可把 RMQ/LCA、子数组最小值贡献、Treap 结构统一起来。
+
+\begin{lstlisting}[language={C++}]
+vector<int> left(n, -1), right(n, -1), st;
+for (int i = 0; i < n; ++i) {
+    int last = -1;
+    while (!st.empty() && a[st.back()] > a[i]) last = st.back(), st.pop_back();
+    if (!st.empty()) right[st.back()] = i;
+    left[i] = last; st.push_back(i);
+}
+int root = st.front();
+while (left[root] != -1) root = left[root];
+\end{lstlisting}
+
+\section{10. 二进制提升的更多用法}\label{ux4e8cux8fdbux5236ux63d0ux5347ux7684ux66f4ux591aux7528ux6cd5}
+
+不只求 LCA：沿跳跃表同时维护最大边、最小边、边权和、函数迭代。函数图（每点出度 1）先找环，再用倍增回答第 k 步位置，复杂度 \passthrough{\lstinline!O((n+q)log K)!}。
+
+\begin{lstlisting}[language={C++}]
+int jump(int u, long long k) {
+    for (int j = 0; j < LOG; ++j) if (k >> j & 1) u = up[u][j];
+    return u;
+}
+\end{lstlisting}
+
+\section{11. 置换与循环}\label{ux7f6eux6362ux4e0eux5faaux73af}
+
+置换分解成不相交环；重复应用 \passthrough{\lstinline!k!} 次时每个位置在所属环内移动 \passthrough{\lstinline!k mod len!}。求置换逆、循环节、最少交换次数都从环分解出发。
+
+\begin{lstlisting}[language={C++}]
+vector<int> vis(n), result(n);
+for (int i = 0; i < n; ++i) if (!vis[i]) {
+    vector<int> cyc;
+    for (int u = i; !vis[u]; u = p[u]) vis[u] = 1, cyc.push_back(u);
+    int m = cyc.size();
+    for (int j = 0; j < m; ++j) result[cyc[j]] = cyc[(j + k) % m];
+}
+\end{lstlisting}
+
+\section{12. FFT/NTT（了解）}\label{fftnttux4e86ux89e3}
+
+多项式卷积、计数合并、字符串匹配。NTT 要求模数为 \passthrough{\lstinline!c·2\^k+1!}（常用 \passthrough{\lstinline!998244353!}），每层蝶形乘原根；逆变换乘 \passthrough{\lstinline!n\^\{-1\}!}。只在卷积规模大于 \passthrough{\lstinline!O(n²)!} 时值得使用。
+
+\begin{lstlisting}[language={C++}]
+void ntt(vector<int>& a, bool inv) {
+    int n = a.size();
+    for (int i = 1, j = 0; i < n; ++i) {
+        int bit = n >> 1; for (; j & bit; bit >>= 1) j ^= bit; j ^= bit;
+        if (i < j) swap(a[i], a[j]);
+    }
+    for (int len = 2; len <= n; len <<= 1) {
+        int wlen = qpow(G, (MOD - 1) / len);
+        if (inv) wlen = qpow(wlen, MOD - 2);
+        for (int i = 0; i < n; i += len) {
+            long long w = 1;
+            for (int j = 0; j < len / 2; ++j) {
+                int u = a[i + j], v = w * a[i + j + len / 2] % MOD;
+                a[i + j] = (u + v) % MOD; a[i + j + len / 2] = (u - v + MOD) % MOD;
+                w = w * wlen % MOD;
+            }
+        }
+    }
+    if (inv) { long long ni = qpow(n, MOD - 2); for (int &x : a) x = x * ni % MOD; }
+}
+\end{lstlisting}
+
+\section{13. 高斯消元}\label{ux9ad8ux65afux6d88ux5143}
+
+解线性方程组、求秩、行列式。整数模数下用模逆；浮点版本选主元避免除以接近 0 的数。方程有自由变量时记录主元列并构造一组解。
+
+\begin{lstlisting}[language={C++}]
+int gauss(vector<vector<long long>> a) {
+    int n = a.size(), m = a[0].size(), rank = 0;
+    for (int col = 0; col < m && rank < n; ++col) {
+        int pivot = rank;
+        while (pivot < n && a[pivot][col] == 0) ++pivot;
+        if (pivot == n) continue;
+        swap(a[pivot], a[rank]);
+        long long inv = qpow(a[rank][col], MOD - 2);
+        for (int j = col; j < m; ++j) a[rank][j] = a[rank][j] * inv % MOD;
+        for (int i = 0; i < n; ++i) if (i != rank && a[i][col]) {
+            long long t = a[i][col];
+            for (int j = col; j < m; ++j) a[i][j] = (a[i][j] - t * a[rank][j]) % MOD;
+        }
+        ++rank;
+    }
+    return rank;
+}
+\end{lstlisting}
+
+\section{14. Hungarian / KM}\label{hungarian-km}
+
+KM 求完备二分图最大权匹配 \passthrough{\lstinline!O(n³)!}，节点数通常几百以内。若只是无权最大匹配用 Hopcroft--Karp；若是最小费用流模型则用费用流更灵活。
+
+\begin{lstlisting}[language={C++}]
+// Hungarian：最小费用完备匹配，a[i][j] 为费用，行列从 1 开始
+vector<long long> u(n + 1), v(n + 1); vector<int> p(n + 1), way(n + 1);
+for (int i = 1; i <= n; ++i) {
+    p[0] = i; int j0 = 0; vector<long long> mn(n + 1, INF); vector<char> used(n + 1);
+    do {
+        used[j0] = true; int i0 = p[j0], j1 = 0; long long delta = INF;
+        for (int j = 1; j <= n; ++j) if (!used[j]) {
+            long long cur = a[i0][j] - u[i0] - v[j];
+            if (cur < mn[j]) mn[j] = cur, way[j] = j0;
+            if (mn[j] < delta) delta = mn[j], j1 = j;
+        }
+        for (int j = 0; j <= n; ++j) if (used[j]) u[p[j]] += delta, v[j] -= delta; else mn[j] -= delta;
+        j0 = j1;
+    } while (p[j0]);
+    do { int j1 = way[j0]; p[j0] = p[j1]; j0 = j1; } while (j0);
+}
+\end{lstlisting}
+
+\section{15. 约束满足与状态图}\label{ux7ea6ux675fux6ee1ux8db3ux4e0eux72b6ux6001ux56fe}
+
+\begin{itemize}
+\tightlist
+\item
+  ``位置 + 剩余次数/钥匙/开关''→ 分层图或状态 BFS。
+\item
+  ``先后依赖 + 最少时间''→ 拓扑 DP。
+\item
+  ``有向图中每步应用函数''→ 倍增。
+\item
+  ``所有子集的某种聚合''→ SOS DP/子集卷积（先确认是否真的需要）。
+\end{itemize}
+
+\begin{lstlisting}[language={C++}]
+struct State { int u, keys, dist; };
+queue<State> q;
+set<pair<int, int>> seen;
+q.push({start, 0, 0}); seen.insert({start, 0});
+while (!q.empty()) {
+    auto cur = q.front(); q.pop();
+    for (auto [v, need, gain] : transitions[cur.u]) {
+        if ((cur.keys & need) != need) continue;
+        int nk = cur.keys | gain;
+        if (seen.insert({v, nk}).second) q.push({v, nk, cur.dist + 1});
+    }
+}
+\end{lstlisting}
+
+\section{16. 高级字符串识别}\label{ux9ad8ux7ea7ux5b57ux7b26ux4e32ux8bc6ux522b}
+
+\begin{itemize}
+\tightlist
+\item
+  只需比较子串：哈希；需严格无碰撞：后缀数组/LCP。
+\item
+  需要按 endpos 聚合：SAM。
+\item
+  需要所有回文后缀在线维护：PAM。
+\item
+  模式动态增删：Trie/AC + fail 树 + 树状数组或离线分治。
+\end{itemize}
+
+\begin{lstlisting}[language={C++}]
+// 静态模式直接复用 06-字符串.md 的 AC 模板；动态增删时把 fail 树 DFS 序化，
+// 一个模式对应 fail 树上的子树，文本匹配节点在树状数组上做子树求和。
+\end{lstlisting}
+
+\chapter{09. 博弈专题}\label{ux535aux5f08ux4e13ux9898}
+
+本章只放竞赛中最常见的博弈模板。先判断游戏是否为无偏、有限、无环状态；能拆成独立子游戏时用 SG，双方都在完整状态上决策时用 Minimax。所有``必胜/必败''结论都要先确认终止规则和是否允许重复状态。
+
+\section{1. Nim、Bash 与反常 Nim}\label{nimbash-ux4e0eux53cdux5e38-nim}
+
+标准 Nim 每次从一堆中取任意正数个，所有堆异或和非零时先手必胜。Bash 游戏每次最多取 \passthrough{\lstinline!k!} 个，单堆 \passthrough{\lstinline!n!} 的必败位置是 \passthrough{\lstinline!n \% (k + 1) == 0!}。
+
+\begin{lstlisting}[language={C++}]
+bool nim_first_win(const vector<int>& piles) {
+    int x = 0;
+    for (int v : piles) x ^= v;
+    return x != 0;
+}
+
+bool bash_first_win(int n, int k) {
+    return n % (k + 1) != 0;
+}
+\end{lstlisting}
+
+反常 Nim（最后取走者输）：若所有堆大小都为 \passthrough{\lstinline!1!}，先手在堆数为偶数时必胜；否则仍看异或和是否非零。
+
+\begin{lstlisting}[language={C++}]
+bool misere_nim_first_win(const vector<int>& piles) {
+    bool all_one = true;
+    int x = 0, ones = 0;
+    for (int v : piles) {
+        all_one &= (v == 1);
+        x ^= v;
+        ones += (v == 1);
+    }
+    if (all_one) return ones % 2 == 0;
+    return x != 0;
+}
+\end{lstlisting}
+
+\section{2. 通用 SG、mex 与 DAG 博弈}\label{ux901aux7528-sgmex-ux4e0e-dag-ux535aux5f08}
+
+无偏博弈的 Grundy 值满足 \passthrough{\lstinline!sg[u] = mex(\{sg[v]\})!}；独立子游戏的总值是异或。若状态图是 DAG，可以记忆化 DFS；若只是判断胜负，则``存在必败后继''为必胜，否则为必败。
+
+\begin{lstlisting}[language={C++}]
+int mex(vector<int> values) {
+    sort(values.begin(), values.end());
+    values.erase(unique(values.begin(), values.end()), values.end());
+    int g = 0;
+    for (int x : values) {
+        if (x == g) ++g;
+        else if (x > g) break;
+    }
+    return g;
+}
+
+vector<int> sg;
+vector<char> sg_vis;
+int grundy(int u) {
+    if (sg_vis[u]) return sg[u];
+    sg_vis[u] = true;
+    vector<int> nxt;
+    for (int v : dag[u]) nxt.push_back(grundy(v));
+    return sg[u] = mex(nxt);
+}
+
+bool first_win(const vector<int>& starts) {
+    int total = 0;
+    for (int s : starts) total ^= grundy(s);
+    return total != 0;
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language={C++}]
+vector<int8_t> win; // 0: 未求，1: 必胜，-1: 必败
+int dag_game(int u) {
+    if (win[u]) return win[u];
+    win[u] = -1;
+    for (int v : dag[u])
+        if (dag_game(v) == -1) return win[u] = 1;
+    return win[u];
+}
+\end{lstlisting}
+
+\section{3. Nim 变体：取法集合与周期 SG}\label{nim-ux53d8ux4f53ux53d6ux6cd5ux96c6ux5408ux4e0eux5468ux671f-sg}
+
+如果单堆允许取的数量集合固定，先计算一维 SG；\passthrough{\lstinline!sg[n]!} 出现周期后可以直接按周期回答超大 \passthrough{\lstinline!n!}。多个互相独立的堆仍然异或。
+
+\begin{lstlisting}[language={C++}]
+int solve_subtraction(int n, const vector<int>& moves) {
+    vector<int> sg(n + 1);
+    vector<int> seen(moves.size() + 2);
+    for (int x = 1; x <= n; ++x) {
+        vector<int> values;
+        for (int take : moves) if (take <= x)
+            values.push_back(sg[x - take]);
+        sg[x] = mex(values);
+    }
+    return sg[n];
+}
+\end{lstlisting}
+
+\section{4. Minimax + Alpha-Beta}\label{minimax-alpha-beta}
+
+双方零和、轮流行动且状态树有限时，Minimax 取当前方能保证的最优值。Alpha-Beta 剪枝维护祖先已知的下界 \passthrough{\lstinline!alpha!} 与上界 \passthrough{\lstinline!beta!}；排序优先搜索好着法会显著提高剪枝率。
+
+\begin{lstlisting}[language={C++}]
+int minimax(State& state, int depth, int alpha, int beta, bool maximizing) {
+    if (depth == 0 || terminal(state)) return evaluate(state);
+    if (maximizing) {
+        int best = INT_MIN;
+        for (Move mv : ordered_moves(state)) {
+            apply(state, mv);
+            best = max(best, minimax(state, depth - 1, alpha, beta, false));
+            undo(state, mv);
+            alpha = max(alpha, best);
+            if (alpha >= beta) break; // beta cutoff
+        }
+        return best;
+    }
+    int best = INT_MAX;
+    for (Move mv : ordered_moves(state)) {
+        apply(state, mv);
+        best = min(best, minimax(state, depth - 1, alpha, beta, true));
+        undo(state, mv);
+        beta = min(beta, best);
+        if (alpha >= beta) break; // alpha cutoff
+    }
+    return best;
+}
+\end{lstlisting}
+
+实际写棋类题时，\passthrough{\lstinline!State/Move/apply/undo/terminal/evaluate!} 替换为题目状态；有深度限制时应加入深度奖励、置换表和走法排序，避免把``未搜到底''的局面误判成终局。
+
+\section{5. 博弈题检查清单}\label{ux535aux5f08ux9898ux68c0ux67e5ux6e05ux5355}
+
+\begin{itemize}
+\tightlist
+\item
+  终止状态是``不能走''输，还是``最后一步''输？这决定普通/反常规则。
+\item
+  是否无偏？若双方可用的操作不同，不能直接套 SG xor。
+\item
+  状态是否可拆成独立和？有共享资源时不能强行异或。
+\item
+  状态图是否有环？有环时需要周期、记忆化博弈或胜负状态方程。
+\item
+  题目只问胜负用 Win/Lose，问组合价值或多堆合并才引入 Grundy。
+\end{itemize}
+
+\chapter{10. 题型/关键词 → 算法索引}\label{ux9898ux578bux5173ux952eux8bcd-ux7b97ux6cd5ux7d22ux5f15}
+
+本页用于``想不起算法名，但记得题面特征''的快速检索。括号内为优先阅读的文件。
+
+\section{约束驱动}\label{ux7ea6ux675fux9a71ux52a8}
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+题面规模/条件 & 首选 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\passthrough{\lstinline!n≤20!}，选或不选 & 状压/子集枚举 \\
+\passthrough{\lstinline!n≤40!}，求和/最值 & 折半搜索 \\
+\passthrough{\lstinline!n≤200!}，区间分割 & 区间 DP / \passthrough{\lstinline!O(n³)!} \\
+\passthrough{\lstinline!n≤2000!}，二维关系 & \passthrough{\lstinline!O(n²)!} DP、朴素图 \\
+\passthrough{\lstinline!n≤2e5!}，静态区间 & 前缀和、ST、离线排序 \\
+\passthrough{\lstinline!n,q≤2e5!}，动态区间 & 树状数组/线段树 \\
+\passthrough{\lstinline!n!} 可到 \passthrough{\lstinline!1e18!} & 数论、矩阵快速幂、数位 DP \\
+字符串总长 \passthrough{\lstinline!≤1e6!} & KMP/Z/AC/线性筛式算法 \\
+\end{longtable}
+
+\section{数组与区间}\label{ux6570ux7ec4ux4e0eux533aux95f4}
+
+\begin{itemize}
+\tightlist
+\item
+  ``连续子数组和/平均值''：前缀和；要求正数且窗口合法：双指针；要求最短和：前缀和 + 单调队列。
+\item
+  ``最小的最大值/最大的最小值''：二分答案。
+\item
+  ``区间加、最后统一询问''：差分；``边加边查前缀''：树状数组。
+\item
+  ``区间最值、静态''：ST；``区间修改 + 区间查询''：线段树。
+\item
+  ``下一个更大/更小''：单调栈；``窗口最值''：单调队列。
+\item
+  ``逆序对/动态排名''：树状数组或归并排序。
+\item
+  ``离线询问，区间增删可维护''：莫队。
+\item
+  ``第 k 小''：主席树、整体二分、值域线段树。
+\end{itemize}
+
+\section{贪心与构造}\label{ux8d2aux5fc3ux4e0eux6784ux9020}
+
+\begin{itemize}
+\tightlist
+\item
+  区间最多不相交：按右端点排序。
+\item
+  合并代价最小：小根堆/Huffman。
+\item
+  有截止时间的最多任务：排序 + 反悔堆。
+\item
+  每步选局部最优且交换不变差：写交换论证。
+\item
+  ``无解/必有解''：检查奇偶、模数、总和、连通性、度数不变量。
+\end{itemize}
+
+\section{数论}\label{ux6570ux8bba}
+
+\begin{itemize}
+\tightlist
+\item
+  单点质因数：试除；批量质数/欧拉函数：线性筛。
+\item
+  大指数：快速幂；线性递推：矩阵快速幂。
+\item
+  模意义除法：扩展欧几里得/费马逆元；模数不质数先检查互质。
+\item
+  组合数：阶乘逆元；\passthrough{\lstinline!n!} 极大、模数质数：Lucas。
+\item
+  多个同余方程：CRT/扩展 CRT。
+\item
+  ``所有约数/\passthrough{\lstinline!floor(n/i)!}''：约数枚举/数论分块。
+\item
+  ``至少一个条件''：容斥；整除和式：莫比乌斯反演。
+\end{itemize}
+
+\section{图论}\label{ux56feux8bba-1}
+
+\begin{itemize}
+\tightlist
+\item
+  无权最短路：BFS；边权 0/1：0-1 BFS；非负权：Dijkstra。
+\item
+  负边：Bellman-Ford；全源小图：Floyd；DAG：拓扑 DP。
+\item
+  连通块/在线合并：DFS/BFS/DSU。
+\item
+  最小连接代价：Kruskal/Prim。
+\item
+  ``有向环、互相可达''：SCC 缩点。
+\item
+  ``删点/删边使图断开''：割点/桥/最小割。
+\item
+  ``两类点不能同组''：二分图染色；``最多配对''：匹配。
+\item
+  ``资源容量/冲突/分配''：最大流、最小割、费用流。
+\item
+  ``选项二选一且有冲突''：2-SAT。
+\item
+  ``依赖顺序''：拓扑排序。
+\item
+  ``树上路径''：LCA/HLD；``树上子树''：DFS 序；``所有点距离和''：换根 DP。
+\item
+  ``树上两点距离/点对计数''：直径、点分治、虚树。
+\end{itemize}
+
+\section{DP}\label{dp}
+
+\begin{itemize}
+\tightlist
+\item
+  ``每个物品选/不选''：0/1 背包；可重复：完全背包。
+\item
+  ``最后一步决定答案''：线性 DP；``左右端点逐渐缩短''：区间 DP。
+\item
+  ``树没有环''：树形 DP；``有先后关系''：DAG DP。
+\item
+  ``数字不超过 N''：数位 DP。
+\item
+  ``少量元素的集合关系''：状压 DP。
+\item
+  ``转移窗口固定''：单调队列；``决策点单调''：分治优化；``直线转移''：斜率优化/Li Chao。
+\item
+  ``胜负状态''：SG/博弈 DP。
+\end{itemize}
+
+\section{字符串}\label{ux5b57ux7b26ux4e32}
+
+\begin{itemize}
+\tightlist
+\item
+  单模式匹配：KMP/Z；重复前缀/周期：前缀函数。
+\item
+  多模式：AC 自动机。
+\item
+  子串相等/二分 LCP：哈希；最长回文：Manacher。
+\item
+  不同子串/重复子串：后缀数组 + LCP 或 SAM。
+\item
+  动态回文后缀：回文自动机。
+\item
+  循环同构最小表示：Booth。
+\end{itemize}
+
+\section{博弈}\label{ux535aux5f08}
+
+\begin{itemize}
+\tightlist
+\item
+  多堆取石子：Nim 异或；最后取走输：反常 Nim。
+\item
+  单堆固定取法/无环状态：SG + mex；DAG 只问胜负：Win/Lose DP。
+\item
+  双方完整对弈、状态树较小：Minimax + Alpha-Beta。
+\end{itemize}
+
+\section{生僻关键词}\label{ux751fux50fbux5173ux952eux8bcd}
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+看到的词 & 查哪里 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\passthrough{\lstinline!xor!} 最大/线性表示 & 线性基（08、模板） \\
+三维偏序/逆序对带时间 & CDQ 分治 \\
+多个第 k 小同时二分 & 整体二分 \\
+动态加边/删边、询问连通 & 线段树分治 + 回滚 DSU \\
+关键点很少但树很大 & 虚树 \\
+树上距离点对 & 点分治 \\
+二选一冲突 & 2-SAT \\
+多项式卷积 & NTT/FFT \\
+矩阵/线性递推 & 矩阵快速幂 \\
+大量回文子串 & Manacher/SAM/PAM \\
+凸包后最远点 & 旋转卡壳 \\
+线段/矩形覆盖面积 & 扫描线 + 线段树 \\
+函数重复跳转 & 倍增/函数图 \\
+动态维护直线最值 & 李超线段树 \\
+区间取 min/max + 区间和 & Segment Tree Beats \\
+动态树连边/断边/路径询问 & LCT \\
+子树颜色/频次统计 & DSU on Tree \\
+祖先方向深度 DP 优化 & 长链剖分 \\
+半平面约束交集 & 半平面交 \\
+圆与直线/圆相交 & 圆几何 \\
+对称染色计数 & Burnside / Pólya \\
+标号树编码/生成树计数 & Prüfer / 矩阵树定理 \\
+\passthrough{\lstinline!x\^2 = a (mod p)!} & 二次剩余 / Tonelli--Shanks \\
+\end{longtable}
+
+\section{常见算法组合}\label{ux5e38ux89c1ux7b97ux6cd5ux7ec4ux5408}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  离散化 + 树状数组：排名、逆序、区间计数。
+\item
+  DFS 序 + 线段树：子树修改/查询。
+\item
+  LCA + 树上差分：大量路径经过次数。
+\item
+  SCC 缩点 + DAG DP：有向图上的可达/最大权。
+\item
+  二分答案 + BFS/贪心/流：判定型最优化。
+\item
+  Kruskal 重构树 + 倍增：按边权阈值查询连通块信息。
+\item
+  AC 自动机 + DP：避免模式/统计匹配串。
+\item
+  主席树 + LCA：树上路径第 k 小。
+\item
+  扫描线 + 线段树 + 坐标压缩：矩形并、覆盖次数。
+\item
+  回滚 DSU + 线段树时间分治：离线动态连通性。
+\end{enumerate}

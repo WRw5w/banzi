@@ -1,0 +1,30 @@
+# LaTeX build products
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.xdv
+*.synctex.gz
+texput.log
+System.Collections.Hashtable.dst
+
+# Temporary renderings, intermediate PDFs and local executables
+tmp/
+$out/
+$outDir/
+*.exe
+
+# Historical generated variants; canonical PDFs live beside their source
+output/pdf/
+
+# Legacy merged TeX fragments and superseded preview images
+banzi/新版*.tex
+remake/visual/
+remake/visual_sync/
+remake/comment_*.pdf
+remake/first_sync.pdf
+remake/second_build.pdf
+remake/second_final.pdf
+remake/second_sync.pdf

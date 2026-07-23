@@ -1,0 +1,542 @@
+\documentclass[UTF8,openany,oneside,zihao=-4]{ctexbook}
+
+\usepackage[a4paper,margin=2.15cm,headheight=15pt]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{array,booktabs,tabularx}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{titlesec}
+
+\definecolor{ink}{HTML}{1F2933}
+\definecolor{muted}{HTML}{667085}
+\definecolor{accent}{HTML}{2563EB}
+\definecolor{accenttwo}{HTML}{0F766E}
+\definecolor{danger}{HTML}{B42318}
+\definecolor{softblue}{HTML}{EEF4FF}
+\definecolor{softgreen}{HTML}{ECFDF3}
+\definecolor{softred}{HTML}{FEF3F2}
+\definecolor{codebg}{HTML}{F6F8FA}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accent
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small 错题本：WA 排查手册}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+\setlist[itemize]{leftmargin=2em,itemsep=0.2em,topsep=0.2em}
+\setlist[enumerate]{leftmargin=2.2em,itemsep=0.25em,topsep=0.25em}
+
+\titleformat{\chapter}
+  {\Huge\bfseries\color{ink}}
+  {\thechapter}{0.8em}{}
+  [\vspace{0.35em}{\titlerule[1pt]}]
+\titleformat{\section}
+  {\Large\bfseries\color{accent}}
+  {\thesection}{0.6em}{}
+\titleformat{\subsection}
+  {\large\bfseries\color{accenttwo}}
+  {\thesubsection}{0.55em}{}
+
+\lstdefinestyle{cppstyle}{
+  language=C++,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{accent}\bfseries,
+  commentstyle=\color{muted},
+  stringstyle=\color{danger},
+  backgroundcolor=\color{codebg},
+  frame=single,
+  rulecolor=\color{codebg},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  tabsize=4
+}
+\lstset{style=cppstyle}
+
+\newcommand{\risk}[1]{%
+  \vspace{0.35em}
+  \noindent\colorbox{softred}{%
+    \parbox{\dimexpr\linewidth-2\fboxsep}{\textcolor{danger}{\textbf{#1}}}}%
+  \vspace{0.35em}
+}
+
+\newcommand{\note}[1]{%
+  \vspace{0.35em}
+  \noindent\colorbox{softblue}{%
+    \parbox{\dimexpr\linewidth-2\fboxsep}{\textcolor{ink}{#1}}}%
+  \vspace{0.35em}
+}
+
+\newcommand{\fix}[1]{%
+  \vspace{0.35em}
+  \noindent\colorbox{softgreen}{%
+    \parbox{\dimexpr\linewidth-2\fboxsep}{\textbf{修正：}#1}}%
+  \vspace{0.35em}
+}
+
+\newcommand{\term}[1]{\textbf{\textcolor{accenttwo}{#1}}}
+
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  \vspace*{2.3cm}
+  {\Huge\bfseries 错题本\par}
+  \vspace{0.5cm}
+  {\LARGE WA 排查手册\par}
+  \vspace{1.2cm}
+  {\large 面向算法竞赛与 OJ 提交的打印版\par}
+  \vfill
+  \begin{tabular}{rl}
+    整理方式： & 一般 WA 错误 / 各知识点 WA 错误 / 读题错误 \\
+    排版目标： & A4 打印、目录清晰、代码可读 \\
+  \end{tabular}
+  \vfill
+  {\large \today\par}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+\chapter{一般 WA 错误}
+
+\section{总排查清单}
+
+\note{提交前先把这一页过一遍。大多数 WA 并不是算法完全错了，而是数据范围、初始化、多测、输出格式这些细节把正确思路拖下水。}
+
+\begin{enumerate}
+  \item \textbf{数据范围：}有没有溢出？有没有把 \lstinline!int! 当成万能药？有没有写 \lstinline!1 << i!？
+  \item \textbf{多组数据：}每一组都清空了吗？有没有在 \lstinline!solve()! 中提前 \lstinline!return! 导致输入串流？
+  \item \textbf{取模逻辑：}减法是否补了 \lstinline!+ MOD!？除法是否用了逆元？每一步是否及时取模？
+  \item \textbf{边界样例：}最小、最大、全相同、无解、不连通、退化链都测过了吗？
+  \item \textbf{输出格式：}大小写、下标基准、空格、换行是否完全按题面来？
+\end{enumerate}
+
+\section{宏定义与数据溢出}
+
+\subsection{位运算毒药}
+\risk{代码中出现 \texttt{1 << i} 时，常数 1 默认是 32 位。若 $i \ge 31$，很容易直接溢出或变成负数。}
+
+\fix{需要长整型位移时写 \texttt{1LL << i}。如果位数可能更大，先确认题目是否需要 \texttt{\_\_int128} 或 bitset。}
+
+\subsection{极大值加法溢出}
+\risk{如果设 \texttt{const long long inf = 2e18;}，在最短路或 DP 中写 \texttt{inf + x}，可能直接冲破 long long 上限，变成负数。}
+
+\fix{转移前判断合法性，例如 \texttt{if (dist[u] != inf \&\& dist[v] > dist[u] + w)}。DP 里同理：不可达状态不要参与转移。}
+
+\subsection{乘法终极溢出}
+\risk{两个 $10^{18}$ 级别的数相乘，long long 必炸。哪怕最后会取模，中间乘积也已经错了。}
+
+\fix{大数乘法取模时使用 \texttt{\_\_int128}、快速乘，或者保证每一步先取模。}
+
+\subsection{浮点数精度丢失}
+\risk{直接用 double 比较分式、判断相等、判断完全平方数，容易被精度误差打穿。}
+
+\fix{优先用整数比较，例如把 $\frac{a}{b} > \frac{c}{d}$ 改成 $a\cdot d > b\cdot c$，同时注意负号和溢出。必须用 double 时，判等写 \texttt{abs(a - b) < 1e-9}。}
+
+\section{多测并发症}
+
+\subsection{中途 return 导致串流}
+\risk{在 \texttt{solve()} 中读到非法情况就直接 \texttt{return;}，但这一组输入还没有读完，后续数据会被当成下一组测试读入。}
+
+\fix{先把当前测试的输入完整读完，再决定输出；或者设计读取逻辑时保证提前返回不会留下未读数据。}
+
+\subsection{清理不干净}
+\begin{itemize}
+  \item 图论中的 \lstinline!head!、\lstinline!edge!、\lstinline!cnt! 是否重置？
+  \item \lstinline!vector<int> G[N]! 是否只清空了当前 $1\sim n$，却留下上一组更大 $n$ 的残边？
+  \item DP、计数数组、visited 数组是否每组都重新初始化？
+\end{itemize}
+
+\subsection{变量重名覆盖}
+\risk{全局有 \texttt{int n, m;}，在 \texttt{solve()} 里又写 \texttt{int n, m; cin >> n >> m;}，导致其他函数读到的全局变量仍然是 0。}
+
+\fix{需要被 DFS、BFS、DP 函数共享的变量，统一使用全局变量；局部读入时避免重名。}
+
+\section{取模与数学基础}
+
+\subsection{负数取模}
+\risk{减法取模写成 \texttt{(a - b) \% MOD}。当 $a<b$ 时，C++ 的结果仍然是负数。}
+
+\fix{写成 \texttt{(a - b + MOD) \% MOD}；如果 $b$ 本身可能很大，先写 \texttt{(a - b \% MOD + MOD) \% MOD}。}
+
+\subsection{除法取模}
+\risk{在模意义下，\texttt{(a / b) \% MOD} 通常是错的。}
+
+\fix{除法要变成乘逆元：\texttt{a * qpow(b, MOD - 2) \% MOD}，或者在非质数模数下用扩展欧几里得判断逆元是否存在。}
+
+\subsection{连加与连乘}
+\risk{\texttt{(A * B * C) \% MOD} 可能在取模前已经溢出。}
+
+\fix{步步取模：\texttt{A * B \% MOD * C \% MOD}。加法很多时也要避免临时和越界。}
+
+\section{边界与极端数据}
+
+\begin{itemize}
+  \item \term{极小数据：}$n=0,1,2$ 是否测过？区间、树形 DP、图论最容易在这里翻车。
+  \item \term{极大数据：}全等数列、全为 $10^9$、全为负数时逻辑是否仍然成立？
+  \item \term{退化结构：}图是一条链、菊花图、森林、孤立点、重边、自环时是否能处理？
+  \item \term{无解情况：}题面是否规定输出 \lstinline!-1!、\lstinline!0!、空行或 \lstinline!Impossible!？
+\end{itemize}
+
+\section{输出格式}
+
+\begin{itemize}
+  \item \textbf{大小写：}题目要求 \lstinline!YES/NO!、\lstinline!Yes/No!，还是其他格式？
+  \item \textbf{下标基准：}输出的是 0-based 还是 1-based？是否需要 \lstinline!+1!？
+  \item \textbf{空格与换行：}行末是否有多余空格？最后一行是否需要换行？
+  \item \textbf{多解要求：}任意解、字典序最小、字典序最大，要求完全不同。
+\end{itemize}
+
+\section{玄学但常见的死角}
+
+\subsection{贪心假了}
+\risk{代码看起来没有 bug，边界也都过了，但贪心策略无法证明。}
+
+\fix{主动构造反例：问自己“按照我的选择方式，是否会为了眼前收益错过后续更优解？”无法证明时，优先考虑 DP、二分答案、图模型或交换论证。}
+
+\subsection{比较器写坏}
+
+\begin{lstlisting}
+// 错误：相等时返回 true，会破坏严格弱序
+bool cmp(int a, int b) { return a <= b; }
+
+// 正确：必须严格
+bool cmp(int a, int b) { return a < b; }
+\end{lstlisting}
+
+\subsection{未初始化}
+\risk{本地样例全对，提交 WA，常见原因是局部变量和局部数组没有初值。}
+
+\fix{所有局部变量显式初始化，例如 \texttt{int sum = 0; int mx = -inf;}。数组用 \texttt{fill}、\texttt{memset} 或构造函数清空。}
+
+\subsection{哈希被卡}
+\risk{\texttt{unordered\_map} 使用固定哈希，可能在 Codeforces 等平台被构造数据卡成 $O(N^2)$。}
+
+\fix{能用 \texttt{map} 就用 \texttt{map}；必须用哈希时，加入基于时间戳的 custom hash。}
+
+\section{十五分钟还没找到 WA 时}
+
+\begin{enumerate}
+  \item 停止盯代码，手造一组包含负数、0、1、乱序的小样例。
+  \item 在纸上跑一遍自己的算法。
+  \item 写一个保证正确的暴力版本，复杂度高也没关系。
+  \item 写随机数据生成器开始对拍。
+  \item 找出最小错误数据，再回到代码定位第一处不一致。
+\end{enumerate}
+
+\chapter{各个知识点的 WA 错误}
+
+\section{图论与树}
+
+\subsection{建图与空间}
+
+\begin{itemize}
+  \item \textbf{无向图边数：}一条边要存正反两次，链式前向星空间至少开 $2M$。
+  \item \textbf{点数边数混用：}\lstinline!vis[N]!、\lstinline!dist[N]! 是点属性，\lstinline!edge[M]! 是边属性，不要反着开。
+  \item \textbf{多测清空：}上一组 $N=10$，下一组 $N=5$ 时，只清空 $1\sim5$ 会留下 $6\sim10$ 的残边。
+  \item \textbf{编号基准：}输入是 $0\sim N-1$ 还是 $1\sim N$，建图和循环必须一致。
+\end{itemize}
+
+\subsection{图的特殊形态}
+
+\begin{itemize}
+  \item \textbf{不连通：}题目没保证连通时，不能只从 1 号点 DFS。外层加 \lstinline!for! 枚举所有未访问点。
+  \item \textbf{重边：}邻接矩阵存最短路时写 \lstinline!g[u][v] = min(g[u][v], w)!。
+  \item \textbf{自环：}拓扑入度、无向图度数、连通性都可能受影响。必要时读入时 \lstinline!if (u == v) continue;!。
+  \item \textbf{退化图：}链会爆递归栈，菊花图会卡某些 $O(N^2)$ 暴力。
+\end{itemize}
+
+\subsection{DFS 与 BFS}
+
+\begin{itemize}
+  \item \textbf{无向树 DFS：}必须传父亲 \lstinline!dfs(u, fa)!，循环中跳过 \lstinline!if (v == fa) continue;!。
+  \item \textbf{BFS 标记时机：}入队时立刻 \lstinline!vis[v] = true!，不要等出队才标记。
+  \item \textbf{回溯恢复：}找所有路径时，离开递归前记得恢复 \lstinline!vis[u] = 0!。
+\end{itemize}
+
+\subsection{最短路}
+
+\begin{itemize}
+  \item \textbf{Dijkstra 去重：}堆优化版本出队后写 \lstinline!if (vis[u]) continue;!。
+  \item \textbf{负权边：}有负权时 Dijkstra 失效，改用 Bellman-Ford、SPFA 或重构模型。
+  \item \textbf{Floyd 初始化：}先设为 \lstinline!inf!，对角线 \lstinline!dp[i][i] = 0!。
+  \item \textbf{Floyd 顺序：}循环顺序必须是 $k,i,j$。
+  \item \textbf{松弛防溢出：}写 \texttt{dist[u] != inf \&\& dist[v] > dist[u] + w}。
+\end{itemize}
+
+\subsection{拓扑排序}
+
+\begin{itemize}
+  \item \textbf{判环：}拓扑结束后检查出队数量 \lstinline!cnt == n!。否则图中有环。
+  \item \textbf{字典序：}要求字典序最小时，用 \lstinline!priority_queue<int, vector<int>, greater<int>>!，不是普通队列。
+\end{itemize}
+
+\subsection{LCA 与树形 DP}
+
+\begin{itemize}
+  \item \textbf{倍增维度：}第二维按 $\log N$ 开足，循环边界不要少一层。
+  \item \textbf{预处理顺序：}倍增表通常外层枚举步长，内层枚举节点。
+  \item \textbf{树形 DP 初始化：}在 \lstinline!dfs(u)! 开头清理并设置当前点的 DP 状态，避免父节点读到旧数据。
+  \item \textbf{后序转移：}必须先 \lstinline!dfs(v)!，再用 \lstinline!dp[v]! 更新 \lstinline!dp[u]!。
+\end{itemize}
+
+\note{\textbf{图论救场法：}一直 WA/RE 时，在测试数据里加孤立点、自环、重边、链和菊花图，很多隐藏越界和死循环会立刻出现。}
+
+\section{动态规划}
+
+\subsection{状态定义与初始化}
+
+\begin{itemize}
+  \item \textbf{求最大值初始化为 0：}如果收益可能为负，答案可能是 $-5$，0 会把正确答案盖掉。最大值初始化为 $-\infty$，最小值初始化为 $\infty$。
+  \item \textbf{幽灵状态转移：}\lstinline!dp[j] == inf! 时不要参与 \lstinline!dp[i] = min(dp[i], dp[j] + cost)!。
+  \item \textbf{状态边界歧义：}“前 $i$ 个元素的最优值”和“以第 $i$ 个元素结尾的最优值”不是同一个状态，答案位置也不同。
+\end{itemize}
+
+\subsection{遍历顺序}
+
+\begin{itemize}
+  \item \textbf{区间 DP：}最外层枚举区间长度 \lstinline!len!，再枚举左端点 \lstinline!L!，推出右端点 \lstinline!R!。
+  \item \textbf{0-1 背包：}容量倒序遍历；完全背包容量正序遍历。
+  \item \textbf{树形 DP：}儿子的状态算完后，父亲才能转移。
+\end{itemize}
+
+\subsection{状态转移遗漏}
+
+\begin{itemize}
+  \item \textbf{白手起家：}LIS 每个元素都可以单独成为长度 1，初始化 \lstinline!dp[i] = 1!。
+  \item \textbf{容斥重复：}计数 DP 有多个否定条件时，注意路径或方案被重复减掉。
+  \item \textbf{滚动数组脏数据：}每一轮开始先清空当前层；注意 \lstinline!+=! 和 \lstinline!=! 的区别。
+\end{itemize}
+
+\subsection{边界与答案位置}
+
+\begin{itemize}
+  \item \textbf{负数下标：}转移含 \lstinline!dp[i-2]! 时，循环不能从 \lstinline!i=1! 开始。
+  \item \textbf{背包容量：}\lstinline!j - weight[i]! 必须非负。
+  \item \textbf{提取答案：}状态是“以 $i$ 结尾”时，答案常常是 \lstinline!max(dp[1...n])!；背包不要求装满时，可能是 \lstinline!max(dp[n][0...V])!。
+\end{itemize}
+
+\note{\textbf{DP 破局法：}找一组最小样例，把 DP 表完整打印出来。手算一张表，对比第一处不同的格子，那里通常就是状态定义或转移方程的错误。}
+
+\section{数据结构与技巧}
+
+\subsection{并查集}
+
+\begin{itemize}
+  \item \textbf{假合并：}不要写 \lstinline!fa[u] = v! 或 \lstinline!fa[find(u)] = v!；正确写法是 \lstinline!fa[find(u)] = find(v)!。
+  \item \textbf{初始化：}每组数据开头执行 \lstinline!iota(fa + 1, fa + n + 1, 1)!。
+  \item \textbf{统计连通块：}统计 \lstinline!find(i)! 的种类，或统计根节点 \lstinline!fa[i] == i!。
+\end{itemize}
+
+\subsection{线段树}
+
+\begin{itemize}
+  \item \textbf{Lazy Tag 混淆：}区间加法的标记是累加，区间赋值才是覆盖。
+  \item \textbf{Pushdown 不完整：}下传标记时，既要传 tag，也要同步更新子节点的 tree 值，最后清空父标记。
+  \item \textbf{区间长度写错：}更新左儿子用原节点范围 \lstinline!mid - l + 1!，不是查询边界 \lstinline!L!。
+  \item \textbf{越界返回：}区间最大值返回 $-\infty$，最小值返回 $\infty$，求和返回 0。
+\end{itemize}
+
+\subsection{二分查找}
+
+\begin{itemize}
+  \item \textbf{死循环：}若分支会写 \lstinline!l = mid!，则 mid 要上取整：\lstinline!mid = (l + r + 1) / 2!。
+  \item \textbf{溢出：}安全写法是 \lstinline!mid = l + (r - l) / 2!。
+  \item \textbf{浮点二分：}建议固定循环次数，例如 100 次，避免精度边界造成死循环。
+  \item \textbf{check 污染：}每次 \lstinline!check(mid)! 开头清空 \lstinline!vis!、计数器和辅助数组。
+\end{itemize}
+
+\subsection{双指针与滑动窗口}
+
+\begin{itemize}
+  \item \textbf{左指针越过右指针：}移动左指针时写 \texttt{while (l <= r \&\& sum > K)}。
+  \item \textbf{答案更新时机：}最长区间通常在修复合法后更新；最短区间通常在即将破坏条件前更新。
+  \item \textbf{漏掉最后一段：}分段统计时给数组或字符串加哨兵，例如 \texttt{s += '\#';}。
+\end{itemize}
+
+\subsection{位运算：优先级与集合操作}
+
+\risk{位运算的按位与、按位或、按位异或，优先级\textbf{低于}比较运算符。\texttt{if (s \& 1 == 0)} 会被解析成 \texttt{if (s \& (1 == 0))}，即 \texttt{s \& 0}，逻辑彻底错乱。}
+
+\fix{位运算和比较混用时一律加括号：\texttt{if ((s \& 1) == 0)}。优先级从高到低：移位 \texttt{<<}、比较 \texttt{< > ==}、按位与/或/异或、逻辑与/或——按位运算比比较还低，所以几乎总要补括号。}
+
+\note{\textbf{取并集 vs 取交集}（状压 / bitmask 高频混淆）：\term{按位或是并集}，越或越大；\term{按位与是交集}，越与越小。}
+
+\begin{itemize}
+  \item \textbf{并集（union）：}合并集合 \lstinline!A | B!；把元素 $i$ 加入集合 \lstinline!S |= (1 << i)!。
+  \item \textbf{交集（intersection）：}公共元素 \lstinline!A & B!；判断元素 $i$ 是否存在 \lstinline!if (S >> i & 1)!。
+  \item \textbf{删除元素 / 差集：}删除元素 $i$ 写 \lstinline!S &= ~(1 << i)!；确定存在时翻转写 \lstinline!S ^= (1 << i)!。
+  \item \textbf{常见 WA：}想取并集却写成 \lstinline!&!，集合越并越空；想判断“同时拥有”却写成 \lstinline!|!。
+\end{itemize}
+
+\note{\textbf{排错小动作：}线段树出错就在 \texttt{query} 和 \texttt{update} 第一行打印当前节点区间；二分和双指针出错就手动模拟“答案在第一个位置、最后一个位置、完全无解”三种样例。}
+
+\section{数学与精度}
+
+\subsection{取模}
+
+\begin{itemize}
+  \item \textbf{减法取模：}\texttt{ans = (A - B \% MOD + MOD) \% MOD}。
+  \item \textbf{除法取模：}组合数不能直接除，要用逆元。
+  \item \textbf{临时溢出：}连乘写成 \texttt{A * B \% MOD * C \% MOD}。
+\end{itemize}
+
+\subsection{组合计数}
+
+\begin{itemize}
+  \item \textbf{容斥错觉：}“至少包含 A 或 B”不能简单相加，否则同时包含 A 和 B 的方案会被算两次。
+  \item \textbf{组合数边界：}函数开头写 \lstinline!if (m < 0 || m > n) return 0;!，并保证 \lstinline!fact[0] = 1!。
+  \item \textbf{有序与无序：}球是否相同、人是否相同、是否允许空，都会改变公式。
+\end{itemize}
+
+\subsection{数论}
+
+\begin{itemize}
+  \item \textbf{LCM 溢出：}写 \lstinline!A / gcd(A, B) * B!，不要先乘后除。
+  \item \textbf{分解质因数：}循环结束后检查 \lstinline!if (N > 1)!，剩下的部分就是一个质数。
+  \item \textbf{负数整除：}C++ 的负数除法向 0 取整；需要数学下取整时要手写处理或用 \lstinline!floor!。
+\end{itemize}
+
+\subsection{浮点精度}
+
+\begin{itemize}
+  \item \textbf{整数幂：}不要用 \lstinline!pow! 算整数幂，写快速幂。
+  \item \textbf{完全平方数：}写 \lstinline!long long r = round(sqrt(N)); if (r * r == N) ...!。
+  \item \textbf{double 比较：}相等用 \lstinline!abs(A - B) < 1e-9!，大于用 \lstinline!A - B > 1e-9!。
+  \item \textbf{分式比较：}优先交叉相乘，但要确认分母同号，并注意乘积是否需要 \lstinline!__int128!。
+\end{itemize}
+
+\chapter{读题错误}
+
+\section{数值范围没看清}
+
+\subsection{变量可以是负数或 0 吗}
+
+\risk{题面约束可能是 $-10^9 \le a_i \le 10^9$，但代码默认所有数都是正数。}
+
+\begin{itemize}
+  \item 最大值初始化为 0 会错。
+  \item 乘法中两个负数会变成大正数，可能破坏单调性。
+  \item 双指针依赖“全为非负数”的性质时，负数会让窗口单调性失效。
+\end{itemize}
+
+\section{核心对象定义没看清}
+
+\subsection{Permutation 还是 Array}
+
+\risk{题面写的是 permutation，意味着元素互不相同，且通常值域是 $1\sim N$。如果当成普通数组，会浪费或错过关键性质。}
+
+\fix{看到 permutation 时，优先考虑位置映射 \texttt{pos[a[i]] = i}、置换环、值域与下标互映射。}
+
+\subsection{图是不是简单图}
+
+\risk{题面如果没有写 “The graph contains no self-loops and multiple edges”，后台很可能有重边和自环。}
+
+\fix{建图前确认是否需要过滤自环、保留最小重边、或者让算法天然支持重边。}
+
+\subsection{有向还是无向}
+
+\risk{“A 和 B 是朋友”可能是无向关系；“A 关注 B”通常是有向关系。背景语言会影响建边方向。}
+
+\fix{看清 Directed / Undirected，以及样例解释中边是否双向。}
+
+\section{操作规则读错}
+
+\subsection{同时发生还是依次发生}
+
+\risk{题面写 simultaneously，但代码在双层循环里直接修改原数组，就会让新状态影响本轮后续判断。}
+
+\fix{使用新数组、临时列表或队列记录所有变化，本轮判断结束后统一修改。}
+
+\subsection{代价是单次还是全局}
+
+\risk{“删除一个元素花费 $X$” 和 “执行一次删除操作总花费 $X$，可删多个元素” 是两种完全不同的 DP。}
+
+\fix{看到 cost 时，逐字确认它乘的是删除数量、操作次数、区间长度，还是固定一次。}
+
+\subsection{Any 还是 All}
+
+\risk{All 要求所有对象满足；Any / At least one 只要求存在一个。读反后算法方向会完全错。}
+
+\fix{把题面量词圈出来：all、any、exactly、at most、at least、for every、there exists。}
+
+\section{坐标系与格式}
+
+\subsection{行列坐标与笛卡尔坐标}
+
+\risk{输入 $(X,Y)$ 常常表示横坐标和纵坐标，但 C++ 数组是 \texttt{grid[row][col]}。如果直接写 \texttt{grid[x][y]}，地图可能被转置；长宽不同还会越界。}
+
+\fix{看图示和变量含义：输入到底是 $(R,C)$ 还是 $(x,y)$。必要时读入后写 \texttt{grid[y][x]}。}
+
+\subsection{矩阵的顺时针与逆时针旋转}
+
+\risk{把 $n$ 行 $m$ 列的矩阵旋转 $90^\circ$ 时，行列下标、新矩阵尺寸、顺逆方向最容易搞反。旋转 $90^\circ$ 后尺寸一定从 $n\times m$ 变成 $m\times n$。}
+
+\note{设原矩阵 \texttt{a} 为 $n$ 行 $m$ 列（下标从 $0$ 起），旋转后矩阵记为 \texttt{b}。}
+
+\begin{itemize}
+  \item \term{顺时针 $90^\circ$：}\lstinline!b[j][n-1-i] = a[i][j]!，即 \lstinline!b[i][j] = a[n-1-j][i]!。口诀：先转置，再把每一行左右翻转。
+  \item \term{逆时针 $90^\circ$：}\lstinline!b[m-1-j][i] = a[i][j]!，即 \lstinline!b[i][j] = a[j][m-1-i]!。口诀：先转置，再把行的顺序上下翻转。
+  \item \term{旋转 $180^\circ$：}\lstinline!b[n-1-i][m-1-j] = a[i][j]!，尺寸不变。
+\end{itemize}
+
+\fix{记不住就画一个 $2\times 3$ 小矩阵，盯住 \texttt{a[0][0]} 转到哪个角，方向立刻清楚。非方阵必须用新数组并交换行列尺寸，不能原地旋转。}
+
+\subsection{输入顺序}
+
+\risk{不是所有题都先给 $N$ 再给 $M$。有些题是 \texttt{cin >> M >> N;}，先列后行，或者先边后点。}
+
+\fix{读题时给变量旁边写中文注释：点数、边数、行数、列数、横坐标、纵坐标。}
+
+\subsection{无解输出}
+
+\risk{凭经验输出 \texttt{-1}，但题目可能要求输出 \texttt{0}、空行或 \texttt{Impossible}。}
+
+\fix{提交前回到题面 Output 段落，专门确认无解、多解、大小写和空行规则。}
+
+\appendix
+\chapter{常用 C++ 板子}
+
+\begin{lstlisting}
+#include <bits/stdc++.h>
+using namespace std;
+
+#define int long long
+#define endl '\n'
+
+const int inf = 2e18;
+// const int inf = 0x3f3f3f3f;
+const int N = 1e6 + 10;
+
+void solve() {
+    int n = 1;
+    cin >> n;
+}
+
+signed main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int t = 1;
+    cin >> t;
+    while (t--) {
+        solve();
+    }
+    return 0;
+}
+\end{lstlisting}
+
+\end{document}

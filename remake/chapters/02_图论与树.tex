@@ -1,0 +1,399 @@
+\chapter{图论与树}
+
+\section{统一建图约定}
+
+除非题目明确要求，否则本手册的图编号从 1 开始。无向边加入两次；有向边只加入一次。多测时重建 `vector<vector<Edge>>` 或清空边池。
+
+\section{BFS、拓扑排序与 DAG DP}
+
+\cardmeta{基础必会}{无权最短路、依赖顺序、DAG 上转移}{\(O(n+m)\)}{拓扑序长度小于 \(n\) 表示有环}
+
+\begin{lstlisting}[style=cpp]
+vector<int> bfs_dist(int s, const vector<vector<int>> &g) {
+    // d[v] = 从 s 到 v 的最少边数；-1 表示尚未到达
+    vector<int> d(g.size(), -1);
+    queue<int> q; q.push(s); d[s] = 0;
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        for (int v : g[u]) if (d[v] == -1)
+            // 第一次到达 v 时，当前路径一定最短
+            d[v] = d[u] + 1, q.push(v);
+    }
+    return d;
+}
+vector<int> topo_sort(const vector<vector<int>> &g, vector<int> indeg) {
+    queue<int> q;
+    // 入度为 0 的点可以作为当前拓扑序的下一个点
+    for (int i = 1; i < (int)g.size(); ++i)
+        if (!indeg[i]) q.push(i);
+    vector<int> order;
+    while (!q.empty()) {
+        int u = q.front(); q.pop(); order.push_back(u);
+        // 删除 u 的出边；新变成 0 入度的点入队
+        for (int v : g[u]) if (--indeg[v] == 0) q.push(v);
+    }
+    return order;
+}
+\end{lstlisting}
+
+\begin{card}
+\textbf{完整样例}\\
+输入边：\(1\to2,1\to3,2\to4,3\to4\)。\\
+BFS 从 1 的距离为 `0 1 1 2`；拓扑序可以是 `1 2 3 4` 或 `1 3 2 4`。加入 \(4\to1\) 后，拓扑序长度变小，说明有环。
+\end{card}
+
+\section{0-1 BFS}
+
+\cardmeta{现场常用}{边权只有 0 和 1、最短路}{\(O(n+m)\)}{0 边入队首，1 边入队尾}
+
+\begin{lstlisting}[style=cpp]
+struct Edge01 { int to, w; };
+vector<vector<Edge01>> g;
+vector<int> dist;
+
+void bfs01(int s) {
+    // deque 保证队首总是当前最有希望的距离
+    deque<int> q;
+    dist.assign(g.size(), inf);
+    dist[s] = 0;
+    q.push_front(s);
+    while (!q.empty()) {
+        int u = q.front(); q.pop_front();
+        for (auto e : g[u]) {
+            if (dist[e.to] > dist[u] + e.w) {
+                dist[e.to] = dist[u] + e.w;
+                // 权 0 不增加距离，应优先处理；权 1 放到队尾
+                if (e.w == 0) q.push_front(e.to);
+                else q.push_back(e.to);
+            }
+        }
+    }
+}
+\end{lstlisting}
+
+\begin{card}
+\textbf{样例}\\
+输入：
+\begin{lstlisting}
+3 3
+1 2 0
+2 3 1
+1 3 0
+\end{lstlisting}
+从 1 到 3 的最短距离为 `0`。若出现权值 2，不能继续使用这份模板。
+\end{card}
+
+\section{Dijkstra}
+
+\cardmeta{基础必会}{非负边权最短路}{\(O((n+m)\log n)\)}{不能有负边}
+
+\begin{lstlisting}[style=cpp]
+struct Edge { int to, w; };
+vector<vector<Edge>> g;
+vector<int> dist;
+
+void dijkstra(int s) {
+    // 只适用于所有边权非负的图
+    dist.assign(g.size(), inf);
+    priority_queue<pair<int,int>,
+                   vector<pair<int,int>>,
+                   greater<pair<int,int>>> pq;
+    dist[s] = 0;
+    pq.push({0, s});
+    while (!pq.empty()) {
+        auto [d, u] = pq.top(); pq.pop();
+        // 同一个点可能多次入堆；旧距离不是当前最优值时跳过
+        if (d != dist[u]) continue;
+        for (auto e : g[u]) {
+            if (dist[e.to] > d + e.w) {
+                dist[e.to] = d + e.w;
+                pq.push({dist[e.to], e.to});
+            }
+        }
+    }
+}
+\end{lstlisting}
+
+\begin{warnbox}
+堆中允许同一个点出现多次，必须跳过旧距离。不要把 Dijkstra 用到存在负边的图上；负边先查 Bellman--Ford 或差分约束。
+\end{warnbox}
+
+\begin{card}
+\textbf{完整样例}\\
+输入：
+\begin{lstlisting}
+3 3 1
+1 2 5
+1 3 1
+3 2 1
+\end{lstlisting}
+输出距离：`0 2 1`。点 2 的旧堆项距离 5 必须被跳过。
+\end{card}
+
+\section{Kruskal 最小生成树}
+
+\cardmeta{基础必会}{连接所有点、最小总边权}{\(O(m\log m)\)}{最后选边数必须为 \(n-1\)}
+
+\begin{lstlisting}[style=cpp]
+struct E { int u, v, w; };
+int kruskal(int n, vector<E> edges) {
+    // 按边权从小到大尝试，只选连接两个不同连通块的边
+    sort(edges.begin(), edges.end(),
+         [](const E& a, const E& b) { return a.w < b.w; });
+    DSU dsu(n);
+    int ans = 0, used = 0; // used 是已选边数，用来判断图是否连通
+    for (auto e : edges) {
+        if (!dsu.unite(e.u, e.v)) continue;
+        ans += e.w;
+        if (++used == n - 1) break;
+    }
+    return used == n - 1 ? ans : -1;
+}
+\end{lstlisting}
+
+\section{SCC 与缩点}
+
+\cardmeta{现场常用}{有向图互相可达、缩成 DAG}{\(O(n+m)\)}{Kosaraju 需要正反图}
+
+\begin{lstlisting}[style=cpp]
+vector<vector<int>> g, rg;
+vector<int> vis, order, comp;
+
+void dfs1(int u) {
+    // 第一遍在原图上求后序；结束时间大的点优先进入第二遍
+    vis[u] = 1;
+    for (int v : g[u]) if (!vis[v]) dfs1(v);
+    order.push_back(u);
+}
+void dfs2(int u, int c) {
+    // 反图上的一次 DFS 恰好得到一个强连通分量
+    comp[u] = c;
+    for (int v : rg[u]) if (comp[v] == -1) dfs2(v, c);
+}
+int scc(int n) {
+    vis.assign(n + 1, 0);
+    comp.assign(n + 1, -1);
+    order.clear();
+    for (int i = 1; i <= n; ++i) if (!vis[i]) dfs1(i);
+    reverse(order.begin(), order.end());
+    int cnt = 0;
+    for (int u : order) if (comp[u] == -1) dfs2(u, cnt++);
+    return cnt;
+}
+\end{lstlisting}
+
+\begin{card}
+\textbf{样例}\\
+输入边：\(1\to2,2\to1,2\to3,3\to4,4\to3\)。\\
+输出分量：\(\{1,2\},\{3,4\}\)。缩点后只保留 \(\{1,2\}\to\{3,4\}\)。
+\end{card}
+
+\section{2-SAT}
+
+\cardmeta{现场常用}{变量真假、子句“\(x\lor y\)”、互斥选择}{\(O(n+m)\)}{每个变量拆成真假两个点}
+
+\begin{lstlisting}[style=cpp]
+int id(int x, int val) { return x * 2 + val; }
+// val=0 表示 false，val=1 表示 true。
+vector<vector<int>> sat_g, sat_rg;
+vector<int> sat_vis, sat_order, sat_comp;
+void init_2sat(int n) {
+    sat_g.assign(2 * n, {});
+    sat_rg.assign(2 * n, {});
+}
+void sat_dfs1(int u) {
+    sat_vis[u] = 1;
+    for (int v : sat_g[u]) if (!sat_vis[v]) sat_dfs1(v);
+    sat_order.push_back(u);
+}
+void sat_dfs2(int u, int c) {
+    sat_comp[u] = c;
+    for (int v : sat_rg[u]) if (sat_comp[v] == -1) sat_dfs2(v, c);
+}
+void add_or(int x, int a, int y, int b) {
+    // (x=a) or (y=b) 等价于 (!x=a)->(y=b) 和 (!y=b)->(x=a)
+    // 子句 (x=a) or (y=b) 的两个蕴含边：
+    // not(x=a) -> (y=b)，not(y=b) -> (x=a)
+    int u1 = id(x, a ^ 1), v1 = id(y, b);
+    int u2 = id(y, b ^ 1), v2 = id(x, a);
+    sat_g[u1].push_back(v1); sat_rg[v1].push_back(u1);
+    sat_g[u2].push_back(v2); sat_rg[v2].push_back(u2);
+}
+bool solve_2sat(int n) {
+    int V = 2 * n;
+    sat_vis.assign(V, 0);
+    sat_comp.assign(V, -1);
+    sat_order.clear();
+    for (int i = 0; i < V; ++i) if (!sat_vis[i]) sat_dfs1(i);
+    reverse(sat_order.begin(), sat_order.end());
+    int c = 0;
+    for (int u : sat_order)
+        if (sat_comp[u] == -1) sat_dfs2(u, c++);
+    // x 与 not x 在同一 SCC 时，互相推出矛盾，不存在解
+    for (int i = 0; i < n; ++i)
+        if (sat_comp[id(i, 0)] == sat_comp[id(i, 1)]) return false;
+    return true;
+}
+\end{lstlisting}
+
+\begin{warnbox}
+最容易错的是蕴含边方向。先写逻辑等价式，再按“假设一边为假，必须推出另一边为真”加边。
+\end{warnbox}
+
+\begin{card}
+\textbf{完整样例接口：}先调用 \texttt{init\_2sat(n)}；每行 \texttt{x a y b} 表示
+\((x=a)\lor(y=b)\)，其中变量编号从 0 开始、`a,b` 为 0/1。\\
+输入：
+\begin{lstlisting}
+2 3
+0 0 1 0
+0 1 1 0
+0 0 1 1
+\end{lstlisting}
+输出：`YES`。若加入 `0 0 0 1` 和 `0 1 0 1` 两个互相矛盾的子句，输出 `NO`。
+\end{card}
+
+\section{Dinic 最大流}
+
+\cardmeta{现场常用}{容量、割、匹配、选取与冲突建模}{常见 \(O(EV^2)\)}{反向边容量必须存在}
+
+\begin{lstlisting}[style=cpp]
+struct FlowEdge { int to, rev, cap; };
+struct Dinic {
+    // rev 是反向边在对方邻接表中的下标，修改残量时必须同步两条边
+    int n;
+    vector<vector<FlowEdge>> g;
+    vector<int> level, it;
+    explicit Dinic(int n): n(n), g(n), level(n), it(n) {}
+    void add_edge(int u, int v, int cap) {
+        FlowEdge a{v, (int)g[v].size(), cap};
+        FlowEdge b{u, (int)g[u].size(), 0};
+        g[u].push_back(a); g[v].push_back(b);
+    }
+    bool bfs(int s, int t) {
+        // level 图只允许沿层数 +1 的边增广
+        fill(level.begin(), level.end(), -1);
+        queue<int> q; q.push(s); level[s] = 0;
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            for (auto &e : g[u])
+                if (e.cap && level[e.to] == -1)
+                    level[e.to] = level[u] + 1, q.push(e.to);
+        }
+        return level[t] != -1;
+    }
+    int dfs(int u, int t, int f) {
+        if (u == t) return f;
+        // it[u] 记住当前弧，避免重复扫描已经失败的边
+        for (int &i = it[u]; i < (int)g[u].size(); ++i) {
+            auto &e = g[u][i];
+            if (e.cap && level[e.to] == level[u] + 1) {
+                int got = dfs(e.to, t, min(f, e.cap));
+                if (got) {
+                    e.cap -= got;
+                    g[e.to][e.rev].cap += got;
+                    return got;
+                }
+            }
+        }
+        return 0;
+    }
+    int max_flow(int s, int t) {
+        int ans = 0, f;
+        // 每轮建立一张 level 图，并在其上尽可能增广
+        while (bfs(s, t)) {
+            fill(it.begin(), it.end(), 0);
+            while ((f = dfs(s, t, inf)) != 0) ans += f;
+        }
+        return ans;
+    }
+};
+\end{lstlisting}
+
+\section{最小费用最大流}
+
+\cardmeta{高风险模板}{运输、带费用匹配、要求最小代价}{每次增广一次最短路}{先确认负费用边和需求不足的输出规则}
+
+\begin{lstlisting}[style=cpp]
+struct CostEdge { int to, rev, cap, cost; };
+vector<vector<CostEdge>> cg;
+void add_cost_edge(int u, int v, int cap, int cost) {
+    CostEdge a{v, (int)cg[v].size(), cap, cost};
+    CostEdge b{u, (int)cg[u].size(), 0, -cost};
+    cg[u].push_back(a); cg[v].push_back(b);
+}
+pair<int,int> min_cost_flow(int s, int t, int need) {
+    int flow = 0, cost = 0, n = cg.size();
+    while (flow < need) {
+        // SPFA 在残量图中寻找一条费用最小的增广路
+        vector<int> d(n, inf), pv(n), pe(n);
+        vector<char> inq(n, false);
+        queue<int> q; q.push(s); d[s] = 0; inq[s] = true;
+        while (!q.empty()) {
+            int u = q.front(); q.pop(); inq[u] = false;
+            for (int i = 0; i < (int)cg[u].size(); ++i) {
+                auto &e = cg[u][i];
+                if (e.cap && d[e.to] > d[u] + e.cost) {
+                    d[e.to] = d[u] + e.cost;
+                    pv[e.to] = u; pe[e.to] = i;
+                    if (!inq[e.to]) inq[e.to] = true, q.push(e.to);
+                }
+            }
+        }
+        if (d[t] == inf) break;
+        // 汇点不可达：剩余网络无法继续送流
+        int add = need - flow;
+        for (int v = t; v != s; v = pv[v])
+            add = min(add, cg[pv[v]][pe[v]].cap);
+        for (int v = t; v != s; v = pv[v]) {
+            auto &e = cg[pv[v]][pe[v]];
+            e.cap -= add; cg[v][e.rev].cap += add;
+        }
+        flow += add; cost += add * d[t];
+    }
+    return {flow, cost};
+}
+\end{lstlisting}
+
+\begin{card}
+\textbf{完整样例}\\
+唯一通路容量为 3、单位费用为 5，要求流量 2，输出 `(2,10)`。\\
+总容量只有 1 而要求流量 2 时，输出流量必须是 1，不能伪造满流。
+\end{card}
+
+\section{LCA 倍增}
+
+\cardmeta{基础必会}{树上路径、最近公共祖先、树上差分}{预处理 \(O(n\log n)\)，查询 \(O(\log n)\)}{树必须连通或逐个连通块处理}
+
+\begin{lstlisting}[style=cpp]
+const int LOG = 21;
+vector<vector<int>> tree;
+vector<array<int, LOG>> up;
+vector<int> depth;
+
+void dfs_lca(int u, int p) {
+    // up[u][j] = u 向上跳 2^j 步到达的祖先
+    up[u][0] = p;
+    for (int j = 1; j < LOG; ++j)
+        up[u][j] = up[up[u][j - 1]][j - 1];
+    for (int v : tree[u]) if (v != p) {
+        depth[v] = depth[u] + 1;
+        dfs_lca(v, u);
+    }
+}
+int lca(int u, int v) {
+    // 先把较深的点抬到同一深度
+    if (depth[u] < depth[v]) swap(u, v);
+    int d = depth[u] - depth[v];
+    for (int j = 0; j < LOG; ++j) if (d >> j & 1) u = up[u][j];
+    if (u == v) return u;
+    for (int j = LOG - 1; j >= 0; --j)
+        if (up[u][j] != up[v][j])
+            u = up[u][j], v = up[v][j];
+    return up[u][0];
+}
+\end{lstlisting}
+
+\begin{warnbox}
+`LOG` 要覆盖最大深度；根节点的父亲必须设为自己或 0，并保持整棵树的初始化一致。
+\end{warnbox}

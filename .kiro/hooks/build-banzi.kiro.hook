@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "▶ 编译板子",
+  "description": "手动点击触发，用 XeLaTeX 编译板子文档两次",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "xelatex -synctex=1 -interaction=nonstopmode -file-line-error \"板子.tex\" && xelatex -synctex=1 -interaction=nonstopmode -file-line-error \"板子.tex\""
+  }
+}
