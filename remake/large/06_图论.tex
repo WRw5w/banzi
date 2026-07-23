@@ -91,6 +91,49 @@ while (!q.empty()) {
 
 按边权排序，用 DSU 合并不同连通块；恰好选 \passthrough{\lstinline!V-1!} 条边则图连通。复杂度 \passthrough{\lstinline!O(E log E)!}。可用于``最小化最大边''\,``第二小生成树''的基础。
 
+\begin{lstlisting}[language={C++}]
+struct MstEdge {
+    int u, v;
+    long long w;
+    bool operator<(const MstEdge &o) const { return w < o.w; }
+};
+struct KruskalDSU {
+    vector<int> p, sz;
+    KruskalDSU(int n) : p(n + 1), sz(n + 1, 1) {
+        iota(p.begin(), p.end(), 0);
+    }
+    int find(int x) { return p[x] == x ? x : p[x] = find(p[x]); }
+    bool unite(int x, int y) {
+        x = find(x); y = find(y);
+        if (x == y) return false;
+        if (sz[x] < sz[y]) swap(x, y);
+        p[y] = x; sz[x] += sz[y];
+        return true;
+    }
+};
+struct MstResult {
+    long long cost;
+    int used;
+    bool connected;
+    vector<MstEdge> chosen;
+};
+MstResult kruskal(int n, vector<MstEdge> edges) {
+    sort(edges.begin(), edges.end());
+    KruskalDSU dsu(n);
+    MstResult ans{0, 0, n <= 1, {}};
+    for (auto e : edges) if (dsu.unite(e.u, e.v)) {
+        ans.cost += e.w;
+        ++ans.used;
+        ans.chosen.push_back(e);
+        if (ans.used == n - 1) break;
+    }
+    ans.connected = (n <= 1 || ans.used == n - 1);
+    return ans; // 不连通时 chosen 是最小生成森林
+}
+\end{lstlisting}
+
+返回值同时保留总权值、选边数、连通性和所选边。若只需要权值可删除 \passthrough{\lstinline!chosen!}；图不连通时不能把当前 \passthrough{\lstinline!cost!} 当作生成树答案。代码块内的 \passthrough{\lstinline!KruskalDSU!} 是自足版本，若已复制并查集主模板可直接替换。
+
 \subsection{Prim}\label{prim}
 
 从任意点出发，每次选未加入点中连接代价最小者，堆优化 \passthrough{\lstinline!O(E log V)!}；稠密图可用朴素 \passthrough{\lstinline!O(V²)!}。
@@ -98,27 +141,111 @@ while (!q.empty()) {
 MST 性质：若一条非树边加入形成环，环上最大边被替换可得到候选；用于瓶颈路径、边权敏感性、树上倍增求环上最大值。
 
 \begin{lstlisting}[language={C++}]
-sort(edges.begin(), edges.end(),
-     [](auto &a, auto &b) { return a.w < b.w; });
-DSU dsu(n); long long cost = 0; int used = 0;
-for (auto e : edges) if (dsu.unite(e.u, e.v)) {
-    cost += e.w; ++used;
+pair<bool, long long> prim(
+        const vector<vector<pair<int, long long>>> &g) {
+    int n = g.size();
+    if (n == 0) return {true, 0};
+    const long long INF64 = numeric_limits<long long>::max();
+    vector<long long> best(n, INF64);
+    vector<char> used(n);
+    using State = pair<long long, int>;
+    priority_queue<State, vector<State>, greater<State>> pq;
+    best[0] = 0; pq.push({0, 0});
+    long long cost = 0;
+    int cnt = 0;
+    while (!pq.empty()) {
+        auto [w, u] = pq.top(); pq.pop();
+        if (used[u]) continue;
+        used[u] = true; cost += w; ++cnt;
+        for (auto [v, c] : g[u])
+            if (!used[v] && c < best[v])
+                best[v] = c, pq.push({c, v});
+    }
+    return {cnt == n, cost};
 }
-bool connected = (used == n - 1);
 \end{lstlisting}
 
+\subsection{Kruskal 重构树}\label{kruskal-reconstruction-tree}
+
+将边按权值从小到大加入。每次连接两个连通块时新建一个父节点，其点权等于当前边权，两个连通块的根作为儿子。原图有 \passthrough{\lstinline!n!} 个点时至多建立 \passthrough{\lstinline!2n-1!} 个点；祖先点权单调不降。
+
+两点首次连通的边权阈值等于它们在重构树中 LCA 的点权，也等于两点间最小瓶颈路的答案。对顶点 \passthrough{\lstinline!u!} 和阈值 \passthrough{\lstinline!lim!} 向上跳到点权不超过 \passthrough{\lstinline!lim!} 的最高祖先，即得到只保留权值不超过 \passthrough{\lstinline!lim!} 的边时，\passthrough{\lstinline!u!} 所在连通块；其 \passthrough{\lstinline!sz!} 是连通块大小。
+
 \begin{lstlisting}[language={C++}]
-vector<long long> best(n, INF); vector<char> used_prim(n);
-priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<>> pq2;
-best[0] = 0; pq2.push({0, 0}); long long mst = 0;
-while (!pq2.empty()) {
-    auto [w, u] = pq2.top(); pq2.pop();
-    if (used_prim[u]) continue;
-    used_prim[u] = true; mst += w;
-    for (auto [v, c] : weighted_graph[u]) if (!used_prim[v] && c < best[v])
-        best[v] = c, pq2.push({c, v});
-}
+struct KruskalTree {
+    struct Edge { int u, v; long long w; };
+    int n, tot, LOG;
+    vector<int> dsu, dep, sz;
+    vector<long long> val;
+    vector<vector<int>> up, child;
+
+    int find(int x) {
+        return dsu[x] == x ? x : dsu[x] = find(dsu[x]);
+    }
+    void build(int n_, vector<Edge> edges) { // 顶点编号 1..n
+        n = n_; tot = n;
+        int cap = 2 * n + 5;
+        LOG = 1;
+        while ((1LL << LOG) <= 2 * n) ++LOG;
+        dsu.resize(cap); iota(dsu.begin(), dsu.end(), 0);
+        dep.assign(cap, 0); sz.assign(cap, 0);
+        val.assign(cap, numeric_limits<long long>::lowest());
+        up.assign(LOG, vector<int>(cap));
+        child.assign(cap, {});
+        for (int i = 1; i <= n; ++i) sz[i] = 1;
+        sort(edges.begin(), edges.end(),
+             [](const Edge &a, const Edge &b) { return a.w < b.w; });
+        for (auto e : edges) {
+            int x = find(e.u), y = find(e.v);
+            if (x == y) continue;
+            ++tot; val[tot] = e.w;
+            sz[tot] = sz[x] + sz[y];
+            child[tot] = {x, y};
+            up[0][x] = up[0][y] = tot;
+            dsu[x] = dsu[y] = tot;
+            dsu[tot] = tot;
+        }
+        vector<int> st;
+        for (int u = 1; u <= tot; ++u) if (dsu[u] == u) {
+            dep[u] = 1; st.push_back(u); // 不连通图得到森林
+        }
+        while (!st.empty()) {
+            int u = st.back(); st.pop_back();
+            for (int v : child[u]) dep[v] = dep[u] + 1, st.push_back(v);
+        }
+        for (int j = 1; j < LOG; ++j)
+            for (int u = 1; u <= tot; ++u)
+                up[j][u] = up[j - 1][up[j - 1][u]];
+    }
+    int lca(int u, int v) const {
+        if (dep[u] < dep[v]) swap(u, v);
+        int d = dep[u] - dep[v];
+        for (int j = 0; j < LOG; ++j) if (d >> j & 1) u = up[j][u];
+        if (u == v) return u;
+        for (int j = LOG - 1; j >= 0; --j)
+            if (up[j][u] != up[j][v])
+                u = up[j][u], v = up[j][v];
+        return up[0][u];
+    }
+    // nullopt 表示两点在原图中不连通；u==v 时瓶颈记为 -INF。
+    optional<long long> bottleneck(int u, int v) {
+        if (find(u) != find(v)) return nullopt;
+        return val[lca(u, v)];
+    }
+    int component_node(int u, long long lim) const {
+        for (int j = LOG - 1; j >= 0; --j) {
+            int a = up[j][u];
+            if (a && val[a] <= lim) u = a;
+        }
+        return u;
+    }
+    int component_size(int u, long long lim) const {
+        return sz[component_node(u, lim)];
+    }
+};
 \end{lstlisting}
+
+若题目按边权从大到小合并（例如询问边权至少为某值的连通性），反向排序并把祖先跳跃条件同步改成 \passthrough{\lstinline!val[a] >= lim!}。多测时每次重新调用 \passthrough{\lstinline!build!}；同权边顺序只影响树形，不影响阈值答案。
 
 \section{强连通分量（Strongly Connected Components，SCC）与缩点}\label{ux5f3aux8fdeux901aux5206ux91cfstrongly-connected-componentssccux4e0eux7f29ux70b9}
 

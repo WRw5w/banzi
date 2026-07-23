@@ -14,6 +14,7 @@
 | [banzi/板子_大版本.tex](banzi/板子_大版本.tex) | 完整大版本入口；章节源在 [remake/large](remake/large) |
 | [remake/chapters/03_字符串.tex](remake/chapters/03_字符串.tex) | KMP、AC（总计数/逐模式计数）、SAM、后缀数组、PAM |
 | [tests/refactored_strings.cpp](tests/refactored_strings.cpp) | 高风险字符串模板的 C++17 回归测试 |
+| [tests/refactored_mst.cpp](tests/refactored_mst.cpp) | Kruskal 与 Kruskal 重构树的 C++17 回归测试 |
 | [修改意见.md](修改意见.md) | 本次重构验收标准与取舍边界 |
 
 ## 重构后的目录
@@ -36,6 +37,7 @@
 ```text
 g++ -std=c++17 -O2 -Wall muban.cpp
 g++ -std=c++17 -O2 -Wall tests/refactored_strings.cpp
+g++ -std=c++17 -O2 -Wall tests/refactored_mst.cpp
 xelatex -interaction=nonstopmode banzi/板子.tex
 xelatex -interaction=nonstopmode banzi/板子_详细验证.tex
 xelatex -interaction=nonstopmode -output-directory banzi banzi/板子_大版本.tex
