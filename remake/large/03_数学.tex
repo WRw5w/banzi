@@ -131,6 +131,94 @@ for (int i = 2; i < N; ++i) { // i：当前正在确定的整数。
 
 \section{组合数与阶乘（Binomial Coefficients）}\label{ux7ec4ux5408ux6570ux4e0eux9636ux4e58}
 
+\subsection{常用推式性质}\label{large-math-binomial-identities}
+
+以下默认 \passthrough{\lstinline!n>=0!}，并约定当 \passthrough{\lstinline!k<0!} 或 \passthrough{\lstinline!k>n!} 时
+\(\binom{n}{k}=0\)。有了这个约定，卷积公式不用反复裁剪求和上下界。
+
+\subsubsection{对称、递推与吸收}
+
+\[
+\binom{n}{k}=\binom{n}{n-k},\qquad
+\binom{n}{k}=\binom{n-1}{k}+\binom{n-1}{k-1}.
+\]
+
+第一式表示“选出 \(k\) 个”等价于“排除 \(n-k\) 个”；第二式按某个指定元素选或不选分类。
+
+\[
+k\binom{n}{k}=n\binom{n-1}{k-1},\qquad
+(n-k)\binom{n}{k}=n\binom{n-1}{k}.
+\]
+
+这两条吸收恒等式用来消掉求和项前面的 \(k\) 或 \(n-k\)。若枚举相邻的 \(k\)，可用
+
+\[
+\binom{n}{k+1}=\binom{n}{k}\frac{n-k}{k+1}.
+\]
+
+整数计算时先乘再除；模意义下的除法必须乘 \((k+1)^{-1}\)，只有分母在当前模数下可逆时才能直接使用。
+
+嵌套选取可以交换先后顺序：
+
+\[
+\binom{n}{k}\binom{k}{r}
+=\binom{n}{r}\binom{n-r}{k-r}
+\qquad(0\le r\le k\le n).
+\]
+
+左边先选 \(k\) 个再从中标记 \(r\) 个；右边先选被标记的 \(r\) 个，再补齐其余 \(k-r\) 个。
+
+\subsubsection{二项式展开与带权和}
+
+\[
+\sum_{k=0}^{n}\binom{n}{k}x^k=(1+x)^n.
+\]
+
+代入 \(x=1,-1\)，或对 \(x\) 求导后再代入 \(x=1\)，可快速得到：
+
+\[
+\sum_{k=0}^{n}\binom{n}{k}=2^n,\qquad
+\sum_{k=0}^{n}(-1)^k\binom{n}{k}=0\quad(n\ge1),
+\]
+
+\[
+\sum_{k=0}^{n}k\binom{n}{k}=n\cdot2^{n-1},\qquad
+\sum_{k=0}^{n}k(k-1)\binom{n}{k}=n(n-1)\cdot2^{n-2}.
+\]
+
+因此 \(\sum k^2\binom{n}{k}=n(n+1)\cdot2^{n-2}\)（\(n\ge2\)）。看到 \(k^2\) 时先拆成
+\(k(k-1)+k\)，通常比直接处理平方更容易。
+
+\subsubsection{曲棍球杆、交错前缀与卷积}
+
+\[
+\sum_{i=r}^{n}\binom{i}{r}=\binom{n+1}{r+1}.
+\]
+
+这是曲棍球杆恒等式，适合把“上标连续变化、下标固定”的前缀和直接合并成一个组合数。对应的交错前缀为
+
+\[
+\sum_{i=0}^{m}(-1)^i\binom{n}{i}
+=(-1)^m\binom{n-1}{m}
+\qquad(0\le m<n).
+\]
+
+范德蒙德卷积为
+
+\[
+\sum_{i\in\mathbb Z}\binom{a}{i}\binom{b}{r-i}
+=\binom{a+b}{r}.
+\]
+
+含义是从大小分别为 \(a,b\) 的两个集合中总共选 \(r\) 个，按第一个集合选了多少个分类。令
+\(a=b=n,r=n\)，结合对称性可得常用平方和：
+
+\[
+\sum_{i=0}^{n}\binom{n}{i}^{2}=\binom{2n}{n}.
+\]
+
+推式时优先尝试三种视角：按某个元素是否被选分类得到 Pascal 递推；交换“先选谁、再选谁”的顺序得到吸收或嵌套选取；把求和看成二项式乘积的某一项系数得到卷积。
+
 \subsection{\texorpdfstring{质数模且 \texttt{n} 不大}{质数模且 n 不大}}\label{ux8d28ux6570ux6a21ux4e14-n-ux4e0dux5927}
 
 预处理 \passthrough{\lstinline!fac[i]!}、\passthrough{\lstinline!ifac[i]!}，\passthrough{\lstinline!C(n,k)=fac[n]ifac[k]ifac[n-k]!}，预处理 \passthrough{\lstinline!O(N)!}，查询 \passthrough{\lstinline!O(1)!}。

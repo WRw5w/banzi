@@ -119,6 +119,79 @@ long long mod_pow(long long a, long long e, long long mod) {
     return ans;
 }
 
+// 接口：返回精确组合数 C(n,k)；测试仅使用 n<=20，保证 long long 不溢出。
+// k 越界时返回 0，与板子中组合数恒等式的统一约定一致。
+long long binom_exact(int n, int k) {
+    if (k < 0 || k > n) return 0;
+    k = min(k, n - k);
+    long long ans = 1;
+    for (int i = 1; i <= k; ++i)
+        ans = ans * (n - i + 1) / i;
+    return ans;
+}
+
+// 数值核对板子中列出的对称、递推、吸收、求和与卷积恒等式。
+void test_binomial_identities() {
+    for (int n = 0; n <= 15; ++n) {
+        long long row_sum = 0, alternating = 0;
+        long long weighted = 0, falling_weighted = 0;
+        for (int k = 0; k <= n; ++k) {
+            long long c = binom_exact(n, k);
+            assert(c == binom_exact(n, n - k));
+            if (n > 0)
+                assert(c == binom_exact(n - 1, k)
+                          + binom_exact(n - 1, k - 1));
+            assert(k * c == n * binom_exact(n - 1, k - 1));
+            assert((n - k) * c == n * binom_exact(n - 1, k));
+            for (int r = 0; r <= k; ++r)
+                assert(c * binom_exact(k, r)
+                       == binom_exact(n, r) * binom_exact(n - r, k - r));
+            row_sum += c;
+            alternating += (k & 1) ? -c : c;
+            weighted += k * c;
+            falling_weighted += k * (k - 1) * c;
+        }
+        assert(row_sum == (1LL << n));
+        assert(alternating == (n == 0 ? 1 : 0));
+        if (n >= 1) assert(weighted == n * (1LL << (n - 1)));
+        if (n >= 2)
+            assert(falling_weighted == n * (n - 1) * (1LL << (n - 2)));
+    }
+
+    for (int n = 1; n <= 15; ++n) {
+        long long alternating_prefix = 0, square_sum = 0;
+        for (int m = 0; m <= n; ++m) {
+            long long c = binom_exact(n, m);
+            square_sum += c * c;
+            if (m < n) {
+                alternating_prefix += (m & 1) ? -c : c;
+                long long expected = binom_exact(n - 1, m);
+                if (m & 1) expected = -expected;
+                assert(alternating_prefix == expected);
+            }
+        }
+        assert(square_sum == binom_exact(2 * n, n));
+    }
+
+    for (int r = 0; r <= 8; ++r) {
+        long long hockey = 0;
+        for (int n = r; n <= 12; ++n) {
+            hockey += binom_exact(n, r);
+            assert(hockey == binom_exact(n + 1, r + 1));
+        }
+    }
+
+    for (int a = 0; a <= 8; ++a)
+        for (int b = 0; b <= 8; ++b)
+            for (int r = 0; r <= a + b; ++r) {
+                long long convolution = 0;
+                for (int i = 0; i <= r; ++i)
+                    convolution += binom_exact(a, i)
+                                 * binom_exact(b, r - i);
+                assert(convolution == binom_exact(a + b, r));
+            }
+}
+
 // 接口：返回 gcd(a,b)，并写回 ax+by=gcd(a,b)。
 long long exgcd(long long a, long long b, long long &x, long long &y) {
     if (!b) return x = 1, y = 0, a;
@@ -361,6 +434,7 @@ int main() {
             vector<long long>{3, 3, 5}));
 
     assert(mod_pow(2, 10, 1000) == 24);
+    test_binomial_identities();
     long long x, y;
     assert(exgcd(30, 18, x, y) == 6 && 30 * x + 18 * y == 6);
     assert(phi(1) == 1 && phi(36) == 12);
