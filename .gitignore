@@ -9,6 +9,8 @@
 *.synctex.gz
 texput.log
 System.Collections.Hashtable.dst
+__pycache__/
+*.pyc
 
 # Temporary renderings, intermediate PDFs and local executables
 tmp/

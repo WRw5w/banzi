@@ -19,6 +19,26 @@ vector<int> bfs(const vector<vector<int>> &g, int s) {
     return d;
 }
 
+// 接口：无权图中每个点到最近源点的最短边数；不可达点返回 -1。
+// sources 可包含重复源点；空集合会使所有点保持 -1。
+vector<int> multi_source_bfs(
+    const vector<vector<int>> &g, const vector<int> &sources) {
+    vector<int> d(g.size(), -1);
+    queue<int> q;
+    for (int s : sources) {
+        if (d[s] != -1) continue;
+        d[s] = 0;
+        q.push(s);
+    }
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        for (int v : g[u]) if (d[v] == -1)
+            d[v] = d[u] + 1, q.push(v);
+    }
+    return d;
+}
+
 // 接口：非负权图单源最短路；不可达点用 INF 表示。
 vector<long long> dijkstra(
     const vector<vector<pair<int, long long>>> &g, int s) {
@@ -260,6 +280,12 @@ int main() {
     g[0] = {1, 2};
     g[1] = {3};
     assert((bfs(g, 0) == vector<int>{0, 1, 1, 2}));
+
+    vector<vector<int>> mg(6);
+    for (int u = 0; u < 4; ++u)
+        mg[u].push_back(u + 1), mg[u + 1].push_back(u);
+    assert((multi_source_bfs(mg, {0, 4, 4})
+            == vector<int>{0, 1, 2, 1, 0, -1}));
 
     vector<vector<pair<int, long long>>> wg(4);
     wg[0] = {{1, 5}, {2, 1}};

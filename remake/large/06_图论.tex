@@ -23,6 +23,40 @@ while (!q.empty()) {
 }
 \end{lstlisting}
 
+\subsection{多源 BFS}\label{large-graph-multi-source-bfs}
+
+多源 BFS 用来求每个点到“最近源点”的无权最短距离。与单源 BFS 的区别只有初始化：把所有源点的距离设为 0，并在搜索开始前全部入队；后面的扩展过程完全相同。每个点第一次被访问时得到的就是它到源点集合的最短距离，复杂度为 \passthrough{\lstinline!O(V+E)!}。
+
+\begin{lstlisting}[language={C++}]
+// 变量：g[u] 存储从顶点 u 出发能够到达的所有相邻顶点。
+vector<vector<int>> g(n);
+// 变量：sources 存储全部源点编号；允许有重复源点。
+vector<int> sources;
+// 变量：dist[u]=顶点 u 到最近源点的最短边数，-1 表示尚未到达。
+vector<int> dist(n, -1);
+// 变量：q 存储已经确定最短距离、等待向外扩展的顶点。
+queue<int> q;
+
+// 所有源点处在第 0 层，必须在正式 BFS 前一起入队。
+// 变量：s=当前正在初始化的源点编号。
+for (int s : sources) {
+    if (dist[s] != -1) continue;  // 跳过重复源点
+    dist[s] = 0;
+    q.push(s);
+}
+
+while (!q.empty()) {
+    // 变量：u 是当前取出并向相邻顶点扩展的顶点。
+    int u = q.front(); q.pop();
+    // 变量：v 是 u 的一个相邻顶点。
+    for (int v : g[u]) {
+        if (dist[v] != -1) continue;
+        dist[v] = dist[u] + 1;
+        q.push(v);
+    }
+}
+\end{lstlisting}
+
 \section{有向无环图（Directed Acyclic Graph，DAG）与拓扑排序}\label{ux6709ux5411ux65e0ux73afux56fedirected-acyclic-graphdagux4e0eux62d3ux6251ux6392ux5e8f}
 
 Kahn：把入度为 0 的点入队，删除出边；处理点数小于 \passthrough{\lstinline!V!} 说明有环。DFS 三色标记也能判环。DAG 上按拓扑序做最长路/最短路、路径计数、DP；多源最短路可把所有源同时入队。
