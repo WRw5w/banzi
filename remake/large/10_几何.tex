@@ -6,14 +6,28 @@
 
 \begin{lstlisting}[language={C++}]
 using Real = long double;
+// 变量：EPS=浮点比较容差，绝对值不超过 EPS 视为 0。
 const Real EPS = 1e-12L;
-struct Point { Real x, y;
+struct Point {
+    Real x, y; // 二维点/向量坐标；所有浮点比较统一经过 sgn/EPS。
+    // 接口：operator+(b)：返回两个点/向量的坐标和；返回类型 Point。
+    // 参数：输入点/向量 b。
     Point operator+(Point b) const { return {x + b.x, y + b.y}; }
+    // 接口：operator-(b)：返回两个点/向量的坐标差；返回类型 Point。
+    // 参数：输入点/向量 b。
     Point operator-(Point b) const { return {x - b.x, y - b.y}; }
+    // 接口：operator*(k)：返回两个矩阵/几何量按本节定义相乘的结果；返回类型 Point。
+    // 参数：向量数乘的实数系数 k。
     Point operator*(Real k) const { return {x * k, y * k}; }
 };
+// 接口：cross(a, b)：返回二维向量 a,b 的叉积；返回类型 Real。
+// 参数：输入点/向量 a；输入点/向量 b。
 Real cross(Point a, Point b) { return a.x * b.y - a.y * b.x; }
+// 接口：dot(a, b)：返回二维向量 a,b 的点积；返回类型 Real。
+// 参数：输入点/向量 a；输入点/向量 b。
 Real dot(Point a, Point b) { return a.x * b.x + a.y * b.y; }
+// 接口：sgn(x)：按 EPS 返回 x 的符号：正为 1，负为 -1，近零为 0；返回类型 int。
+// 参数：待处理值或点/状态 x。
 int sgn(Real x) { return (x > EPS) - (x < -EPS); }
 \end{lstlisting}
 
@@ -24,7 +38,12 @@ int sgn(Real x) { return (x > EPS) - (x < -EPS); }
 点积判断投影/夹角：\passthrough{\lstinline!dot(a,b)>0!} 锐角，\passthrough{\lstinline!<0!} 钝角；距离平方尽量不开放平方根。
 
 \begin{lstlisting}[language={C++}]
+// 接口：dist2(a, b)：返回点 a,b 的欧氏距离平方；返回类型 Real。
+// 参数：输入点/向量 a；输入点/向量 b。
+// 变量：d=从点 b 指向点 a 的差向量 d。
 Real dist2(Point a, Point b) { Point d = a - b; return dot(d, d); }
+// 接口：left_of(a, b, p)：判断 p 是否严格位于有向直线 a->b 左侧；返回 true 表示本节条件成立/操作成功。
+// 参数：输入点/向量 a；输入点/向量 b；输入点 p。
 bool left_of(Point a, Point b, Point p) { return sgn(cross(b - a, p - a)) > 0; }
 \end{lstlisting}
 
@@ -35,11 +54,17 @@ bool left_of(Point a, Point b, Point p) { return sgn(cross(b - a, p - a)) > 0; }
 点到直线距离：\passthrough{\lstinline!abs(cross(b-a,p-a))/|b-a|!}；点到线段要先看投影是否落在段内，否则取端点距离。
 
 \begin{lstlisting}[language={C++}]
+// 接口：on_segment(a, b, p)：判断点 p 是否在线段 ab 上（含端点）；返回 true 表示本节条件成立/操作成功。
+// 参数：输入点/向量 a；输入点/向量 b；输入点 p。
 bool on_segment(Point a, Point b, Point p) {
     return sgn(cross(b - a, p - a)) == 0 && sgn(dot(p - a, p - b)) <= 0;
 }
+// 接口：intersect(a, b, c, d)：判断闭线段 ab 与 cd 是否相交（含端点）；返回 true 表示本节条件成立/操作成功。
+// 参数：输入点/向量 a；输入点/向量 b；输入点/向量 c；第四个输入点/向量 d。
 bool intersect(Point a, Point b, Point c, Point d) {
+    // 变量：c1=点 c 相对有向线段 a->b 的方向叉积 c1；c2=点 d 相对有向线段 a->b 的方向叉积 c2。
     Real c1 = cross(b - a, c - a), c2 = cross(b - a, d - a);
+    // 变量：c3=点 a 相对有向线段 c->d 的方向叉积 c3；c4=点 b 相对有向线段 c->d 的方向叉积 c4。
     Real c3 = cross(d - c, a - c), c4 = cross(d - c, b - c);
     if (sgn(c1) == 0 && on_segment(a, b, c)) return true;
     if (sgn(c2) == 0 && on_segment(a, b, d)) return true;
@@ -52,26 +77,41 @@ bool intersect(Point a, Point b, Point c, Point d) {
 直线与圆交点先投影到直线，再根据圆心到直线的距离判断交点数；两圆交点用圆心连线方向分解。判别相切时仍使用 \passthrough{\lstinline!EPS!}。
 
 \begin{lstlisting}[language={C++}]
-struct Circle { Point o; Real r; };
+struct Circle { Point o; Real r; }; // o=圆心，r=非负半径。
+// 接口：line_circle(a, b, c)：返回直线与圆的全部交点（0/1/2 个）；返回类型 vector<Point>。
+// 参数：输入点/向量 a；输入点/向量 b；输入点/向量 c。
 vector<Point> line_circle(Point a, Point b, Circle c) {
+    // 变量：d=当前距离、差值或覆盖增量 d。
     Point d = b - a;
+    // 变量：dd=两圆圆心距离的平方 dd；t=测试用例数量或当前临时值 t。
     Real dd = dot(d, d), t = dot(c.o - a, d) / dd;
+    // 变量：foot=点在直线上的垂足 foot。
     Point foot = a + d * t;
+    // 变量：h2=“圆几何”这段代码中的临时量 h2；值由本行初始化式确定。
     Real h2 = c.r * c.r - dist2(foot, c.o);
     if (h2 < -EPS) return {};
     if (h2 <= EPS) return {foot};
+    // 变量：unit=单位方向向量 unit。
     Point unit = d * (sqrtl(h2 / dd));
     return {foot - unit, foot + unit};
 }
 
+// 接口：circle_circle(a, b)：返回两圆全部交点（0/1/2 个；重合圆需单独处理）；返回类型 vector<Point>。
+// 参数：输入点/向量 a；输入点/向量 b。
 vector<Point> circle_circle(Circle a, Circle b) {
+    // 变量：d=从圆 a 圆心指向圆 b 圆心的向量 d；dd=两圆圆心距离的平方 dd；dis=两圆圆心距离/当前实际距离 dis。
     Point d = b.o - a.o; Real dd = dot(d, d), dis = sqrtl(dd);
     if (dis < EPS || dis > a.r + b.r + EPS || dis < fabsl(a.r - b.r) - EPS) return {};
+    // 变量：x=当前输入值/查询值/坐标 x。
     Real x = (a.r * a.r - b.r * b.r + dd) / (2 * dis);
+    // 变量：h2=“圆几何”这段代码中的临时量 h2；值由本行初始化式确定。
     Real h2 = max((Real)0, a.r * a.r - x * x);
+    // 变量：base=当前幂运算底数/基多项式 base。
     Point base = a.o + d * (x / dis);
+    // 变量：perp=与当前方向垂直的单位向量 perp。
     Point perp{-d.y / dis, d.x / dis};
     if (h2 <= EPS) return {base};
+    // 变量：off=从中点到交点的垂直偏移 off。
     Point off = perp * sqrtl(h2);
     return {base - off, base + off};
 }
@@ -92,8 +132,12 @@ vector<Point> circle_circle(Circle a, Circle b) {
 \end{itemize}
 
 \begin{lstlisting}[language={C++}]
+// 接口：area2(p)：返回多边形有向面积的两倍；返回类型 Real。
+// 参数：当前节点/模数 p（见本节定义）。
 Real area2(const vector<Point>& p) {
+    // 变量：s=当前枚举的起点/源点 s。
     Real s = 0;
+    // 变量：i=当前循环下标 i。
     for (int i = 0; i < (int)p.size(); ++i)
         s += cross(p[i], p[(i + 1) % p.size()]);
     return s;
@@ -105,19 +149,28 @@ Real area2(const vector<Point>& p) {
 点按 \passthrough{\lstinline!(x,y)!} 排序去重；维护下凸/上凸，若 \passthrough{\lstinline!cross <= 0!} 弹出可得到不保留共线点的凸包，若要保留边界改为 \passthrough{\lstinline!<0!}。复杂度 \passthrough{\lstinline!O(n log n)!}。周长、面积、最远点对都以凸包为输入。
 
 \begin{lstlisting}[language={C++}]
+// 接口：convex_hull(p)：返回去重后的凸包顶点（逆时针，不重复首点）；返回类型 vector<Point>。
+// 参数：输入点 p。
 vector<Point> convex_hull(vector<Point> p) {
+    // 接口：比较器 lambda(a, b)：供“凸包（Andrew）”当前语句回调；返回值含义见调用处条件。
+    // 参数：输入点/向量 a；输入点/向量 b。
     sort(p.begin(), p.end(), [](Point a, Point b) {
         return a.x < b.x || (a.x == b.x && a.y < b.y);
     });
+    // 接口：比较器 lambda(a, b)：供“凸包（Andrew）”当前语句回调；返回值含义见调用处条件。
+    // 参数：输入点/向量 a；输入点/向量 b。
     p.erase(unique(p.begin(), p.end(), [](Point a, Point b) {
         return a.x == b.x && a.y == b.y;
     }), p.end());
+    // 变量：h=“凸包（Andrew）”这段代码中的临时量 h；值由本行初始化式确定。
     vector<Point> h;
     for (Point x : p) {
         while (h.size() >= 2 && cross(h.back() - h[h.size() - 2], x - h.back()) <= 0) h.pop_back();
         h.push_back(x);
     }
+    // 变量：lower=凸包下链/下方候选 lower。
     int lower = h.size();
+    // 变量：i=当前循环下标 i。
     for (int i = (int)p.size() - 2; i >= 0; --i) {
         while ((int)h.size() > lower && cross(h.back() - h[h.size() - 2], p[i] - h.back()) <= 0) h.pop_back();
         h.push_back(p[i]);
@@ -132,9 +185,14 @@ vector<Point> convex_hull(vector<Point> p) {
 在凸包上用一个单调指针寻找对踵点，求直径（最远点对）\passthrough{\lstinline!O(h)!}；也可求最大三角形面积、两凸多边形距离。指针前进依据叉积面积是否增大，不要用浮点角度比较。
 
 \begin{lstlisting}[language={C++}]
+// 接口：diameter2(p)：返回凸多边形直径的平方；返回类型 long double。
+// 参数：当前节点/模数 p（见本节定义）。
 long double diameter2(const vector<Point>& p) {
+    // 变量：n=当前元素/顶点/状态数量 n；j=内层循环下标 j；ans=当前累计答案 ans。
     int n = p.size(), j = 1; long double ans = 0;
+    // 变量：i=当前循环下标 i。
     for (int i = 0; i < n; ++i) {
+        // 变量：ni=变换长度 n 在模 MOD 下的逆元 ni。
         int ni = (i + 1) % n;
         while (fabsl(cross(p[ni] - p[i], p[(j + 1) % n] - p[i])) >
                fabsl(cross(p[ni] - p[i], p[j] - p[i]))) j = (j + 1) % n;
@@ -149,9 +207,13 @@ long double diameter2(const vector<Point>& p) {
 矩形并面积：按 x 端点事件排序，y 区间用线段树维护覆盖长度，当前面积增量为 \passthrough{\lstinline!covered\_y * Δx!}。坐标压缩要保留相邻坐标差，节点代表小区间而非点。
 
 \begin{lstlisting}[language={C++}]
-struct Event { long long x, y1, y2; int delta; };
+struct Event { long long x, y1, y2; int delta; }; // x 扫描坐标、y 区间、覆盖增量 ±1。
+// 接口：比较器 lambda(a, b)：供“扫描线”当前语句回调；返回值含义见调用处条件。
+// 参数：输入值/数组 a（见本节定义）；输入值/数组 b（见本节定义）。
 sort(events.begin(), events.end(), [](auto a, auto b) { return a.x < b.x; });
+// 变量：area=当前累计面积 area；last_x=扫描线上一个事件横坐标 last_x。
 long long area = 0, last_x = events[0].x;
+// 变量：e=当前指数、质因子次数或边对象 e。
 for (auto e : events) {
     area += covered_length() * (e.x - last_x);
     update(y1_id(e.y1), y2_id(e.y2) - 1, e.delta);
@@ -164,18 +226,30 @@ for (auto e : events) {
 分治按 x 排序，递归求左右最小距离，只检查中线附近按 y 排序的常数个点，复杂度 \passthrough{\lstinline!O(n log n)!}。若只需竞赛常见规模，网格哈希也可用，但要证明桶大小与最小距离的关系。
 
 \begin{lstlisting}[language={C++}]
+// 接口：closest(p, l, r)：返回指定点集/下标区间内最近点对距离；返回类型 long double。
+// 参数：当前节点/模数 p（见本节定义）；闭区间左端点 l；闭区间右端点 r。
 long double closest(vector<Point>& p, int l, int r) {
     if (r - l <= 3) {
+        // 变量：ans=当前累计答案 ans。
         long double ans = 1e100L;
+        // 变量：i=当前循环下标 i。
         for (int i = l; i < r; ++i) for (int j = l; j < i; ++j) ans = min(ans, dist2(p[i], p[j]));
+        // 接口：比较器 lambda(a, b)：供“最近点对”当前语句回调；返回值含义见调用处条件。
+        // 参数：输入值/数组 a（见本节定义）；输入值/数组 b（见本节定义）。
         sort(p.begin() + l, p.begin() + r, [](Point a, Point b) { return a.y < b.y; });
         return ans;
     }
+    // 变量：m=当前边数、操作数或第二维规模 m；mid=当前区间中点 mid。
     int m = (l + r) / 2; Real mid = p[m].x;
+    // 变量：ans=当前累计答案 ans。
     Real ans = min(closest(p, l, m), closest(p, m, r));
+    // 变量：strip=当前阶梯 Nim 的奇数层石子异或和 strip。
     vector<Point> strip;
+    // 变量：i=当前循环下标 i。
     for (int i = l; i < r; ++i) if ((p[i].x - mid) * (p[i].x - mid) < ans) strip.push_back(p[i]);
+    // 变量：i=当前循环下标 i。
     for (int i = 0; i < (int)strip.size(); ++i)
+        // 变量：j=内层循环下标 j。
         for (int j = i + 1; j < (int)strip.size() && strip[j].y - strip[i].y < sqrtl(ans); ++j)
             ans = min(ans, dist2(strip[i], strip[j]));
     return ans;
@@ -187,16 +261,23 @@ long double closest(vector<Point>& p, int l, int r) {
 把每个半平面写成有向直线左侧，按极角排序并用双端队列维护交集；处理平行情形和角度相等是难点。若题目只问凸多边形裁剪，优先用逐边 Sutherland--Hodgman。
 
 \begin{lstlisting}[language={C++}]
+// 接口：clip(poly, a, b)：用有向直线 a->b 的左半平面裁剪凸多边形 poly；返回类型 vector<Point>。
+// 参数：当前凸多边形顶点 poly；输入点/向量 a；输入点/向量 b。
 vector<Point> clip(const vector<Point>& poly, Point a, Point b) {
     // 保留有向边 a->b 的左侧；cp/cq 是端点相对切线的叉积符号。
+    // 变量：out=准备返回的多边形/交点集合 out。
     vector<Point> out;
+    // 变量：i=当前循环下标 i。
     for (int i = 0; i < (int)poly.size(); ++i) {
+        // 变量：p=当前质数、节点编号或指针 p；具体角色见所在公式；q=当前查询对象 q。
         Point p = poly[i], q = poly[(i + 1) % poly.size()];
+        // 变量：cp=当前点 p 相对圆心/基点的向量 cp；cq=当前点 q 相对圆心/基点的向量 cq。
         Real cp = cross(b - a, p - a), cq = cross(b - a, q - a);
         // p 在合法侧就保留 p。
         if (cp >= -EPS) out.push_back(p);
         // 一进一出时，边 pq 与切线有交点，按线性插值求交。
         if ((cp >= 0) != (cq >= 0)) {
+            // 变量：t=测试用例数量或当前临时值 t。
             Real t = cp / (cp - cq);
             out.push_back(p + (q - p) * t);
         }
@@ -208,24 +289,35 @@ vector<Point> clip(const vector<Point>& poly, Point a, Point b) {
 下面是``有向直线左侧为合法半平面''的真正半平面交模板；返回空集表示交集无界或为空时需结合题目另行处理，常规竞赛题通常会额外给一个大矩形作边界。
 
 \begin{lstlisting}[language={C++}]
-struct HalfPlane { Point p, v; Real ang; };
+struct HalfPlane { Point p, v; Real ang; }; // 边界 p+t*v，保留其左侧；ang=方向极角。
+// 接口：line_inter(a, b)：返回两条非平行直线的交点；返回类型 Point。
+// 参数：输入点/向量 a；输入点/向量 b。
 Point line_inter(HalfPlane a, HalfPlane b) {
     // a.p+t*a.v 与 b.p+s*b.v 的交点参数。
+    // 变量：t=测试用例数量或当前临时值 t。
     Real t = cross(b.p - a.p, b.v) / cross(a.v, b.v);
     return a.p + a.v * t;
 }
+// 接口：outside(h, p)：判断点 p 是否在有向半平面的外侧；返回 true 表示本节条件成立/操作成功。
+// 参数：当前半平面 h；输入点 p。
 bool outside(HalfPlane h, Point p) {
     // 有向直线左侧合法；叉积小于 0 表示点在右侧，应该删掉。
     return sgn(cross(h.v, p - h.p)) < 0;
 }
 
+// 接口：half_plane_intersection(h)：返回半平面交得到的凸多边形；返回类型 vector<Point>。
+// 参数：当前半平面 h。
 vector<Point> half_plane_intersection(vector<HalfPlane> h) {
     // 极角排序让平面边界按方向排列，双端队列只需维护首尾交点。
     for (auto &x : h) x.ang = atan2l(x.v.y, x.v.x);
+    // 接口：比较器 lambda(a, b)：供“半平面交（Half-Plane Intersection，HPI，了解）”当前语句回调；返回值含义见调用处条件。
+    // 参数：输入点/向量 a；输入点/向量 b。
     sort(h.begin(), h.end(), [](const HalfPlane& a, const HalfPlane& b) {
         return a.ang < b.ang;
     });
+    // 变量：q=当前 BFS/单调算法使用的队列 q。
     deque<HalfPlane> q;
+    // 变量：cur=当前扫描位置的累计状态 cur。
     for (auto cur : h) {
         // 新半平面会淘汰队尾/队首不在新半平面内的交点。
         while (q.size() >= 2 && outside(cur, line_inter(q[q.size() - 2], q.back()))) q.pop_back();
@@ -238,7 +330,9 @@ vector<Point> half_plane_intersection(vector<HalfPlane> h) {
     while (q.size() >= 3 && outside(q.front(), line_inter(q[q.size() - 2], q.back()))) q.pop_back();
     while (q.size() >= 3 && outside(q.back(), line_inter(q[0], q[1]))) q.pop_front();
     if (q.size() < 3) return {};
+    // 变量：poly=当前凸多边形顶点序列 poly。
     vector<Point> poly;
+    // 变量：i=当前循环下标 i。
     for (int i = 0; i < (int)q.size(); ++i)
         poly.push_back(line_inter(q[i], q[(i + 1) % q.size()]));
     return poly;
@@ -261,6 +355,7 @@ vector<Point> half_plane_intersection(vector<HalfPlane> h) {
 mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 shuffle(a.begin(), a.end(), rng);
 nth_element(a.begin(), a.begin() + k, a.end());
+// 变量：answer=当前累计/最终答案 answer。
 int answer = a[k];
 uint64_t random_hash = rng();
 \end{lstlisting}
@@ -270,9 +365,12 @@ uint64_t random_hash = rng();
 \passthrough{\lstinline!std::bitset!} 将 64/机器字并行，适合传递闭包（布尔矩阵）、集合交并、子集计数；\passthrough{\lstinline!bitset!} 大小需编译期常量，动态场景使用 \passthrough{\lstinline!vector<unsigned long long>!}。
 
 \begin{lstlisting}[language={C++}]
+// 变量：N=数组容量/预处理上界；实际合法下标以本节注释为准。
 const int N = 2000;
 bitset<N> reach[N];
+// 变量：k=当前排名、选取数量或循环层数 k。
 for (int k = 0; k < n; ++k)
+    // 变量：i=当前循环下标 i。
     for (int i = 0; i < n; ++i)
         if (reach[i][k]) reach[i] |= reach[k];
 \end{lstlisting}
@@ -292,11 +390,13 @@ for (int k = 0; k < n; ++k)
 \end{itemize}
 
 \begin{lstlisting}[language={C++}]
+// 变量：g=图/树的邻接表 g。
 long long g = std::gcd(a, b);
+// 变量：l=当前区间左端点 l。
 long long l = a / g * b;
 sort(v.begin(), v.end());
 v.erase(unique(v.begin(), v.end()), v.end());
 long long lowbit = x & -x; // x != 0
+// 变量：safe_product=“几何快速小技巧”这段代码中的临时量 safe_product；值由本行初始化式确定。
 long long safe_product = (long long)((__int128)x * y % MOD);
 \end{lstlisting}
-

@@ -9,12 +9,18 @@
 最实用的现场做法是先把更新写成基函数，再分别维护系数的差分。比如区间 \passthrough{\lstinline![l,r]!} 加 \passthrough{\lstinline!a*i+b!}，维护两个差分数组 \passthrough{\lstinline!da, db!}：
 
 \begin{lstlisting}[language={C++}]
+// 变量：da=点/节点 a 的深度或差值 da；db=点/节点 b 的深度或差值 db。
 vector<long long> da(n + 2), db(n + 2);
+// 接口：range_add_linear(l, r, a, b)：在闭区间 [l,r] 给位置 i 加上 a*i+b；无返回值；结果写入引用参数或当前结构状态。
+// 参数：闭区间左端点 l；闭区间右端点 r；输入值/数组 a（见本节定义）；输入值/数组 b（见本节定义）。
 void range_add_linear(int l, int r, long long a, long long b) {
     da[l] += a; da[r + 1] -= a;
     db[l] += b; db[r + 1] -= b;
 }
+// 接口：point_value(i)：返回位置 i 的当前值；返回类型 long long。
+// 参数：当前 0/1-based 位置 i（见接口区间约定）。
 long long point_value(int i) {
+    // 变量：ca=圆/节点 a 的当前分类或余弦值 ca；cb=圆/节点 b 的当前分类或余弦值 cb。
     static long long ca = 0, cb = 0;
     // 按 i 从小到大扫描时更新 ca += da[i], cb += db[i]
     return ca * i + cb;
@@ -38,13 +44,16 @@ long long point_value(int i) {
 struct Tag {
     // 一个懒标记表示：把区间内每个 x 变成 mul * x + add。
     // 初始值必须是恒等变换 x -> x，而不是 0。
+    // 变量：mul=当前仿射乘数/矩阵乘积 mul。
     long long mul = 1;
-    long long add = 0;
+    long long add = 0; // 仿射变换的常数项；恒等标记为 {mul=1,add=0}。
 };
 struct Node {
     long long sum = 0; // 当前区间的和，已经包含本节点自己的 tag。
     Tag tag;           // 尚未下传给儿子的变换。
 };
+// 接口：apply(p, l, r, mul, add)：把本次懒操作直接作用于节点 p，并同步节点值与标记；会修改当前结构；多测时重新构造或显式清空成员。
+// 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r；仿射标记乘数 mul；仿射标记常数项/本次增加量 add。
 void apply(int p, int l, int r, long long mul, long long add) {
     // 先更新“区间答案”：区间和乘 mul，再额外加 add * 区间长度。
     tr[p].sum = (tr[p].sum * mul + add * (r - l + 1)) % MOD;
@@ -55,9 +64,12 @@ void apply(int p, int l, int r, long long mul, long long add) {
     tr[p].tag.mul = tr[p].tag.mul * mul % MOD;
     tr[p].tag.add = (tr[p].tag.add * mul + add) % MOD;
 }
+// 接口：push(p, l, r)：把节点 p/x 的待下传标记传给孩子并清除本节点标记；会修改当前结构；多测时重新构造或显式清空成员。
+// 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r。
 void push(int p, int l, int r) {
     // 叶子没有儿子，标记留在自己这里即可。
     if (l == r) return;
+    // 变量：mid=当前区间中点 mid。
     int mid = (l + r) >> 1;
     auto [m, a] = tr[p].tag;
 
@@ -123,11 +135,15 @@ void push(int p, int l, int r) {
 当每个节点维护一个可合并的``容量/最大值/最小值''，并且可以判断``左子树是否存在答案''，就可以在线段树上二分，复杂度 \(O(\log n)\)。
 
 \begin{lstlisting}[language={C++}]
+// 接口：first_at_least(p, l, r, x)：返回查询范围内第一个值至少为 x 的位置，不存在返回 -1；返回类型 int。
+// 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r；待处理值或点/状态 x。
 int first_at_least(int p, int l, int r, long long x) {
     if (tr[p].mx < x) return -1;
     if (l == r) return l;
     push(p, l, r);
+    // 变量：mid=当前区间中点 mid。
     int mid = (l + r) >> 1;
+    // 变量：ans=当前累计答案 ans。
     int ans = first_at_least(p << 1, l, mid, x);
     if (ans != -1) return ans;
     return first_at_least(p << 1 | 1, mid + 1, r, x);
@@ -143,23 +159,31 @@ int first_at_least(int p, int l, int r, long long x) {
 
 \begin{lstlisting}[language={C++}]
 // t 是时间维：这个询问发生以前，数组已经执行了多少次修改。
-struct Query { int l, r, t, id; };
+struct Query { int l, r, t, id; }; // 查询闭区间、需应用的修改次数、原始编号。
 
 // oldv/newv 必须在读入时保存；处理询问时不能再从当前数组猜 oldv。
-struct Change { int pos, oldv, newv; };
+struct Change { int pos, oldv, newv; }; // 修改位置及修改前/后的离散化值。
 
 // 当前窗口是 [L,R]，当前已经应用到第 T 次修改。
 // 初始设置为 L=1,R=0，表示窗口为空。
+// 变量：L=当前左边界/左半部分 L；R=当前右边界/右半部分 R；T=测试用例数量 T。
 int L = 1, R = 0, T = 0;
 
 // 这两个函数是“题目答案维护器”，不是莫队本身。
 // 例如统计不同颜色：add 时 freq[a[p]] 从 0 变 1 就 ++answer，
 // del 时从 1 变 0 就 --answer；统计频率平方和则要先减旧贡献再加新贡献。
+// 接口：add_pos(p)：把数组位置 p 加入当前莫队窗口并更新答案；无返回值；结果写入引用参数或当前结构状态。
+// 参数：当前节点/模数 p（见本节定义）。
 void add_pos(int p) { /* 把 a[p] 加入当前答案 */ }
+// 接口：del_pos(p)：把数组位置 p 移出当前莫队窗口并更新答案；无返回值；结果写入引用参数或当前结构状态。
+// 参数：当前节点/模数 p（见本节定义）。
 void del_pos(int p) { /* 从当前答案删除 a[p] */ }
 
+// 接口：apply_change(c, forward)：正向应用或反向撤销一次带修改莫队更新；无返回值；结果写入引用参数或当前结构状态。
+// 参数：字符编号/边容量/候选对象 c（见本节）；true=应用修改，false=撤销修改。
 void apply_change(const Change& c, bool forward) {
     // forward=true：把 oldv 改成 newv；false：撤销为 oldv。
+    // 变量：v=当前相邻顶点/下一状态 v。
     int v = forward ? c.newv : c.oldv;
 
     // 只有修改点位于当前区间时，它才会影响答案。
@@ -173,6 +197,8 @@ void apply_change(const Change& c, bool forward) {
 // 1. 先按 (l 所在块, r 所在块, t) 排序；
 // 2. 把当前 L/R/T 一格一格移动到询问要求的位置；
 // 3. 每次移动都调用同一套 add/del/apply_change，答案逻辑无需重复编写。
+// 接口：process_query(q)：把莫队窗口和时间移动到查询 q，随后记录答案；无返回值；结果写入引用参数或当前结构状态。
+// 参数：当前查询对象 q。
 void process_query(Query q) {
     while (T < q.t) apply_change(changes[++T], true);
     while (T > q.t) apply_change(changes[T--], false);
@@ -234,33 +260,44 @@ CDQ 解决的不是``任意三维查询''，而是一个维度分治、另一个
 // 对每个点 i，统计有多少个点 j 满足 xj<=xi、yj<=yi、zj<=zi。
 // 调用前：按 (x,y,z) 排序、把完全相同的点合并，z 压缩成 1..Z。
 struct Point {
-    int x, y, z;
+    int x, y, z;       // 三个偏序坐标；进入 CDQ 前按 (x,y,z) 排序。
     int cnt = 1;       // 完全相同点的个数；合并重复点后使用。
     long long ans = 0; // 不含自己这一组的答案。
 };
 
 struct Fenwick {
-    vector<int> t;
+    vector<int> t; // 1-based 频次数组；大小 n+1，t[0] 不使用。
+  // 接口：Fenwick(n)：构造管理 1..n 下标的空树状数组；构造并初始化对象；每组测试建议重新构造。
+  // 参数：规模/上界 n。
     Fenwick(int n): t(n + 1) {}
 
     // 在压缩坐标 x 上加入 v 个点。
+    // 接口：add(x, v)：执行本节定义的单点/区间增加或加入操作；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：待处理值或点/状态 x；顶点/状态编号 v。
     void add(int x, int v) {
         for (; x < (int)t.size(); x += x & -x) t[x] += v;
     }
 
     // 返回 z<=x 的点数。
+    // 接口：sum(x)：返回闭前缀 [1,x] 的累计和/频次；返回类型 int。
+    // 参数：待处理值或点/状态 x。
     int sum(int x) const {
+        // 变量：res=准备返回的结果容器/结果值 res。
         int res = 0;
         for (; x > 0; x -= x & -x) res += t[x];
         return res;
     }
 };
 
+// 变量：bit=当前处理的二进制位 bit。
 Fenwick bit(MAX_Z);
 
+// 接口：cdq(a, l, r)：处理下标闭区间 [l,r] 的 CDQ 分治贡献；无返回值；结果写入引用参数或当前结构状态。
+// 参数：输入值/数组 a（见本节定义）；闭区间左端点 l；闭区间右端点 r。
 void cdq(vector<Point>& a, int l, int r) {
     // a 的“分治下标”仍然按 x 分组；递归返回时区间内部会按 y 有序。
     if (l == r) return;
+    // 变量：m=当前边数、操作数或第二维规模 m。
     int m = (l + r) >> 1;
 
     // 先完成左半内部和右半内部的贡献。
@@ -269,7 +306,9 @@ void cdq(vector<Point>& a, int l, int r) {
 
     // 此时 a[l..m]、a[m+1..r] 各自已经按 y 排序。
     // 左半只能贡献给右半，不能把右半反过来影响左半。
+    // 变量：i=当前循环下标 i。
     int i = l;
+    // 变量：j=内层循环下标 j。
     for (int j = m + 1; j <= r; ++j) {
         while (i <= m && a[i].y <= a[j].y) {
             // BIT 的下标是 z；加入左半中同时满足 x、y 限制的点。
@@ -281,11 +320,14 @@ void cdq(vector<Point>& a, int l, int r) {
     }
 
     // 必须撤销本次加入，否则别的分治区间会错误继承左半贡献。
+    // 变量：k=当前排名、选取数量或循环层数 k。
     for (int k = l; k < i; ++k) bit.add(a[k].z, -a[k].cnt);
 
     // 合并为按 y 有序，供父层用双指针处理第二维。
     inplace_merge(a.begin() + l, a.begin() + m + 1,
                   a.begin() + r + 1,
+                  // 接口：匿名 lambda(A, B)：供“三维偏序的 CDQ 分治与动态规划优化”当前语句回调；返回值含义见调用处条件。
+                  // 参数：左操作数/矩阵 A；右操作数/矩阵 B。
                   [](const Point& A, const Point& B) {
                       return A.y < B.y;
                   });
@@ -340,8 +382,11 @@ struct Node {
 int tot = 0;       // 已经使用的节点数，0 号节点表示空树。
 int root[MAXN];    // root[i] 是前 i 个数构成的版本。
 
+// 接口：insert(old, bit, x)：把参数表示的数/字符串/版本插入当前结构；会修改当前结构；多测时重新构造或显式清空成员。
+// 参数：旧版本根节点编号 old；当前处理的二进制位 bit；待处理值或点/状态 x。
 int insert(int old, int bit, int x) {
     // “持久化”的关键：复制旧根到新节点，只修改本次路径。
+    // 变量：now=“可持久化字典树（Persistent Trie）”这段代码中的临时量 now；值由本行初始化式确定。
     int now = ++tot;
     tr[now] = tr[old];
     ++tr[now].cnt;
@@ -349,17 +394,21 @@ int insert(int old, int bit, int x) {
     // bit<0 表示所有二进制位都处理完了。
     if (bit < 0) return now;
 
+    // 变量：b=当前输入数组/操作数 b。
     int b = (x >> bit) & 1;
     // 旧版本的另一条分支仍然复用；当前分支递归创建新节点。
     tr[now].ch[b] = insert(tr[old].ch[b], bit - 1, x);
     return now;
 }
 
+// 接口：max_xor(left_root, right_root, bit, x)：返回把 x 与当前集合/线性基元素组合后能得到的最大异或值；返回类型 int。
+// 参数：区间左端前一个前缀版本根 left_root；区间右端前缀版本根 right_root；当前处理的二进制位 bit；待处理值或点/状态 x。
 int max_xor(int left_root, int right_root, int bit, int x) {
     // 两个版本相减：root[r] 的数量 - root[l-1] 的数量，正好保留 [l,r]。
     if (bit < 0) return 0;
 
     // 为了让异或结果当前位为 1，优先走和 x 当前位相反的分支。
+    // 变量：want=当前查询希望找到的分支/值 want。
     int want = ((x >> bit) & 1) ^ 1;
     int a = tr[tr[right_root].ch[want]].cnt
           - tr[tr[left_root].ch[want]].cnt;
@@ -371,6 +420,7 @@ int max_xor(int left_root, int right_root, int bit, int x) {
     }
 
     // 目标分支为空，只能走相同位；这一位贡献 0。
+    // 变量：same=当前两个对象是否相同/重合的标记 same。
     int same = want ^ 1;
     return max_xor(tr[left_root].ch[same],
                    tr[right_root].ch[same], bit - 1, x);
@@ -421,20 +471,28 @@ int max_xor(int left_root, int right_root, int bit, int x) {
 
 \begin{lstlisting}[language={C++}]
 struct Line {
-    long long k = 0;
+    long long k = 0; // 直线斜率，表示 y=k*x+b。
     long long b = -(1LL << 60); // 最大值模板的负无穷空直线。
 
     // 题目数据若 k*x 可能超过 long long，要改成 __int128 比较。
+    // 接口：get(x)：返回直线在横坐标 x 处的函数值；返回类型 long long。
+    // 参数：待处理值或点/状态 x。
     long long get(long long x) const { return k * x + b; }
 };
+// 变量：tree=当前线段树/树结构存储 tree。
 Line tree[4 * MAXX];
 
+// 接口：add_line(nw, p, l, r)：把一条候选直线插入当前李超树/单调凸包并删除失效候选；会修改当前结构；多测时重新构造或显式清空成员。
+// 参数：待插入的新直线 nw；当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r。
 void add_line(Line nw, int p, int l, int r) {
     // 节点 p 负责整数横坐标 [l,r]，tree[p] 是当前候选直线。
+    // 变量：m=当前边数、操作数或第二维规模 m。
     int m = (l + r) >> 1;
 
     // 比较新旧直线在左端点、中点的优劣。
+    // 变量：lef=新直线在区间左端是否更优 lef。
     bool lef = nw.get(l) > tree[p].get(l);
+    // 变量：mid=当前区间中点 mid。
     bool mid = nw.get(m) > tree[p].get(m);
 
     // 中点处更优的直线必须留在当前节点；被换下来的直线只可能在某一侧更优。
@@ -445,10 +503,14 @@ void add_line(Line nw, int p, int l, int r) {
     if (lef != mid) add_line(nw, p << 1, l, m);
     else add_line(nw, p << 1 | 1, m + 1, r);
 }
+// 接口：query(x, p, l, r)：返回本节数据结构在给定位置/区间上的查询结果；返回类型 long long。
+// 参数：待处理值或点/状态 x；当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r。
 long long query(int x, int p, int l, int r) {
     // 答案必须比较沿根到 x 所在叶子的每一个节点保存的直线。
+    // 变量：res=准备返回的结果容器/结果值 res。
     long long res = tree[p].get(x);
     if (l == r) return res;
+    // 变量：m=当前边数、操作数或第二维规模 m。
     int m = (l + r) >> 1;
     if (x <= m) return max(res, query(x, p << 1, l, m));
     return max(res, query(x, p << 1 | 1, m + 1, r));
@@ -508,8 +570,11 @@ struct BeatNode {
     long long mx2; // 严格小于 mx1 的次大值；不存在时为 NEG。
     int cnt;       // 最大值出现次数。
 };
+// 变量：NEG=空直线/不存在次大值使用的负无穷哨兵 NEG。
 const long long NEG = -(1LL << 60);
 
+// 接口：push_chmin(p, x)：把父节点的 chmin 约束下传到孩子；无返回值；结果写入引用参数或当前结构状态。
+// 参数：当前线段树节点编号 p（根通常为 1）；待处理值或点/状态 x。
 void push_chmin(int p, long long x) {
     // 只有 x < mx1 时才有变化；调用者还必须保证 x > mx2。
     // 这样区间内只有“最大值这一类”会被修改，才能整段打标记。
@@ -517,12 +582,15 @@ void push_chmin(int p, long long x) {
     tr[p].sum -= (tr[p].mx1 - x) * tr[p].cnt;
     tr[p].mx1 = x;
 }
+// 接口：push_up(p)：由两个孩子重新计算节点 p 的全部统计量；会修改当前结构；多测时重新构造或显式清空成员。
+// 参数：当前线段树节点编号 p（根通常为 1）。
 void push_up(int p) {
     // 合并两个儿子的 sum、最大值、次大值和最大值个数。
     tr[p].sum = tr[p<<1].sum + tr[p<<1|1].sum;
     tr[p].mx1 = max(tr[p<<1].mx1, tr[p<<1|1].mx1);
     tr[p].cnt = 0;
     tr[p].mx2 = NEG;
+    // 变量：q=当前查询对象 q。
     for (int q : {p << 1, p << 1 | 1}) {
         if (tr[q].mx1 == tr[p].mx1) {
             tr[p].cnt += tr[q].cnt;
@@ -532,12 +600,16 @@ void push_up(int p) {
         }
     }
 }
+// 接口：push_down(p)：把节点 p 的区间约束下传到两个孩子；会修改当前结构；多测时重新构造或显式清空成员。
+// 参数：当前线段树节点编号 p（根通常为 1）。
 void push_down(int p) {
     // 父节点的 mx1 可能已经被压低，儿子仍保留更大的旧最大值。
     // 把父亲的上界传给儿子，不能直接复制整个节点。
     if (tr[p<<1].mx1 > tr[p].mx1) push_chmin(p<<1, tr[p].mx1);
     if (tr[p<<1|1].mx1 > tr[p].mx1) push_chmin(p<<1|1, tr[p].mx1);
 }
+// 接口：range_chmin(p, l, r, ql, qr, x)：对闭区间 [ql,qr] 执行 a[i]=min(a[i],x)；无返回值；结果写入引用参数或当前结构状态。
+// 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r；查询/修改闭区间左端 ql；查询/修改闭区间右端 qr；待处理值或点/状态 x。
 void range_chmin(int p, int l, int r, int ql, int qr, long long x) {
     // 没交集，或当前最大值已经不超过 x：无需处理。
     if (r < ql || qr < l || x >= tr[p].mx1) return;
@@ -550,6 +622,7 @@ void range_chmin(int p, int l, int r, int ql, int qr, long long x) {
 
     // 否则区间内至少有两类值会被影响，必须下传后递归到儿子。
     push_down(p); // 把父节点较小的 mx1 下传给孩子
+    // 变量：m=当前边数、操作数或第二维规模 m。
     int m = (l + r) >> 1;
     range_chmin(p<<1, l, m, ql, qr, x);
     range_chmin(p<<1|1, m+1, r, ql, qr, x);
@@ -607,40 +680,57 @@ void range_chmin(int p, int l, int r, int ql, int qr, long long x) {
 题面出现``第 \passthrough{\lstinline!k!} 个版本中连不连通''\,``回到历史版本再合并''时，普通并查集不能回退。用可持久化线段树保存 \passthrough{\lstinline!fa!} 和秩/深度数组，每次只复制从根到叶子的 \(O(\log n)\) 个节点。
 
 \begin{lstlisting}[language={C++}]
-struct PNode { int l, r, val; } tr[MAXNODE];
+struct PNode { int l, r, val; } tr[MAXNODE]; // 左右儿子版本节点及叶子存值。
+// 变量：tot=当前已创建节点总数/累计数量 tot。
 int tot;
+// 接口：build(l, r)：由当前输入/成员状态完成数据结构预处理；完成初始化；多测时每组重新调用。
+// 参数：闭区间左端点 l；闭区间右端点 r。
 int build(int l, int r) {
     // build 建立版本 0：每个位置的父亲初始是自己。
+    // 变量：p=当前质数、节点编号或指针 p；具体角色见所在公式。
     int p = ++tot;
     if (l == r) tr[p].val = l;
     else {
+        // 变量：m=当前边数、操作数或第二维规模 m。
         int m = (l + r) >> 1;
         tr[p].l = build(l, m);
         tr[p].r = build(m + 1, r);
     }
     return p;
 }
+// 接口：update(old, l, r, pos, val)：基于旧版本复制修改路径并返回/写入新版本根；会修改当前结构；多测时重新构造或显式清空成员。
+// 参数：旧版本根节点编号 old；闭区间左端点 l；闭区间右端点 r；当前 0-based/DP 位置 pos；写入的新值 val。
 int update(int old, int l, int r, int pos, int val) {
     // 只复制从根到 pos 的路径；没有改动的子树直接复用 old 版本。
+    // 变量：p=当前质数、节点编号或指针 p；具体角色见所在公式。
     int p = ++tot; tr[p] = tr[old];
     if (l == r) { tr[p].val = val; return p; }
+    // 变量：m=当前边数、操作数或第二维规模 m。
     int m = (l + r) >> 1;
     if (pos <= m) tr[p].l = update(tr[old].l, l, m, pos, val);
     else tr[p].r = update(tr[old].r, m + 1, r, pos, val);
     return p;
 }
+// 接口：query(p, l, r, pos)：返回本节数据结构在给定位置/区间上的查询结果；返回类型 int。
+// 参数：当前节点/模数 p（见本节定义）；闭区间左端点 l；闭区间右端点 r；当前 0-based/DP 位置 pos。
 int query(int p, int l, int r, int pos) {
     // 按 pos 在持久化线段树中向下找到 fa[pos]。
     if (l == r) return tr[p].val;
+    // 变量：m=当前边数、操作数或第二维规模 m。
     int m = (l + r) >> 1;
     return pos <= m ? query(tr[p].l, l, m, pos)
                     : query(tr[p].r, m + 1, r, pos);
 }
+// 接口：find_root(root, x)：返回隐式平衡树中第 k 个位置对应的节点；返回类型 int。
+// 参数：当前版本/树的根节点编号 root；待处理值或点/状态 x。
 int find_root(int root, int x) {
     // 不能做路径压缩：那会修改旧版本；用递归沿父指针查根。
+    // 变量：f=当前流量上限/递归返回值 f。
     int f = query(root, 1, n, x);
     return f == x ? x : find_root(root, f);
 }
+// 接口：merge_version(root, x, y)：合并两棵可持久化线段树版本并返回新根；返回类型 int。
+// 参数：当前版本/树的根节点编号 root；待处理值或点/状态 x；待处理值或点/状态 y。
 int merge_version(int root, int x, int y) {
     // root 是“要从哪个历史版本继续操作”，不是固定写 root[n-1]。
     x = find_root(root, x); y = find_root(root, y);
@@ -667,6 +757,4 @@ int merge_version(int root, int x, int y) {
 如果版本一和版本二都变成同一棵并查集，说明更新时修改了旧版本节点；如果从版本二继续合并时版本一也改变，说明没有真正复制根到叶子的路径。
 
 例题：\href{https://www.luogu.com.cn/problem/P3402}{P3402 可持久化并查集}。每个版本 \passthrough{\lstinline!root[i]!} 从 \passthrough{\lstinline!root[i-1]!} 继承；操作 \passthrough{\lstinline!0!} 复制某版本，操作 \passthrough{\lstinline!1!} 合并，操作 \passthrough{\lstinline!2!} 查询连通性。上面为了突出结构只展示 \passthrough{\lstinline!fa!}，正式提交要再维护按秩合并的深度，否则最坏会退化；不做路径压缩是为了保持版本不被修改。
-
-
 

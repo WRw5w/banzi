@@ -7,12 +7,17 @@
 DFS 可求连通块、染色、子树大小、DFS 序、树高；BFS 求无权最短路和层数。递归 DFS 在 \passthrough{\lstinline!n≈2e5!} 时可能爆栈，改手写栈或提高栈空间。
 
 \begin{lstlisting}[language={C++}]
+// 变量：g=图/树的邻接表 g。
 vector<vector<int>> g(n);
+// 变量：dist=最短路/几何距离数组或当前距离 dist。
 vector<int> dist(n, -1);
+// 变量：q=当前 BFS/单调算法使用的队列 q。
 queue<int> q;
 dist[s] = 0; q.push(s);
 while (!q.empty()) {
+    // 变量：u=当前顶点/状态编号 u。
     int u = q.front(); q.pop();
+    // 变量：v=当前边的终点 v。
     for (int v : g[u]) if (dist[v] == -1)
         dist[v] = dist[u] + 1, q.push(v);
 }
@@ -25,11 +30,16 @@ Kahn：把入度为 0 的点入队，删除出边；处理点数小于 \passthro
 关键路径：\passthrough{\lstinline!earliest[v] = max(earliest[v], earliest[u]+w)!}。若要恢复方案，保存前驱；同一最优值的多条路径计数要注意模数。
 
 \begin{lstlisting}[language={C++}]
+// 变量：q=当前 BFS/单调算法使用的队列 q。
 queue<int> q;
+// 变量：u=当前顶点/状态编号 u。
 for (int u = 0; u < n; ++u) if (!indeg[u]) q.push(u);
+// 变量：topo=拓扑序列 topo。
 vector<int> topo;
 while (!q.empty()) {
+    // 变量：u=当前顶点/状态编号 u。
     int u = q.front(); q.pop(); topo.push_back(u);
+    // 变量：v=当前边的终点 v；w=当前边权 w。
     for (auto [v, w] : g[u]) if (--indeg[v] == 0) q.push(v);
 }
 if ((int)topo.size() != n) throw runtime_error("cycle");
@@ -60,12 +70,15 @@ Dijkstra 的核心前提是所有边权非负；堆中允许重复状态，弹�
 
 \begin{lstlisting}[language={C++}]
 using P = pair<long long, int>;
+// 变量：dist=最短路/几何距离数组或当前距离 dist。
 vector<long long> dist(n, INF);
+// 变量：pq=当前优先队列 pq；堆顶含义见比较器。
 priority_queue<P, vector<P>, greater<P>> pq;
 dist[s] = 0; pq.push({0, s});
 while (!pq.empty()) {
     auto [du, u] = pq.top(); pq.pop();
     if (du != dist[u]) continue;
+    // 变量：v=当前边的终点 v；w=当前边权 w。
     for (auto [v, w] : g[u]) if (dist[v] > du + w) {
         dist[v] = du + w;
         pq.push({dist[v], v});
@@ -74,10 +87,14 @@ while (!pq.empty()) {
 \end{lstlisting}
 
 \begin{lstlisting}[language={C++}]
+// 变量：q=当前 BFS/单调算法使用的队列 q。
 deque<int> q;
+// 变量：d=当前距离、差值或覆盖增量 d。
 vector<int> d(n, INF); d[s] = 0; q.push_front(s);
 while (!q.empty()) {
+    // 变量：u=当前顶点/状态编号 u。
     int u = q.front(); q.pop_front();
+    // 变量：v=当前相邻顶点/下一状态 v；w=当前边权/转移代价 w。
     for (auto [v, w] : zero_one_graph[u]) if (d[v] > d[u] + w) {
         d[v] = d[u] + w;
         if (w == 0) q.push_front(v); else q.push_back(v);
@@ -93,16 +110,24 @@ while (!q.empty()) {
 
 \begin{lstlisting}[language={C++}]
 struct MstEdge {
-    int u, v;
-    long long w;
+    int u, v;       // 无向边的两个 1-based 端点。
+    long long w;    // 边权；允许为负。
+    // 接口：operator<(o)：按边权升序比较两条边，供 Kruskal 排序；返回 true 表示本节条件成立/操作成功。
+    // 参数：用于比较/哈希的另一个对象 o。
     bool operator<(const MstEdge &o) const { return w < o.w; }
 };
 struct KruskalDSU {
-    vector<int> p, sz;
+    vector<int> p, sz; // p[x]=父节点；sz[root]=集合大小；点编号 1..n。
+  // 接口：KruskalDSU(n)：构造管理点 1..n 的 Kruskal 专用并查集；构造并初始化对象；每组测试建议重新构造。
+  // 参数：规模/上界 n。
     KruskalDSU(int n) : p(n + 1), sz(n + 1, 1) {
         iota(p.begin(), p.end(), 0);
     }
+    // 接口：find(x)：返回 x 当前所在并查集的代表元；返回类型 int。
+    // 参数：待处理值或点/状态 x。
     int find(int x) { return p[x] == x ? x : p[x] = find(p[x]); }
+    // 接口：unite(x, y)：合并两个元素所在集合；原本同集合时返回 false；返回 true 表示本节条件成立/操作成功。
+    // 参数：待处理值或点/状态 x；待处理值或点/状态 y。
     bool unite(int x, int y) {
         x = find(x); y = find(y);
         if (x == y) return false;
@@ -112,15 +137,20 @@ struct KruskalDSU {
     }
 };
 struct MstResult {
-    long long cost;
-    int used;
-    bool connected;
-    vector<MstEdge> chosen;
+    long long cost;             // 已选边总权值；不连通时是最小生成森林权值。
+    int used;                   // 实际选择的边数。
+    bool connected;             // 是否选满 n-1 条边，即原图是否连通。
+    vector<MstEdge> chosen;     // 按 Kruskal 选择顺序保存的边。
 };
+// 接口：kruskal(n, edges)：返回无向图最小生成森林是否连通及总权值；返回类型 MstResult。
+// 参数：规模/上界 n；输入边集合 edges。
 MstResult kruskal(int n, vector<MstEdge> edges) {
     sort(edges.begin(), edges.end());
+    // 变量：dsu=并查集父节点数组/对象 dsu。
     KruskalDSU dsu(n);
+    // 变量：ans=当前累计答案 ans。
     MstResult ans{0, 0, n <= 1, {}};
+    // 变量：e=当前指数、质因子次数或边对象 e。
     for (auto e : edges) if (dsu.unite(e.u, e.v)) {
         ans.cost += e.w;
         ++ans.used;
@@ -141,22 +171,32 @@ MstResult kruskal(int n, vector<MstEdge> edges) {
 MST 性质：若一条非树边加入形成环，环上最大边被替换可得到候选；用于瓶颈路径、边权敏感性、树上倍增求环上最大值。
 
 \begin{lstlisting}[language={C++}]
+// 接口：prim(g)：返回图是否连通及最小生成树总权值；返回类型 pair<bool, long long>。
+// 参数：图的邻接表/生成树拉普拉斯矩阵 g（见本节）。
 pair<bool, long long> prim(
         const vector<vector<pair<int, long long>>> &g) {
+    // 变量：n=当前元素/顶点/状态数量 n。
     int n = g.size();
     if (n == 0) return {true, 0};
+    // 变量：INF64=long long 不可达哨兵 INF64。
     const long long INF64 = numeric_limits<long long>::max();
+    // 变量：best=目前找到的最优值 best。
     vector<long long> best(n, INF64);
+    // 变量：used=是否已使用/选择的标记集合 used。
     vector<char> used(n);
     using State = pair<long long, int>;
+    // 变量：pq=当前优先队列 pq；堆顶含义见比较器。
     priority_queue<State, vector<State>, greater<State>> pq;
     best[0] = 0; pq.push({0, 0});
+    // 变量：cost=当前累计费用/边权和 cost。
     long long cost = 0;
+    // 变量：cnt=计数数组/当前计数 cnt。
     int cnt = 0;
     while (!pq.empty()) {
         auto [w, u] = pq.top(); pq.pop();
         if (used[u]) continue;
         used[u] = true; cost += w; ++cnt;
+        // 变量：v=当前边的终点 v；c=当前字符、容量或第三个操作数 c。
         for (auto [v, c] : g[u])
             if (!used[v] && c < best[v])
                 best[v] = c, pq.push({c, v});
@@ -173,17 +213,23 @@ pair<bool, long long> prim(
 
 \begin{lstlisting}[language={C++}]
 struct KruskalTree {
-    struct Edge { int u, v; long long w; };
-    int n, tot, LOG;
-    vector<int> dsu, dep, sz;
-    vector<long long> val;
-    vector<vector<int>> up, child;
+    struct Edge { int u, v; long long w; }; // 原图边：1-based 端点与边权。
+    int n, tot, LOG;             // n=原点数；tot=重构树总点数；LOG=倍增层数。
+    vector<int> dsu, dep, sz;    // dep=重构树深度；sz[u]=u 子树中的原图点数。
+    vector<long long> val;       // val[u]=合并节点对应边权；原图点权为负无穷。
+    vector<vector<int>> up;      // up[k][u]=u 的 2^k 级祖先。
+    vector<vector<int>> child;   // 重构树孩子表；边从合并节点指向两个分量。
 
+    // 接口：find(x)：返回 x 当前所在并查集的代表元；返回类型 int。
+    // 参数：待处理值或点/状态 x。
     int find(int x) {
         return dsu[x] == x ? x : dsu[x] = find(dsu[x]);
     }
+    // 接口：build(n_, edges)：由当前输入/成员状态完成数据结构预处理；完成初始化；多测时每组重新调用。
+    // 参数：原图点数 n_；输入边集合 edges。
     void build(int n_, vector<Edge> edges) { // 顶点编号 1..n
         n = n_; tot = n;
+        // 变量：cap=当前边的剩余容量 cap。
         int cap = 2 * n + 5;
         LOG = 1;
         while ((1LL << LOG) <= 2 * n) ++LOG;
@@ -192,10 +238,15 @@ struct KruskalTree {
         val.assign(cap, numeric_limits<long long>::lowest());
         up.assign(LOG, vector<int>(cap));
         child.assign(cap, {});
+        // 变量：i=当前循环下标 i。
         for (int i = 1; i <= n; ++i) sz[i] = 1;
         sort(edges.begin(), edges.end(),
+             // 接口：匿名 lambda(a, b)：供“Kruskal 重构树”当前语句回调；返回值含义见调用处条件。
+             // 参数：输入值/数组 a（见本节定义）；输入值/数组 b（见本节定义）。
              [](const Edge &a, const Edge &b) { return a.w < b.w; });
+        // 变量：e=当前指数、质因子次数或边对象 e。
         for (auto e : edges) {
+            // 变量：x=当前输入值/查询值/坐标 x；y=当前输入值/查询值/坐标 y。
             int x = find(e.u), y = find(e.v);
             if (x == y) continue;
             ++tot; val[tot] = e.w;
@@ -205,40 +256,59 @@ struct KruskalTree {
             dsu[x] = dsu[y] = tot;
             dsu[tot] = tot;
         }
+        // 变量：st=当前集合或自动机/DP 状态 st。
         vector<int> st;
+        // 变量：u=当前顶点/状态编号 u。
         for (int u = 1; u <= tot; ++u) if (dsu[u] == u) {
             dep[u] = 1; st.push_back(u); // 不连通图得到森林
         }
         while (!st.empty()) {
+            // 变量：u=当前顶点/状态编号 u。
             int u = st.back(); st.pop_back();
+            // 变量：v=当前相邻顶点/下一状态 v。
             for (int v : child[u]) dep[v] = dep[u] + 1, st.push_back(v);
         }
+        // 变量：j=当前处理的二进制位/倍增层 j。
         for (int j = 1; j < LOG; ++j)
+            // 变量：u=当前顶点/状态编号 u。
             for (int u = 1; u <= tot; ++u)
                 up[j][u] = up[j - 1][up[j - 1][u]];
     }
+    // 接口：lca(u, v)：返回树上 u,v 的最近公共祖先；返回类型 int。
+    // 参数：顶点/状态编号 u；顶点/状态编号 v。
     int lca(int u, int v) const {
         if (dep[u] < dep[v]) swap(u, v);
+        // 变量：d=当前距离、差值或覆盖增量 d。
         int d = dep[u] - dep[v];
+        // 变量：j=当前处理的二进制位/倍增层 j。
         for (int j = 0; j < LOG; ++j) if (d >> j & 1) u = up[j][u];
         if (u == v) return u;
+        // 变量：j=当前处理的二进制位/倍增层 j。
         for (int j = LOG - 1; j >= 0; --j)
             if (up[j][u] != up[j][v])
                 u = up[j][u], v = up[j][v];
         return up[0][u];
     }
     // nullopt 表示两点在原图中不连通；u==v 时瓶颈记为 -INF。
+    // 接口：bottleneck(u, v)：返回 u,v 路径上的瓶颈边权；不连通时返回空；返回类型 optional<long long>。
+    // 参数：顶点/状态编号 u；顶点/状态编号 v。
     optional<long long> bottleneck(int u, int v) {
         if (find(u) != find(v)) return nullopt;
         return val[lca(u, v)];
     }
+    // 接口：component_node(u, lim)：返回 Kruskal 重构树中阈值 lim 对应的祖先节点；返回类型 int。
+    // 参数：顶点/状态编号 u；允许的阈值 lim。
     int component_node(int u, long long lim) const {
+        // 变量：j=当前处理的二进制位/倍增层 j。
         for (int j = LOG - 1; j >= 0; --j) {
+            // 变量：a=当前输入数组/操作数 a。
             int a = up[j][u];
             if (a && val[a] <= lim) u = a;
         }
         return u;
     }
+    // 接口：component_size(u, lim)：返回阈值 lim 下点 u 所在连通块大小；返回类型 int。
+    // 参数：顶点/状态编号 u；允许的阈值 lim。
     int component_size(int u, long long lim) const {
         return sz[component_node(u, lim)];
     }
@@ -252,9 +322,13 @@ struct KruskalTree {
 Tarjan：DFS 维护 \passthrough{\lstinline!dfn/low!} 与栈，\passthrough{\lstinline!low[u]==dfn[u]!} 时弹出一个 SCC，\passthrough{\lstinline!O(V+E)!}。Kosaraju：正图后序 + 反图 DFS，代码更直观。SCC 缩成 DAG 后做 DP、计数、可达性。缩点后不要把同一分量内的边当作 DAG 边。
 
 \begin{lstlisting}[language={C++}]
+// 变量：timer=DFS/扫描使用的递增时间戳 timer；dfn=DFS 首次访问时间戳 dfn；low=Tarjan 最低可达时间戳 low；stk=当前栈 stk；in=顶点当前是否在 Tarjan 栈内的标记 in；comp=每个顶点所属强连通分量编号 comp；cc=当前已经找到的强连通分量数量 cc。
 int timer = 0; vector<int> dfn(n), low(n), stk, in(n), comp(n); int cc = 0;
+// 接口：tarjan(u)：从 u 开始求强连通分量的 Tarjan DFS；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u。
 void tarjan(int u) {
     dfn[u] = low[u] = ++timer; stk.push_back(u); in[u] = 1;
+    // 变量：v=当前边的终点 v。
     for (int v : g[u]) {
         if (!dfn[v]) tarjan(v), low[u] = min(low[u], low[v]);
         else if (in[v]) low[u] = min(low[u], dfn[v]);
@@ -262,6 +336,7 @@ void tarjan(int u) {
     if (low[u] != dfn[u]) return;
     ++cc;
     while (true) {
+        // 变量：v=当前相邻顶点/下一状态 v。
         int v = stk.back(); stk.pop_back(); in[v] = 0; comp[v] = cc;
         if (v == u) break;
     }
@@ -275,9 +350,13 @@ void tarjan(int u) {
 点双/边双连通可在 Tarjan 过程中用边栈或 DSU 缩桥。桥树上路径问题常转为树上 LCA/差分。
 
 \begin{lstlisting}[language={C++}]
+// 变量：timer=DFS/扫描使用的递增时间戳 timer；dfn=DFS 首次访问时间戳 dfn；low=Tarjan 最低可达时间戳 low；bridges=已经找到的桥边端点集合 bridges。
 int timer = 0; vector<int> dfn(n), low(n); vector<pair<int, int>> bridges;
+// 接口：dfs(u, parent_edge)：从当前节点/位置继续深度优先处理，并写入本节状态数组；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；DFS 进入 u 所用的无向边编号 parent_edge。
 void dfs(int u, int parent_edge) {
     dfn[u] = low[u] = ++timer;
+    // 变量：v=当前边的终点 v；id=当前对象的原始编号 id。
     for (auto [v, id] : g[u]) {
         if (id == parent_edge) continue;
         if (!dfn[v]) {
@@ -295,12 +374,18 @@ void dfs(int u, int parent_edge) {
 BFS/DFS 交替染色；发现相邻同色则不是二分图。每个连通块可独立选择两种颜色，计数时乘法合并。
 
 \begin{lstlisting}[language={C++}]
+// 变量：color=顶点颜色/二分图染色数组 color。
 vector<int> color(n, -1);
+// 变量：ok=当前条件是否仍成立 ok。
 bool ok = true;
+// 变量：s=当前枚举的起点/源点 s。
 for (int s = 0; s < n; ++s) if (color[s] < 0) {
+    // 变量：q=当前 BFS/单调算法使用的队列 q。
     queue<int> q; q.push(s); color[s] = 0;
     while (!q.empty()) {
+        // 变量：u=当前顶点/状态编号 u。
         int u = q.front(); q.pop();
+        // 变量：v=当前边的终点 v。
         for (int v : g[u]) {
             if (color[v] < 0) color[v] = color[u] ^ 1, q.push(v);
             else if (color[v] == color[u]) ok = false;
@@ -322,8 +407,12 @@ for (int s = 0; s < n; ++s) if (color[s] < 0) {
 \end{itemize}
 
 \begin{lstlisting}[language={C++}]
+// 变量：matchR=右部点当前匹配到的左部点 matchR；vis=访问或记忆化完成标记 vis。
 vector<int> matchR(n, -1), vis(n);
+// 接口：aug(u)：从左部点 u 尝试寻找一条二分图增广路；返回 true 表示本节条件成立/操作成功。
+// 参数：顶点/状态编号 u。
 bool aug(int u) {
+    // 变量：v=当前边的终点 v。
     for (int v : g[u]) if (vis[v] != stamp) {
         vis[v] = stamp;
         if (matchR[v] == -1 || aug(matchR[v]))
@@ -331,7 +420,9 @@ bool aug(int u) {
     }
     return false;
 }
+// 变量：matching=当前二分图匹配边数 matching。
 int matching = 0;
+// 变量：u=当前顶点/状态编号 u。
 for (int u = 0; u < left_n; ++u) ++stamp, matching += aug(u);
 \end{lstlisting}
 
@@ -350,27 +441,40 @@ KM 算法求完备二分图最大权匹配，通常约 \passthrough{\lstinline!O
 BFS 建层次图，DFS 在层次递增的图上发送阻塞流；一般题目规模足够使用，二分图匹配也可套用。每条边要维护反向边 \passthrough{\lstinline!cap!}。
 
 \begin{lstlisting}[language={C++}]
-struct Edge { int to, rev; long long cap; };
+struct Edge { int to, rev; long long cap; }; // 终点、反向边下标、当前残量容量。
+// 变量：fg=Dinic 残量网络邻接表 fg。
 vector<vector<Edge>> fg;
+// 变量：level=Dinic 层次图中的顶点层数 level；it=当前容器迭代器/当前弧位置 it。
 vector<int> level, it;
+// 接口：add_edge(u, v, c)：向残量网络/邻接表加入本节定义的一条边及其反向边；会修改当前结构；多测时重新构造或显式清空成员。
+// 参数：顶点/状态编号 u；顶点/状态编号 v；字符编号/边容量/候选对象 c（见本节）。
 void add_edge(int u, int v, long long c) {
+    // 变量：a=正向残量边 a；b=配套的反向残量边 b。
     Edge a{v, (int)fg[v].size(), c}, b{u, (int)fg[u].size(), 0};
     fg[u].push_back(a); fg[v].push_back(b);
 }
+// 接口：bfs(s, t)：从源点建立层次/可达信息；返回是否能到达汇点；返回 true 表示本节条件成立/操作成功。
+// 参数：源点编号或输入字符串 s（见本节类型）；汇点编号或目标状态 t。
 bool bfs(int s, int t) {
+    // 变量：q=当前 BFS/单调算法使用的队列 q。
     fill(level.begin(), level.end(), -1); queue<int> q;
     level[s] = 0; q.push(s);
+    // 变量：u=当前顶点/状态编号 u。
     while (!q.empty()) { int u = q.front(); q.pop();
         for (auto &e : fg[u]) if (e.cap && level[e.to] < 0)
             level[e.to] = level[u] + 1, q.push(e.to);
     }
     return level[t] >= 0;
 }
+// 接口：dfs(u, t, f)：从当前节点/位置继续深度优先处理，并写入本节状态数组；返回类型 long long。
+// 参数：顶点/状态编号 u；汇点编号或目标状态 t；本次 DFS 允许继续发送的流量 f。
 long long dfs(int u, int t, long long f) {
     if (u == t) return f;
     for (int &i = it[u]; i < (int)fg[u].size(); ++i) {
+        // 变量：e=当前遍历的边对象 e。
         Edge &e = fg[u][i];
         if (e.cap && level[e.to] == level[u] + 1) {
+            // 变量：got=本次增广实际发送的流量 got。
             long long got = dfs(e.to, t, min(f, e.cap));
             if (got) { e.cap -= got; fg[e.to][e.rev].cap += got; return got; }
         }
@@ -386,16 +490,26 @@ long long dfs(int u, int t, long long f) {
 增广最短路（势能 + Dijkstra 或 SPFA）反复找最小费用路径；适合规模较小的带费用匹配/运输，注意负边与势能初始化。
 
 \begin{lstlisting}[language={C++}]
-struct MCEdge { int to, rev, cap, cost; };
+struct MCEdge { int to, rev, cap, cost; }; // 终点、反向边下标、残量容量、单位费用。
+// 变量：mg=最小费用流残量网络邻接表 mg。
 vector<vector<MCEdge>> mg(n);
+// 接口：add_edge(u, v, cap, cost)：向残量网络/邻接表加入本节定义的一条边及其反向边；会修改当前结构；多测时重新构造或显式清空成员。
+// 参数：顶点/状态编号 u；顶点/状态编号 v；边容量 cap；每单位流费用 cost。
 void add_edge(int u, int v, int cap, int cost) {
+    // 变量：a=正向残量边 a。
     MCEdge a{v, (int)mg[v].size(), cap, cost};
+    // 变量：b=当前输入数组/操作数 b。
     MCEdge b{u, (int)mg[u].size(), 0, -cost};
     mg[u].push_back(a); mg[v].push_back(b);
 }
+// 接口：min_cost_flow(s, t, need)：发送至多 need 单位流，返回 (实际流量, 最小费用)；返回类型 pair<int, long long>。
+// 参数：源点编号或输入字符串 s（见本节类型）；汇点编号或目标状态 t；希望发送的流量 need。
 pair<int, long long> min_cost_flow(int s, int t, int need) {
+    // 变量：flow=当前已经发送的流量 flow；cost=当前累计费用/边权和 cost。
     int flow = 0; long long cost = 0;
+    // 变量：pot=费用流顶点势能数组 pot；dist=最短路/几何距离数组或当前距离 dist。
     vector<long long> pot(n), dist(n);
+    // 变量：pv=最短增广路中顶点的前驱点 pv；pe=最短增广路中使用的前驱边下标 pe。
     vector<int> pv(n), pe(n);
     while (flow < need) {
         fill(dist.begin(), dist.end(), (long long)4e18);
@@ -405,9 +519,12 @@ pair<int, long long> min_cost_flow(int s, int t, int need) {
         while (!pq.empty()) {
             auto [du, u] = pq.top(); pq.pop();
             if (du != dist[u]) continue;
+            // 变量：i=当前循环下标 i。
             for (int i = 0; i < (int)mg[u].size(); ++i) {
+                // 变量：e=当前遍历的边对象 e。
                 auto const &e = mg[u][i];
                 if (!e.cap) continue;
+                // 变量：nd=候选新距离 nd。
                 long long nd = du + e.cost + pot[u] - pot[e.to];
                 if (nd < dist[e.to])
                     dist[e.to] = nd, pv[e.to] = u, pe[e.to] = i,
@@ -415,10 +532,15 @@ pair<int, long long> min_cost_flow(int s, int t, int need) {
             }
         }
         if (dist[t] == (long long)4e18) break;
+        // 变量：v=当前相邻顶点/下一状态 v。
         for (int v = 0; v < n; ++v) if (dist[v] < (long long)4e18) pot[v] += dist[v];
+        // 变量：add=当前增加量/仿射常数项 add。
         int add = need - flow;
+        // 变量：v=当前相邻顶点/下一状态 v。
         for (int v = t; v != s; v = pv[v]) add = min(add, mg[pv[v]][pe[v]].cap);
+        // 变量：v=当前相邻顶点/下一状态 v。
         for (int v = t; v != s; v = pv[v]) {
+            // 变量：e=当前指数、质因子次数或边对象 e。
             auto &e = mg[pv[v]][pe[v]];
             e.cap -= add; mg[v][e.rev].cap += add; cost += 1LL * add * e.cost;
         }
@@ -435,9 +557,13 @@ pair<int, long long> min_cost_flow(int s, int t, int need) {
 \passthrough{\lstinline!tin[u]!}、\passthrough{\lstinline!tout[u]!} 使子树变成连续区间 \passthrough{\lstinline![tin[u], tout[u]]!}。子树加/和直接用树状数组或线段树；路径则还需 LCA/重链。
 
 \begin{lstlisting}[language={C++}]
+// 变量：timer=DFS/扫描使用的递增时间戳 timer；tin=DFS 进入每个节点的时间戳 tin；tout=DFS 离开每个节点的时间戳 tout；depth=“DFS 序与子树”这段代码中的临时量 depth；值由本行初始化式确定；euler=欧拉路径最终顶点序列 euler。
 int timer = 0; vector<int> tin(n), tout(n), depth(n), euler(n + 1);
+// 接口：dfs(u, p)：从当前节点/位置继续深度优先处理，并写入本节状态数组；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；当前节点 u 的父节点 p。
 void dfs(int u, int p) {
     tin[u] = ++timer; euler[timer] = u;
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : tree[u]) if (v != p)
         depth[v] = depth[u] + 1, dfs(v, u);
     tout[u] = timer;
@@ -449,18 +575,29 @@ void dfs(int u, int p) {
 预处理 \passthrough{\lstinline!up[u][j]!} 与深度，查询时先抬高深度差，再从大到小跳；预处理 \passthrough{\lstinline!O(V log V)!}，查询 \passthrough{\lstinline!O(log V)!}。同时可维护路径最小/最大/和。
 
 \begin{lstlisting}[language={C++}]
+// 变量：LOG=倍增表层数 LOG，需满足 2^LOG 大于最大规模。
 const int LOG = 20;
-int up[MAXN][LOG], dep[MAXN];
+int up[MAXN][LOG]; // up[u][k]=u 的 2^k 级祖先；不存在时为 0。
+int dep[MAXN];     // dep[u]=u 的深度；根深度约定为 0。
+// 接口：init_lca(u, p)：从 u 开始填写深度及倍增祖先 up[u][k]；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；当前节点/模数 p（见本节定义）。
 void init_lca(int u, int p) {
     up[u][0] = p;
+    // 变量：j=当前处理的二进制位/倍增层 j。
     for (int j = 1; j < LOG; ++j) up[u][j] = up[up[u][j - 1]][j - 1];
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : tree[u]) if (v != p) dep[v] = dep[u] + 1, init_lca(v, u);
 }
+// 接口：lca(u, v)：返回树上 u,v 的最近公共祖先；返回类型 int。
+// 参数：顶点/状态编号 u；顶点/状态编号 v。
 int lca(int u, int v) {
     if (dep[u] < dep[v]) swap(u, v);
+    // 变量：d=当前距离、差值或覆盖增量 d。
     int d = dep[u] - dep[v];
+    // 变量：j=当前处理的二进制位/倍增层 j。
     for (int j = 0; j < LOG; ++j) if (d >> j & 1) u = up[u][j];
     if (u == v) return u;
+    // 变量：j=当前处理的二进制位/倍增层 j。
     for (int j = LOG - 1; j >= 0; --j)
         if (up[u][j] != up[v][j]) u = up[u][j], v = up[v][j];
     return up[u][0];
@@ -472,12 +609,18 @@ int lca(int u, int v) {
 点路径 \passthrough{\lstinline!(u,v)!} 加一：\passthrough{\lstinline!d[u]++, d[v]++, d[lca]--, d[parent(lca)]--!}；边路径把 \passthrough{\lstinline!d[lca] -= 2!}。后序累加得到每点/边被经过次数。
 
 \begin{lstlisting}[language={C++}]
+// 接口：add_path(u, v)：给树上 u-v 路径做差分标记，之后必须自底向上 collect；会修改当前结构；多测时重新构造或显式清空成员。
+// 参数：顶点/状态编号 u；顶点/状态编号 v。
 void add_path(int u, int v) {
+    // 变量：w=当前边权/转移代价 w。
     int w = lca(u, v);
     ++diff[u]; ++diff[v]; --diff[w];
     if (up[w][0]) --diff[up[w][0]];
 }
+// 接口：collect(u, p)：收集当前子树的距离/差分贡献到输出容器或父节点；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；当前节点 u 的父节点 p。
 void collect(int u, int p) {
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : tree[u]) if (v != p)
         collect(v, u), diff[u] += diff[v];
 }
@@ -488,12 +631,18 @@ void collect(int u, int p) {
 树直径：从任一点 BFS/DFS 找最远 \passthrough{\lstinline!s!}，再从 \passthrough{\lstinline!s!} 找最远 \passthrough{\lstinline!t!}；\passthrough{\lstinline!dist(s,t)!} 为直径。带权树同理（边权非负）。重心：删除后最大连通块最小的点，可由子树大小判断。
 
 \begin{lstlisting}[language={C++}]
+// 接口：farthest(s)：返回从起点出发最远的 (距离, 顶点)；返回类型 pair<int, long long>。
+// 参数：源点编号或输入字符串 s（见本节类型）。
 pair<int, long long> farthest(int s) {
+    // 变量：d=当前距离、差值或覆盖增量 d；q=当前 BFS/单调算法使用的队列 q。
     vector<long long> d(n, -1); queue<int> q;
     d[s] = 0; q.push(s);
+    // 变量：best=目前找到的最优值 best。
     int best = s;
+    // 变量：u=当前顶点/状态编号 u。
     while (!q.empty()) { int u = q.front(); q.pop();
         if (d[u] > d[best]) best = u;
+        // 变量：v=当前相邻顶点/下一状态 v；w=当前边权/转移代价 w。
         for (auto [v, w] : weighted_tree[u]) if (d[v] < 0)
             d[v] = d[u] + w, q.push(v);
     }
@@ -506,8 +655,11 @@ pair<int, long long> farthest(int s) {
 先子树后父亲。常见状态：选/不选（独立集）、子树颜色、背包合并、最大匹配、距离和。换根 DP：第一次 DFS 求根答案，第二次用父节点答案推出子节点答案。
 
 \begin{lstlisting}[language={C++}]
+// 接口：tree_dp(u, p)：自底向上计算以 u 为根的树形 DP 状态；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；当前节点 u 的父节点 p。
 void tree_dp(int u, int p) {
     dp[u][0] = 0; dp[u][1] = weight[u];
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : tree[u]) if (v != p) {
         tree_dp(v, u);
         dp[u][0] += max(dp[v][0], dp[v][1]);
@@ -521,19 +673,28 @@ void tree_dp(int u, int p) {
 把每条重链映射到数组，路径拆成 \passthrough{\lstinline!O(log V)!} 个连续区间，配合线段树实现路径/子树修改查询，复杂度 \passthrough{\lstinline!O(log² V)!}。先求 \passthrough{\lstinline!size, heavy!}，再求 \passthrough{\lstinline!top, dfn!}。
 
 \begin{lstlisting}[language={C++}]
+// 接口：dfs1(u, p)：计算 HLD 所需的父亲、深度、子树大小和重儿子；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；当前节点 u 的父节点 p。
 void dfs1(int u, int p) {
     parent[u] = p; size[u] = 1; heavy[u] = 0;
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : tree[u]) if (v != p) {
         dep[v] = dep[u] + 1; dfs1(v, u); size[u] += size[v];
         if (!heavy[u] || size[v] > size[heavy[u]]) heavy[u] = v;
     }
 }
+// 接口：dfs2(u, topf)：沿重链优先编号并填写链顶 top；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；当前重链链顶 topf。
 void dfs2(int u, int topf) {
     top[u] = topf; dfn[u] = ++timer;
     if (heavy[u]) dfs2(heavy[u], topf);
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : tree[u]) if (v != parent[u] && v != heavy[u]) dfs2(v, v);
 }
+// 接口：path_sum(u, v)：返回树上 u 到 v 路径的权值和；返回类型 long long。
+// 参数：顶点/状态编号 u；顶点/状态编号 v。
 long long path_sum(int u, int v) {
+    // 变量：ans=当前累计答案 ans。
     long long ans = 0;
     while (top[u] != top[v]) {
         if (dep[top[u]] < dep[top[v]]) swap(u, v);
@@ -549,20 +710,30 @@ long long path_sum(int u, int v) {
 以重心分治树，统计跨重心的路径信息，递归处理子树；每层总计 \passthrough{\lstinline!O(V)!}，深度 \passthrough{\lstinline!O(log V)!}，常见复杂度 \passthrough{\lstinline!O(V log V)!}。适用于树上距离小于/等于 k 的点对计数、距离最小值。
 
 \begin{lstlisting}[language={C++}]
+// 接口：get_size(u, p)：统计当前未删除连通块的子树大小；返回类型 int。
+// 参数：顶点/状态编号 u；当前节点 u 的父节点 p。
 int get_size(int u, int p) {
     sz[u] = 1;
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : tree[u]) if (v != p && !removed[v]) sz[u] += get_size(v, u);
     return sz[u];
 }
+// 接口：get_centroid(u, p, total)：返回当前连通块的重心；返回类型 int。
+// 参数：顶点/状态编号 u；当前节点 u 的父节点 p；当前连通块总大小 total。
 int get_centroid(int u, int p, int total) {
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : tree[u]) if (v != p && !removed[v])
         if (sz[v] * 2 > total) return get_centroid(v, u, total);
     return u;
 }
+// 接口：divide(entry)：对 entry 所在连通块执行一层点分治并递归子块；无返回值；结果写入引用参数或当前结构状态。
+// 参数：当前连通块入口 entry。
 void divide(int entry) {
+    // 变量：c=当前字符、容量或第三个操作数 c。
     int c = get_centroid(entry, 0, get_size(entry, 0));
     removed[c] = true;
     // 统计经过 c 的贡献
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : tree[c]) if (!removed[v]) divide(v);
 }
 \end{lstlisting}
@@ -574,31 +745,42 @@ void divide(int entry) {
 \begin{lstlisting}[language={C++}]
 vector<int> sz(n + 1), heavy(n + 1); // 子树大小、重儿子。
 vector<int> color(n + 1), freq(MAXC); // 颜色和当前统计集合中的频次。
+// 变量：answer=当前累计/最终答案 answer。
 vector<int> answer(n + 1);
 int distinct = 0; // 示例维护量：当前集合中出现过的颜色数。
 
+// 接口：dfs_size(u, p)：计算未删除树/子树的大小及重儿子；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；当前节点 u 的父节点 p。
 void dfs_size(int u, int p) {
     // 第一次 DFS 只决定轻/重儿子，不修改答案统计。
     sz[u] = 1;
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : tree[u]) if (v != p) {
         dfs_size(v, u); sz[u] += sz[v];
         if (!heavy[u] || sz[v] > sz[heavy[u]]) heavy[u] = v;
     }
 }
+// 接口：add_subtree(u, p, delta)：把 u 子树（排除父亲/禁用重儿子）加入或移出统计；会修改当前结构；多测时重新构造或显式清空成员。
+// 参数：顶点/状态编号 u；当前节点 u 的父节点 p；本次增量 delta。
 void add_subtree(int u, int p, int delta) {
     // delta=+1 是加入，delta=-1 是清空。
     // 这里的“答案维护器”可以替换成最大频率、频率平方和等任何可增删统计。
     if (delta == 1 && freq[color[u]]++ == 0) ++distinct;
     if (delta == -1 && --freq[color[u]] == 0) --distinct;
     // 必须递归整棵子树；只处理 u 会漏掉大量颜色。
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : tree[u]) if (v != p) add_subtree(v, u, delta);
 }
+// 接口：dsu_on_tree(u, p, keep)：按 keep 参数执行 DSU on Tree；keep=false 时清除贡献；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；当前节点 u 的父节点 p；是否保留 u 子树统计贡献 keep。
 void dsu_on_tree(int u, int p, bool keep) {
     // 轻儿子先算并清空：它们只贡献一次，避免统计互相污染。
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : tree[u]) if (v != p && v != heavy[u]) dsu_on_tree(v, u, false);
     // 重儿子保留答案，后面把轻子树和 u 合并进这份大集合。
     if (heavy[u]) dsu_on_tree(heavy[u], u, true);
     // 把所有轻儿子整棵加入重儿子的统计集合。
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : tree[u]) if (v != p && v != heavy[u]) add_subtree(v, u, 1);
     // 最后加入 u 自己，此时集合恰好是 u 的整棵子树。
     if (freq[color[u]]++ == 0) ++distinct;
@@ -615,11 +797,16 @@ void dsu_on_tree(int u, int p, bool keep) {
 长链剖分按``向下最长深度''而不是子树大小选重儿子，适合树上深度/祖先方向的 DP 优化和长链合并。它和 HLD 的选重标准不同，不能混用复杂度证明。
 
 \begin{lstlisting}[language={C++}]
+// 变量：parent2=长链/重链剖分中的父节点数组 parent2；depth2=长链/重链剖分中的深度数组 depth2；heavy_len=从每个点向下的最长链长度 heavy_len。
 vector<int> parent2(n + 1), depth2(n + 1), heavy_len(n + 1);
+// 变量：heavy2=每个点的最长链儿子 heavy2；top2=每个点所属最长链链顶 top2。
 vector<int> heavy2(n + 1), top2(n + 1);
+// 接口：long_chain_dfs1(u, p)：计算子树最大深度并选择最长链儿子；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；当前节点 u 的父节点 p。
 void long_chain_dfs1(int u, int p) {
     // heavy_len[u] 是从 u 向下的最长链长度，不是子树大小。
     parent2[u] = p; heavy_len[u] = 1;
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : tree[u]) if (v != p) {
         depth2[v] = depth2[u] + 1;
         long_chain_dfs1(v, u);
@@ -628,10 +815,13 @@ void long_chain_dfs1(int u, int p) {
     }
     if (heavy2[u]) heavy_len[u] = heavy_len[heavy2[u]] + 1;
 }
+// 接口：long_chain_dfs2(u, topf)：沿最长链优先处理并填写链顶/数组位置；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；当前重链链顶 topf。
 void long_chain_dfs2(int u, int topf) {
     // 长儿子沿用同一个链顶，其他儿子各自开新链。
     top2[u] = topf;
     if (heavy2[u]) long_chain_dfs2(heavy2[u], topf);
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : tree[u])
         if (v != parent2[u] && v != heavy2[u]) long_chain_dfs2(v, v);
 }
@@ -650,73 +840,107 @@ struct LCT {
         long long sum{};   // 当前 splay 子树的维护信息。
         bool rev{};        // 是否有待下传的换根翻转标记。
     };
-    vector<Node> t;
+    vector<Node> t; // t[1..n] 对应原树点；t[0] 是空哨兵且所有字段为 0。
+  // 接口：LCT(n)：构造含 n 个 1-based 点的 Link-Cut Tree；构造并初始化对象；每组测试建议重新构造。
+  // 参数：规模/上界 n。
     LCT(int n): t(n + 1) {}
+    // 接口：is_root(x)：判断 x 是否是当前 splay 辅助树的根；返回 true 表示本节条件成立/操作成功。
+    // 参数：待处理值或点/状态 x。
     bool is_root(int x) const {
         // x 没有 splay 父亲，或不是父亲的直接儿子时，是辅助树根。
+        // 变量：f=当前流量上限/递归返回值 f。
         int f = t[x].fa;
         return !f || (t[f].ch[0] != x && t[f].ch[1] != x);
     }
+    // 接口：pull_sum(x)：由两个 splay 儿子和自身点权重算 t[x].sum；无返回值；结果写入引用参数或当前结构状态。
+    // 参数：待处理值或点/状态 x。
     void pull_sum(int x) {
         // 修改儿子后必须重新计算聚合信息。
         t[x].sum = t[x].val + t[t[x].ch[0]].sum + t[t[x].ch[1]].sum;
     }
+    // 接口：apply_rev(x)：交换 x 的左右儿子并翻转路径反转标记；无返回值；结果写入引用参数或当前结构状态。
+    // 参数：待处理值或点/状态 x。
     void apply_rev(int x) {
         if (!x) return;
         // 翻转只交换辅助树儿子；原树路径方向由 makeroot 实现。
         swap(t[x].ch[0], t[x].ch[1]); t[x].rev ^= 1;
     }
+    // 接口：push(x)：把节点 p/x 的待下传标记传给孩子并清除本节点标记；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：待处理值或点/状态 x。
     void push(int x) {
         // 旋转前必须把从辅助树根到 x 的所有 rev 标记按顺序下传。
         if (t[x].rev) apply_rev(t[x].ch[0]), apply_rev(t[x].ch[1]), t[x].rev = false;
     }
+    // 接口：rotate(x)：在辅助 splay 中把 x 向上旋转一层；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：待处理值或点/状态 x。
     void rotate(int x) {
         // 一次旋转把 x 提升；b 是 x 原来靠旋转方向的另一棵子树。
+        // 变量：y=当前输入值/查询值/坐标 y；z=当前第三维坐标/临时值 z；dx=当前节点/坐标相对偏移 dx；b=当前输入数组/操作数 b。
         int y = t[x].fa, z = t[y].fa, dx = (t[y].ch[1] == x), b = t[x].ch[dx ^ 1];
         if (!is_root(y)) t[z].ch[t[z].ch[1] == y] = x;
         t[x].fa = z; t[x].ch[dx ^ 1] = y; t[y].fa = x; t[y].ch[dx] = b;
         if (b) t[b].fa = y;
         pull_sum(y); pull_sum(x);
     }
+    // 接口：splay(x)：把 x 旋到其当前辅助树根，并先下传祖先标记；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：待处理值或点/状态 x。
     void splay(int x) {
         // 先收集祖先，再从上到下 push，确保旋转时方向标记正确。
+        // 变量：st=当前集合或自动机/DP 状态 st。
         vector<int> st{ x };
+        // 变量：y=当前输入值/查询值/坐标 y。
         for (int y = x; !is_root(y); y = t[y].fa) st.push_back(t[y].fa);
         while (!st.empty()) push(st.back()), st.pop_back();
         while (!is_root(x)) {
+            // 变量：y=当前输入值/查询值/坐标 y；z=当前第三维坐标/临时值 z。
             int y = t[x].fa, z = t[y].fa;
             if (!is_root(y)) ((t[y].ch[0] == x) ^ (t[z].ch[0] == y)) ? rotate(x) : rotate(y);
             rotate(x);
         }
     }
+    // 接口：access(x)：打通原树根到 x 的首选路径，结束时 x 为辅助树根；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：待处理值或点/状态 x。
     void access(int x) {
         // 依次把 x 到原树根的 preferred path 变成一条辅助树路径。
         // y 是上一轮处理的节点，挂到 x 的右儿子。
+        // 变量：y=当前输入值/查询值/坐标 y。
         for (int y = 0; x; x = t[y = x].fa) splay(x), t[x].ch[1] = y, pull_sum(x);
     }
+    // 接口：makeroot(x)：把 x 设为其动态树的根；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：待处理值或点/状态 x。
     void makeroot(int x) {
         // access+splay 后 x 表示整条根到 x 的路径，翻转它即可让 x 成为原树根。
         access(x); splay(x); apply_rev(x);
     }
+    // 接口：findroot(x)：返回动态树中 x 所在树的根；返回类型 int。
+    // 参数：待处理值或点/状态 x。
     int findroot(int x) {
         // 暴露 x 后不断向左走，左端点就是所在原树的根。
         access(x); splay(x);
         while (t[x].ch[0]) push(x), x = t[x].ch[0];
         splay(x); return x;
     }
+    // 接口：split(x, y)：按 key/路径把当前结构拆成两部分，结果写入输出参数；无返回值；结果写入引用参数或当前结构状态。
+    // 参数：待处理值或点/状态 x；待处理值或点/状态 y。
     void split(int x, int y) {
         // 之后 y 的 splay 子树正好维护原树路径 x..y。
         makeroot(x); access(y); splay(y);
     }
+    // 接口：link(x, y)：连接原本不连通的 x,y；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：待处理值或点/状态 x；待处理值或点/状态 y。
     void link(int x, int y) {
         // 先换根保证 x 没有原树父亲，再确认两点不连通。
         makeroot(x); if (findroot(y) != x) t[x].fa = y;
     }
+    // 接口：cut(x, y)：删除动态树中的边 (x,y)；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：待处理值或点/状态 x；待处理值或点/状态 y。
     void cut(int x, int y) {
         // 暴露边 x-y；合法形态要求 y 的左儿子是 x 且 x 没有右儿子。
         split(x, y);
         if (t[y].ch[0] == x && !t[x].ch[1]) t[y].ch[0] = t[x].fa = 0, pull_sum(y);
     }
+    // 接口：path_sum(x, y)：返回树上 u 到 v 路径的权值和；返回类型 long long。
+    // 参数：待处理值或点/状态 x；待处理值或点/状态 y。
     long long path_sum(int x, int y) {
         split(x, y);
         return t[y].sum;
@@ -729,7 +953,10 @@ struct LCT {
 无向图存在欧拉回路当且仅当非零度点连通且所有度为偶；欧拉路径有且仅有 0 或 2 个奇度点。有向图对应入度=出度，路径起点出度比入度多 1、终点相反。Hierholzer 用栈在线性时间构造。哈密顿路径一般是 NP-hard，不要把两者混淆。
 
 \begin{lstlisting}[language={C++}]
+// 变量：ptr=当前遍历邻接边/数组的位置指针 ptr；euler=欧拉路径最终顶点序列 euler。
 vector<int> ptr(n), euler;
+// 接口：hierholzer(u)：从 start 构造欧拉路径，返回顶点序列；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u。
 void hierholzer(int u) {
     while (ptr[u] < (int)g[u].size()) {
         auto [v, id] = g[u][ptr[u]++];
@@ -755,4 +982,3 @@ void hierholzer(int u) {
 \item
   DAG + 计数要同时维护 \passthrough{\lstinline!ways[v]!}，相同最优值时累加、更新更优时覆盖。
 \end{itemize}
-

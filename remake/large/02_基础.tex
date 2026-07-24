@@ -5,7 +5,9 @@
 \passthrough{\lstinline!for (int s = mask; s; s = (s - 1) \& mask)!} 枚举 \passthrough{\lstinline!mask!} 的所有非空子集，总复杂度是 \passthrough{\lstinline!O(3\^n)!}（对所有 \passthrough{\lstinline!mask!} 求子集时）。
 
 \begin{lstlisting}[language={C++}]
+// 变量：mask=当前子集/博弈状态的二进制掩码 mask。
 for (int mask = 0; mask < (1 << n); ++mask) {
+    // 变量：sub=当前枚举的子掩码 sub。
     for (int sub = mask;; sub = (sub - 1) & mask) {
         // 处理 sub；这里包含空集
         if (sub == 0) break;
@@ -18,9 +20,12 @@ for (int mask = 0; mask < (1 << n); ++mask) {
 固定顺序、提前判非法、记录当前最优上界、相同状态记忆化。对排列/组合先排序再跳过相同元素：\passthrough{\lstinline!if (i > start \&\& a[i] == a[i-1]) continue;!}。
 
 \begin{lstlisting}[language={C++}]
+// 接口：dfs(pos, sum)：从当前节点/位置继续深度优先处理，并写入本节状态数组；无返回值；结果写入引用参数或当前结构状态。
+// 参数：当前 0-based/DP 位置 pos；当前累计值 sum。
 void dfs(int pos, long long sum) {
     if (sum == target) { ++answer; return; }
     if (pos == n || sum > target) return;
+    // 变量：i=当前循环下标 i。
     for (int i = pos; i < n; ++i) {
         if (i > pos && a[i] == a[i - 1]) continue;
         dfs(i + 1, sum + a[i]);
@@ -33,19 +38,29 @@ void dfs(int pos, long long sum) {
 \passthrough{\lstinline!n ≤ 40!}、每个元素选/不选且目标为和/异或/最值时，把数组分两半枚举，排序一侧后二分或双指针，复杂度 \passthrough{\lstinline!O(2\^(n/2) log 2\^(n/2))!}。
 
 \begin{lstlisting}[language={C++}]
+// 接口：gen(a, l, r)：枚举 a 的下标闭区间 [l,r] 的所有子集和并返回排序结果；返回类型 vector<long long>。
+// 参数：输入值/数组 a（见本节定义）；闭区间左端点 l；闭区间右端点 r。
 vector<long long> gen(const vector<long long>& a, int l, int r) {
+    // 变量：res=准备返回的结果容器/结果值 res。
     vector<long long> res{0};
+    // 变量：i=当前循环下标 i。
     for (int i = l; i < r; ++i) {
+        // 变量：old=修改前版本根/修改前容器大小 old。
         int old = (int)res.size();
+        // 变量：j=内层循环下标 j。
         for (int j = 0; j < old; ++j) res.push_back(res[j] + a[i]);
     }
     return res;
 }
 
+// 变量：L=当前左边界/左半部分 L；R=当前右边界/右半部分 R。
 auto L = gen(a, 0, n / 2), R = gen(a, n / 2, n);
 sort(R.begin(), R.end());
+// 变量：best=目前找到的最优值 best。
 long long best = 0;
+// 变量：x=当前输入值/查询值/坐标 x。
 for (long long x : L) {
+    // 变量：it=当前容器迭代器/当前弧位置 it。
     auto it = upper_bound(R.begin(), R.end(), limit - x);
     if (it != R.begin()) best = max(best, x + *prev(it));
 }
@@ -64,16 +79,26 @@ for (long long x : L) {
 对 \passthrough{\lstinline![l,r]!} 加 \passthrough{\lstinline!v!}：\passthrough{\lstinline!d[l]+=v; d[r+1]-=v!}；最后累加 \passthrough{\lstinline!d!} 恢复数组。二维矩形加法在四个角标记，二维前缀恢复。
 
 \begin{lstlisting}[language={C++}]
+// 变量：pre=前缀和/前缀状态数组 pre；diff=当前差值/差分数组 diff。
 vector<long long> pre(n + 1), diff(n + 2);
+// 变量：i=当前循环下标 i。
 for (int i = 1; i <= n; ++i) pre[i] = pre[i - 1] + a[i];
+// 接口：range_sum(l, r)：供“一维差分”当前语句回调；返回值含义见调用处条件。
+// 参数：闭区间左端点 l；闭区间右端点 r。
+// 变量：range_sum=返回指定区间和的局部 lambda range_sum。
 auto range_sum = [&](int l, int r) { return pre[r] - pre[l - 1]; };
 
+// 接口：range_add(l, r, v)：供“一维差分”当前语句回调；返回值含义见调用处条件。
+// 参数：闭区间左端点 l；闭区间右端点 r；顶点/状态编号 v。
 auto range_add = [&](int l, int r, long long v) {
     diff[l] += v;
     diff[r + 1] -= v;
 };
+// 变量：l=当前事件/询问区间左端点 l；r=当前事件/询问区间右端点 r；v=当前相邻顶点/下一状态 v。
 for (auto [l, r, v] : updates) range_add(l, r, v);
+// 变量：cur=当前扫描位置的累计状态 cur。
 long long cur = 0;
+// 变量：i=当前循环下标 i。
 for (int i = 1; i <= n; ++i) {
     cur += diff[i];
     a[i] += cur;
@@ -86,10 +111,13 @@ for (int i = 1; i <= n; ++i) {
 
 \begin{lstlisting}[language={C++}]
 vector<pair<int, int>> event; // {坐标, +1 开始 / -1 结束}
+// 变量：l=当前事件/询问区间左端点 l；r=当前事件/询问区间右端点 r。
 for (auto [l, r] : intervals)
     event.push_back({l, 1}), event.push_back({r, -1});
 sort(event.begin(), event.end());
+// 变量：active=扫描到当前位置时仍活跃的区间数 active；peak=扫描过程中出现过的最大活跃数量 peak。
 int active = 0, peak = 0;
+// 变量：x=当前输入值/查询值/坐标 x；delta=当前事件带来的计数增量 delta。
 for (auto [x, delta] : event) {
     active += delta;
     peak = max(peak, active);
@@ -103,8 +131,10 @@ for (auto [x, delta] : event) {
 \passthrough{\lstinline!lower\_bound!} 找第一个 \passthrough{\lstinline!>= x!}，\passthrough{\lstinline!upper\_bound!} 找第一个 \passthrough{\lstinline!> x!}。手写时推荐半开区间 \passthrough{\lstinline![l,r)!}：
 
 \begin{lstlisting}[language={C++}]
+// 变量：l=当前区间左端点 l；r=当前区间右端点 r。
 int l = 0, r = n;
 while (l < r) {
+    // 变量：m=当前边数、操作数或第二维规模 m。
     int m = l + (r - l) / 2;
     if (a[m] < x) l = m + 1;
     else r = m;
@@ -117,9 +147,14 @@ while (l < r) {
 当答案具有单调可行性 \passthrough{\lstinline!check(x)!} 时，在答案范围二分。先明确求``最小可行''还是``最大可行''，并把 \passthrough{\lstinline!check!} 写成无副作用函数。典型：最小最大分段和、最小速度、最大最小距离、满足容量的最少天数。
 
 \begin{lstlisting}[language={C++}]
+// 接口：check(limit)：判断二分答案 limit 是否可行；必须满足关于 limit 的单调性；返回 true 表示本节条件成立/操作成功。
+// 参数：判定阈值 limit。
 bool check(long long limit) {
+    // 变量：groups=当前贪心分出的连续组数 groups。
     int groups = 1;
+    // 变量：sum=当前累计和 sum。
     long long sum = 0;
+    // 变量：x=当前输入值/查询值/坐标 x。
     for (long long x : a) {
         if (x > limit) return false;
         if (sum + x > limit) sum = x, ++groups;
@@ -128,9 +163,12 @@ bool check(long long limit) {
     return groups <= k;
 }
 
+// 变量：l=当前区间左端点 l。
 long long l = *max_element(a.begin(), a.end());
+// 变量：r=当前区间右端点 r。
 long long r = accumulate(a.begin(), a.end(), 0LL);
 while (l < r) {
+    // 变量：mid=当前区间中点 mid。
     long long mid = l + (r - l) / 2;
     if (check(mid)) r = mid;
     else l = mid + 1;
@@ -142,8 +180,11 @@ while (l < r) {
 窗口右端只增不减，维护``当前窗口合法''不变量；若加入 \passthrough{\lstinline!r!} 使其非法，就移动 \passthrough{\lstinline!l!} 直到恢复。适用于正数和、至多/至少 \passthrough{\lstinline!k!} 个不同值、最长合法子串。含负数的和通常不能直接用双指针。
 
 \begin{lstlisting}[language={C++}]
+// 变量：cnt=计数数组/当前计数 cnt。
 vector<int> cnt(alphabet);
+// 变量：distinct=当前窗口内不同值的数量 distinct；left=滑动窗口左端点 left；answer=当前累计/最终答案 answer。
 int distinct = 0, left = 0, answer = 0;
+// 变量：right=滑动窗口右端点 right。
 for (int right = 0; right < n; ++right) {
     if (cnt[s[right]]++ == 0) ++distinct;
     while (distinct > k) {
@@ -159,12 +200,16 @@ for (int right = 0; right < n; ++right) {
 
 \begin{lstlisting}[language={C++}]
 while (r - l > 3) {
+    // 变量：m1=第一个模数/第一部分规模 m1。
     long long m1 = l + (r - l) / 3;
+    // 变量：m2=第二个模数/第二部分规模 m2。
     long long m2 = r - (r - l) / 3;
     if (f(m1) < f(m2)) l = m1 + 1; // 求最大值
     else r = m2 - 1;
 }
+// 变量：ans=当前累计答案 ans。
 long long ans = LLONG_MIN;
+// 变量：x=当前输入值/查询值/坐标 x。
 for (long long x = l; x <= r; ++x) ans = max(ans, f(x));
 \end{lstlisting}
 
@@ -186,8 +231,12 @@ for (long long x = l; x <= r; ++x) ans = max(ans, f(x));
 
 \begin{lstlisting}[language={C++}]
 sort(intervals.begin(), intervals.end(),
+     // 接口：匿名 lambda(x, y)：供“典型证明模式”当前语句回调；返回值含义见调用处条件。
+     // 参数：待处理值或点/状态 x；待处理值或点/状态 y。
      [](auto &x, auto &y) { return x.second < y.second; });
+// 变量：last=上一个已选择位置/值 last；chosen=“典型证明模式”这段代码中的临时量 chosen；值由本行初始化式确定。
 int last = numeric_limits<int>::min(), chosen = 0;
+// 变量：l=当前事件/询问区间左端点 l；r=当前事件/询问区间右端点 r。
 for (auto [l, r] : intervals) {
     if (l >= last) last = r, ++chosen;
 }
@@ -199,8 +248,12 @@ for (auto [l, r] : intervals) {
 
 \begin{lstlisting}[language={C++}]
 sort(jobs.begin(), jobs.end(),
+     // 接口：匿名 lambda(x, y)：供“反悔贪心”当前语句回调；返回值含义见调用处条件。
+     // 参数：待处理值或点/状态 x；待处理值或点/状态 y。
      [](auto &x, auto &y) { return x.deadline < y.deadline; });
+// 变量：chosen=“反悔贪心”这段代码中的临时量 chosen；值由本行初始化式确定。
 priority_queue<int> chosen;
+// 变量：job=当前按贪心顺序处理的任务 job。
 for (auto job : jobs) {
     chosen.push(job.cost);
     if ((int)chosen.size() > job.deadline) chosen.pop();
@@ -213,15 +266,23 @@ for (auto job : jobs) {
 
 \begin{lstlisting}[language={C++}]
 // x[v] <= x[u] + w；无解等价于存在可达负环
-struct Edge { int v, w; };
+struct Edge { int v, w; }; // v=有向边终点，w=边权/收益（按本题转移定义）。
+// 变量：g=图/树的邻接表 g。
 vector<vector<Edge>> g(n);
+// 变量：d=当前距离、差值或覆盖增量 d。
 vector<long long> d(n, 0);
+// 变量：inq=顶点当前是否在队列中的标记 inq；pushed=当前点进入队列的次数 pushed。
 vector<int> inq(n), pushed(n);
+// 变量：q=当前 BFS/单调算法使用的队列 q。
 queue<int> q;
+// 变量：s=当前枚举的起点/源点 s。
 for (int s = 0; s < n; ++s) q.push(s), inq[s] = 1;
+// 变量：ok=当前条件是否仍成立 ok。
 bool ok = true;
 while (!q.empty() && ok) {
+    // 变量：u=当前顶点/状态编号 u。
     int u = q.front(); q.pop(); inq[u] = 0;
+    // 变量：v=当前边的终点 v；w=当前边权 w。
     for (auto [v, w] : g[u]) if (d[v] > d[u] + w) {
         d[v] = d[u] + w;
         if (++pushed[v] > n) { ok = false; break; }
@@ -237,7 +298,9 @@ while (!q.empty() && ok) {
 维护栈内下标对应值单调。遇到更小/更大元素时弹栈，弹出元素的右侧第一个更小/更大位置被确定。应用：下一个更大元素、柱状图最大矩形、最大子矩形、贡献法统计子数组最小值。
 
 \begin{lstlisting}[language={C++}]
+// 变量：nextGreater=每个位置右侧第一个更大元素下标 nextGreater；st=当前集合或自动机/DP 状态 st。
 vector<int> nextGreater(n, -1), st;
+// 变量：i=当前循环下标 i。
 for (int i = 0; i < n; ++i) {
     while (!st.empty() && a[st.back()] < a[i])
         nextGreater[st.back()] = i, st.pop_back();
@@ -250,7 +313,9 @@ for (int i = 0; i < n; ++i) {
 队首始终是窗口最优值，队尾删除不可能成为最优的元素。应用：滑动窗口最值、DP 转移 \passthrough{\lstinline!dp[i]=min(dp[j])+w(i)!}、有长度限制的最短/最长子数组。
 
 \begin{lstlisting}[language={C++}]
+// 变量：q=当前 BFS/单调算法使用的队列 q。
 deque<int> q;
+// 变量：i=当前循环下标 i。
 for (int i = 0; i < n; ++i) {
     while (!q.empty() && q.front() <= i - k) q.pop_front();
     while (!q.empty() && a[q.back()] <= a[i]) q.pop_back();
@@ -264,9 +329,12 @@ for (int i = 0; i < n; ++i) {
 收集所有会出现的坐标，排序去重，用 \passthrough{\lstinline!lower\_bound!} 映射。若区间端点表示连续长度，通常还要把 \passthrough{\lstinline!x!} 与 \passthrough{\lstinline!x+1!} 或相邻端点间距保留，避免把长区间压成一个点。值域大、操作数小的线段树/树状数组必须先离散化。
 
 \begin{lstlisting}[language={C++}]
+// 变量：xs=离散化后排序去重的坐标 xs。
 vector<long long> xs = coordinates;
 sort(xs.begin(), xs.end());
 xs.erase(unique(xs.begin(), xs.end()), xs.end());
+// 接口：id(x)：供“离散化与坐标压缩”当前语句回调；返回值含义见调用处条件。
+// 参数：待处理值或点/状态 x。
 auto id = [&](long long x) {
     return int(lower_bound(xs.begin(), xs.end(), x) - xs.begin()) + 1;
 };
@@ -288,8 +356,11 @@ auto id = [&](long long x) {
 
 \begin{lstlisting}[language={C++}]
 // 常见构造：把 1..n 按奇偶分组输出
+// 变量：ans=当前累计答案 ans。
 vector<int> ans;
+// 变量：x=当前输入值/查询值/坐标 x。
 for (int x = 1; x <= n; x += 2) ans.push_back(x);
+// 变量：x=当前输入值/查询值/坐标 x。
 for (int x = 2; x <= n; x += 2) ans.push_back(x);
 \end{lstlisting}
 
@@ -309,6 +380,7 @@ for (int x = 2; x <= n; x += 2) ans.push_back(x);
 mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 shuffle(a.begin(), a.end(), rng);
 nth_element(a.begin(), a.begin() + k, a.end());
+// 变量：answer=当前累计/最终答案 answer。
 int answer = a[k];
 uint64_t random_hash = rng();
 \end{lstlisting}
@@ -318,9 +390,12 @@ uint64_t random_hash = rng();
 \passthrough{\lstinline!std::bitset!} 将 64/机器字并行，适合传递闭包（布尔矩阵）、集合交并、子集计数；\passthrough{\lstinline!bitset!} 大小需编译期常量，动态场景使用 \passthrough{\lstinline!vector<unsigned long long>!}。
 
 \begin{lstlisting}[language={C++}]
+// 变量：N=数组容量/预处理上界；实际合法下标以本节注释为准。
 const int N = 2000;
 bitset<N> reach[N];
+// 变量：k=当前排名、选取数量或循环层数 k。
 for (int k = 0; k < n; ++k)
+    // 变量：i=当前循环下标 i。
     for (int i = 0; i < n; ++i)
         if (reach[i][k]) reach[i] |= reach[k];
 \end{lstlisting}
@@ -340,12 +415,14 @@ for (int k = 0; k < n; ++k)
 \end{itemize}
 
 \begin{lstlisting}[language={C++}]
+// 变量：g=图/树的邻接表 g。
 long long g = std::gcd(a, b);
+// 变量：l=当前区间左端点 l。
 long long l = a / g * b;
 sort(v.begin(), v.end());
 v.erase(unique(v.begin(), v.end()), v.end());
 long long lowbit = x & -x; // x != 0
+// 变量：safe_product=“快速小技巧”这段代码中的临时量 safe_product；值由本行初始化式确定。
 long long safe_product = (long long)((__int128)x * y % MOD);
 \end{lstlisting}
-
 

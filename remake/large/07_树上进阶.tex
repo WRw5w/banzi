@@ -7,20 +7,28 @@
 识别信号：树不修改，每个节点有颜色/权值，每个询问问``子树中出现次数最多的颜色''\,``不同颜色数''\,``频率平方和''等。先求重儿子，保留重儿子的贡献，轻儿子算完后清空，复杂度通常 \(O(n\log n)\)。
 
 \begin{lstlisting}[language={C++}]
-vector<vector<int>> g;
-vector<int> sz, son, color, ans;
-vector<int> cnt;
+vector<vector<int>> g;       // 1-based 无向树邻接表；每组测试重新建图。
+vector<int> sz;              // sz[u]=以 u 为根的子树大小。
+vector<int> son;             // son[u]=u 的重儿子；没有儿子时为 -1/0（按初始化）。
+vector<int> color;           // color[u]=点 u 的颜色，使用前需离散化到 cnt 范围。
+vector<int> ans;             // ans[u]=以 u 为根的子树询问答案。
+vector<int> cnt;             // cnt[c]=当前保留节点中颜色 c 的出现次数。
 long long cur_answer = 0; // 示例：维护所有颜色频次的平方和。
 
+// 接口：dfs_size(u, fa)：计算未删除树/子树的大小及重儿子；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；父节点 fa。
 void dfs_size(int u, int fa) {
     // sz 和 son 只计算一次；son[u] 是子树最大的儿子。
     sz[u] = 1;
+    // 变量：v=当前边的终点 v。
     for (int v : g[u]) if (v != fa) {
         dfs_size(v, u);
         sz[u] += sz[v];
         if (sz[v] > sz[son[u]]) son[u] = v;
     }
 }
+// 接口：add_subtree(u, fa, delta)：把 u 子树（排除父亲/禁用重儿子）加入或移出统计；会修改当前结构；多测时重新构造或显式清空成员。
+// 参数：顶点/状态编号 u；父节点 fa；本次增量 delta。
 void add_subtree(int u, int fa, int delta) {
     // 先删除颜色旧贡献，再改变频次，最后加入新贡献。
     // 这里选 freq^2 作为演示；换题时只改这段“单点统计器”。
@@ -29,11 +37,15 @@ void add_subtree(int u, int fa, int delta) {
     cur_answer += 1LL * cnt[color[u]] * cnt[color[u]];
 
     // 加/删的是整棵子树，不是只有根 u。
+    // 变量：v=当前边的终点 v。
     for (int v : g[u])
         if (v != fa) add_subtree(v, u, delta);
 }
+// 接口：dsu(u, fa, keep)：按 keep 参数执行 DSU on Tree；keep=false 时清除 u 子树贡献；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；父节点 fa；是否保留 u 子树统计贡献 keep。
 void dsu(int u, int fa, bool keep) {
     // 轻儿子先算完并清空，避免它们的统计污染当前节点。
+    // 变量：v=当前边的终点 v。
     for (int v : g[u])
         if (v != fa && v != son[u]) dsu(v, u, false);
 
@@ -41,6 +53,7 @@ void dsu(int u, int fa, bool keep) {
     if (son[u]) dsu(son[u], u, true);
 
     // 把轻儿子整棵子树逐个加入。
+    // 变量：v=当前边的终点 v。
     for (int v : g[u])
         if (v != fa && v != son[u]) add_subtree(v, u, +1);
     add_subtree(u, fa, +1);
@@ -91,9 +104,12 @@ void dsu(int u, int fa, bool keep) {
 识别信号：树上大量询问``第 \(k\) 个祖先/深度为某值的节点''，\passthrough{\lstinline!k!} 很大，普通倍增内存或常数不理想。长链剖分按``向下最深''的儿子选重儿子，并把同一条长链连续存储，常配合 \passthrough{\lstinline!O(1)!} 的第 \(k\) 级祖先。
 
 \begin{lstlisting}[language={C++}]
+// 接口：dfs_len(u, fa)：计算 u 子树最大深度并选出最长链儿子；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；父节点 fa。
 void dfs_len(int u, int fa) {
     // up[u] 是父亲；len[u] 是从 u 向下走的最长链节点数。
     up[u] = fa; len[u] = 1; son[u] = 0;
+    // 变量：v=当前边的终点 v。
     for (int v : g[u]) if (v != fa) {
         dfs_len(v, u);
         // 长链剖分按“深度最长”选重儿子，不是按子树大小。
@@ -101,6 +117,8 @@ void dfs_len(int u, int fa) {
             len[u] = len[v] + 1, son[u] = v;
     }
 }
+// 接口：dfs_chain(u, top)：沿最长链优先递归并填写每个点的链顶 top；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；当前长链/重链链顶 top。
 void dfs_chain(int u, int top) {
     // 同一条长链上的节点共享链顶 top，并连续编号。
     chain_top[u] = top;
@@ -110,6 +128,7 @@ void dfs_chain(int u, int top) {
     if (son[u]) dfs_chain(son[u], top);
 
     // 其他儿子都是新长链的起点。
+    // 变量：v=当前边的终点 v。
     for (int v : g[u])
         if (v != up[u] && v != son[u]) dfs_chain(v, v);
 }
@@ -163,19 +182,26 @@ void dfs_chain(int u, int top) {
 静态树上``距离为 \passthrough{\lstinline!k!} 的点数/距离小于等于 \passthrough{\lstinline!k!} 的点权和''是点分治；有在线修改则把每个节点到各层重心的距离放入重心树容器，形成点分树。
 
 \begin{lstlisting}[language={C++}]
+// 接口：collect(u, fa, d, ds)：收集当前子树的距离/差分贡献到输出容器或父节点；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；父节点 fa；当前距离/覆盖增量 d；收集距离的输出数组 ds。
 void collect(int u, int fa, int d, vector<int>& ds) {
     // ds 保存“当前重心 c 到该分支中所有节点的距离”。
     // 点分治的每层都只收集未被 removed 的节点。
     ds.push_back(d);
+    // 变量：v=当前边的终点 v。
     for (int v : g[u])
         if (v != fa && !removed[v]) collect(v, u, d + 1, ds);
 }
+// 接口：decompose(entry)：以当前连通块重心为根递归建立点分治/点分树；无返回值；结果写入引用参数或当前结构状态。
+// 参数：当前连通块入口 entry。
 void decompose(int entry) {
     // get_centroid 必须只在当前未删除连通块中找重心。
     int c = get_centroid(entry); // 按子树大小找重心
     removed[c] = true;
 
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : g[c]) if (!removed[v]) {
+        // 变量：ds=当前收集到的距离列表 ds。
         vector<int> ds;
         collect(v, c, 1, ds);
 
@@ -185,6 +211,7 @@ void decompose(int entry) {
     }
 
     // 删除 c 后，剩下的是若干个互不相连的子问题。
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : g[c]) if (!removed[v]) decompose(v);
 }
 \end{lstlisting}
@@ -270,6 +297,5 @@ if (ch[y][0] == x && ch[x][1] == 0)
 \end{lstlisting}
 
 第二组检查路径合并和单点修改；第三组先建立两棵树，再连成一棵，最后断开，能抓住 \passthrough{\lstinline!makeroot/access/splay!} 顺序和断边条件错误。实际提交前还要根据题目保证避免查询不连通节点。
-
 
 

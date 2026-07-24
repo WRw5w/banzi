@@ -7,12 +7,17 @@
 标准 Nim 每次从一堆中取任意正数个，所有堆异或和非零时先手必胜。Bash 游戏每次最多取 \passthrough{\lstinline!k!} 个，单堆 \passthrough{\lstinline!n!} 的必败位置是 \passthrough{\lstinline!n \% (k + 1) == 0!}。
 
 \begin{lstlisting}[language={C++}]
+// 接口：nim_first_win(piles)：返回标准 Nim 当前局面是否先手必胜；返回 true 表示本节条件成立/操作成功。
+// 参数：各堆石子数 piles。
 bool nim_first_win(const vector<int>& piles) {
     int x = 0; // 整个无偏 Nim 游戏的 SG 异或和。
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : piles) x ^= v;
     return x != 0;
 }
 
+// 接口：bash_first_win(n, k)：返回 Bash 取石子局面是否先手必胜；返回 true 表示本节条件成立/操作成功。
+// 参数：规模/上界 n；排名/选取数量 k。
 bool bash_first_win(int n, int k) {
     // 一堆石子每次取 1..k；模 k+1 为 0 的位置是必败态。
     return n % (k + 1) != 0;
@@ -22,10 +27,15 @@ bool bash_first_win(int n, int k) {
 反常 Nim（最后取走者输）：若所有堆大小都为 \passthrough{\lstinline!1!}，先手在堆数为偶数时必胜；否则仍看异或和是否非零。
 
 \begin{lstlisting}[language={C++}]
+// 接口：misere_nim_first_win(piles)：返回反常 Nim 当前局面是否先手必胜；返回 true 表示本节条件成立/操作成功。
+// 参数：各堆石子数 piles。
 bool misere_nim_first_win(const vector<int>& piles) {
     // 只有“所有非空堆都是 1”时，最后一步输的规则会改变公式。
+    // 变量：all_one=所有堆是否都只有 1 个石子的标记 all_one。
     bool all_one = true;
+    // 变量：x=当前输入值/查询值/坐标 x；ones=石子数恰为 1 的堆数量 ones。
     int x = 0, ones = 0;
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : piles) {
         all_one &= (v == 1);
         x ^= v;
@@ -41,11 +51,15 @@ bool misere_nim_first_win(const vector<int>& piles) {
 无偏博弈的 Grundy 值满足 \passthrough{\lstinline!sg[u] = mex(\{sg[v]\})!}；独立子游戏的总值是异或。若状态图是 DAG，可以记忆化 DFS；若只是判断胜负，则``存在必败后继''为必胜，否则为必败。
 
 \begin{lstlisting}[language={C++}]
+// 接口：mex(values)：返回集合中没有出现的最小非负整数；返回类型 int。
+// 参数：要求 mex 的非负整数集合 values。
 int mex(vector<int> values) {
     // 排序去重后，从 0 开始找第一个断点；适合后继数量不太大的单次计算。
     sort(values.begin(), values.end());
     values.erase(unique(values.begin(), values.end()), values.end());
+    // 变量：g=图/树的邻接表 g。
     int g = 0;
+    // 变量：x=当前输入值/查询值/坐标 x。
     for (int x : values) {
         if (x == g) ++g;
         else if (x > g) break;
@@ -53,20 +67,28 @@ int mex(vector<int> values) {
     return g;
 }
 
-vector<int> sg;
-vector<char> sg_vis;
+vector<int> sg;       // sg[u]=状态 u 的 Sprague-Grundy 值。
+vector<char> sg_vis;  // sg_vis[u]=1 表示 sg[u] 已完成记忆化计算。
+// 接口：grundy(u)：返回状态 x/u 的 Sprague-Grundy 值；返回类型 int。
+// 参数：顶点/状态编号 u。
 int grundy(int u) {
     // DAG 上记忆化求后继 SG；有环时必须换成专门的环博弈分析。
     if (sg_vis[u]) return sg[u];
     sg_vis[u] = true;
+    // 变量：nxt=当前一步可到达的后继状态 nxt。
     vector<int> nxt;
+    // 变量：v=当前边的终点 v。
     for (int v : dag[u]) nxt.push_back(grundy(v));
     return sg[u] = mex(nxt);
 }
 
+// 接口：first_win(starts)：返回若干独立子游戏异或和是否非零；返回 true 表示本节条件成立/操作成功。
+// 参数：若干独立子游戏的起始状态 starts。
 bool first_win(const vector<int>& starts) {
     // 只有子游戏互不影响时才能异或；共享资源的游戏不能套这里。
+    // 变量：total=当前总数/连通块规模 total。
     int total = 0;
+    // 变量：s=当前枚举的起点/源点 s。
     for (int s : starts) total ^= grundy(s);
     return total != 0;
 }
@@ -74,10 +96,13 @@ bool first_win(const vector<int>& starts) {
 
 \begin{lstlisting}[language={C++}]
 vector<int8_t> win; // 0: 未求，1: 必胜，-1: 必败
+// 接口：dag_game(u)：返回 DAG 状态 u 的 SG 值；返回类型 int。
+// 参数：顶点/状态编号 u。
 int dag_game(int u) {
     // 先暂定为必败，发现一个必败后继就改成必胜。
     if (win[u]) return win[u];
     win[u] = -1;
+    // 变量：v=当前边的终点 v。
     for (int v : dag[u])
         if (dag_game(v) == -1) return win[u] = 1;
     return win[u];
@@ -89,11 +114,18 @@ int dag_game(int u) {
 如果单堆允许取的数量集合固定，先计算一维 SG；\passthrough{\lstinline!sg[n]!} 出现周期后可以直接按周期回答超大 \passthrough{\lstinline!n!}。多个互相独立的堆仍然异或。
 
 \begin{lstlisting}[language={C++}]
+// 接口：solve_subtraction(n, moves)：返回 n 堆/个石子的减法游戏 SG 值；返回类型 int。
+// 参数：规模/上界 n；每步允许取走的石子数集合 moves。
 int solve_subtraction(int n, const vector<int>& moves) {
+    // 变量：sg=Sprague-Grundy 值数组 sg。
     vector<int> sg(n + 1);
+    // 变量：seen=“Nim 变体：取法集合与 Sprague--Grundy 周期”这段代码中的临时量 seen；值由本行初始化式确定。
     vector<int> seen(moves.size() + 2);
+    // 变量：x=当前输入值/查询值/坐标 x。
     for (int x = 1; x <= n; ++x) {
+        // 变量：values=当前需要求 mex 的后继 SG 值集合 values。
         vector<int> values;
+        // 变量：take=当前尝试取走的石子数量 take。
         for (int take : moves) if (take <= x)
             values.push_back(sg[x - take]);
         sg[x] = mex(values);
@@ -107,11 +139,14 @@ int solve_subtraction(int n, const vector<int>& moves) {
 双方零和、轮流行动且状态树有限时，Minimax 取当前方能保证的最优值。Alpha-Beta 剪枝维护祖先已知的下界 \passthrough{\lstinline!alpha!} 与上界 \passthrough{\lstinline!beta!}；排序优先搜索好着法会显著提高剪枝率。
 
 \begin{lstlisting}[language={C++}]
+// 接口：minimax(state, depth, alpha, beta, maximizing)：返回当前博弈状态在双方最优策略下的估值；返回类型 int。
+// 参数：当前博弈状态 state；剩余搜索深度 depth；当前已知下界 alpha；当前已知上界 beta；当前层是否轮到极大化一方 maximizing。
 int minimax(State& state, int depth, int alpha, int beta, bool maximizing) {
     // evaluate 始终站在固定一方视角；max 方取最大，min 方取最小。
     // alpha 是 max 已知下界，beta 是 min 已知上界。
     if (depth == 0 || terminal(state)) return evaluate(state);
     if (maximizing) {
+        // 变量：best=目前找到的最优值 best。
         int best = INT_MIN;
         for (Move mv : ordered_moves(state)) {
             // apply/undo 必须成对，否则下一分支会继承上一分支的局面。
@@ -124,6 +159,7 @@ int minimax(State& state, int depth, int alpha, int beta, bool maximizing) {
         }
         return best;
     }
+    // 变量：best=目前找到的最优值 best。
     int best = INT_MAX;
     for (Move mv : ordered_moves(state)) {
         apply(state, mv);
@@ -154,4 +190,3 @@ int minimax(State& state, int depth, int alpha, int beta, bool maximizing) {
 \item
   题目只问胜负用 Win/Lose，问组合价值或多堆合并才引入 Grundy。
 \end{itemize}
-

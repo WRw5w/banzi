@@ -7,7 +7,9 @@
 数位 DP 处理 \passthrough{\lstinline!0..N!} 中满足数字条件的数。状态通常是 \passthrough{\lstinline!(pos,tight,started,extra)!}；上下界用 \passthrough{\lstinline!count(R)-count(L-1)!}。若有``不能出现某模式/相邻数字限制''，把 \passthrough{\lstinline!extra!} 换成自动机节点。
 
 \begin{lstlisting}[language={C++}]
-long long memo[20][2][2][STATE];
+long long memo[20][2][2][STATE]; // -1=未计算；末维 st 为题目/自动机状态 [0,STATE)。
+// 接口：dfs(pos, tight, started, st)：从当前节点/位置继续深度优先处理，并写入本节状态数组；返回类型 long long。
+// 参数：当前 0-based/DP 位置 pos；前缀是否仍贴住上界 tight；是否已经放置非前导零数字 started；题目定义或自动机节点状态 st，范围 [0,STATE)。
 long long dfs(int pos, bool tight, bool started, int st) {
     // pos：正在处理第 pos 位；tight：前缀是否仍等于上界；
     // started：是否已经出现过非前导零；st：额外限制的自动机状态。
@@ -15,12 +17,17 @@ long long dfs(int pos, bool tight, bool started, int st) {
     // 只有 tight=false 的状态可以复用；tight=true 还依赖上界前缀。
     if (!tight && memo[pos][started][0][st] != -1)
         return memo[pos][started][0][st];
+    // 变量：res=准备返回的结果容器/结果值 res。
     long long res = 0;
+    // 变量：up=父侧贡献/倍增祖先数组 up。
     int up = tight ? digit[pos] : 9;
+    // 变量：d=当前距离、差值或覆盖增量 d。
     for (int d = 0; d <= up; ++d) {
         // 前导零通常不应触发“数字出现/相邻数字”等条件。
+        // 变量：ns=转移后的 started 状态 ns。
         bool ns = started || d != 0;
         // 尚未开始时是否把 0 送入自动机，必须按题意决定；这里留在起点 0。
+        // 变量：nst=转移后的自动机/DP 状态 nst。
         int nst = ns ? go[st][d] : 0;
         if (ns && nst == forbidden) continue;
         // 注意必须与真实上界位 digit[pos] 比较，不能写成 d==up。
@@ -60,7 +67,9 @@ long long dfs(int pos, bool tight, bool started, int st) {
 SOS DP 用来计算所有子集/超集的和：
 
 \begin{lstlisting}[language={C++}]
+// 变量：bit=当前处理的二进制位 bit。
 for (int bit = 0; bit < K; ++bit)
+    // 变量：mask=当前子集/博弈状态的二进制掩码 mask。
     for (int mask = 0; mask < (1 << K); ++mask)
         if (mask >> bit & 1)
             // 把“去掉 bit 后的子集”贡献给当前 mask。
@@ -95,7 +104,9 @@ for (int bit = 0; bit < K; ++bit)
 若转移有 \passthrough{\lstinline!dp[i] = min(dp[j] + w(j,i))!}，且 \passthrough{\lstinline!j!} 的优劣具有区间单调性，先尝试单调队列；若整理后是直线最值，才上凸包/李超树。
 
 \begin{lstlisting}[language={C++}]
+// 变量：q=当前 BFS/单调算法使用的队列 q。
 deque<int> q;
+// 变量：i=当前循环下标 i。
 for (int i = 0; i < n; ++i) {
     // 过期候选先删除；窗口条件由题目决定。
     while (!q.empty() && q.front() < i - window) q.pop_front();
@@ -114,13 +125,18 @@ for (int i = 0; i < n; ++i) {
 \begin{lstlisting}[language={C++}]
 // 把 dp[i] 整理成“查询某条候选直线在 x[i] 处的最值”时使用。
 struct Line {
-    long long k, b;
+    long long k, b; // 候选直线 y=k*x+b 的斜率与截距。
+    // 接口：value(x)：返回直线 k*x+b 在横坐标 x 处的值；返回类型 long long。
+    // 参数：待处理值或点/状态 x。
     long long value(long long x) const { return k * x + b; }
 };
 
 // 只有在斜率按单调顺序加入、查询 x 也按单调顺序时，
 // 才能用普通 deque；任意插入/任意查询请改用前面的李超线段树。
+// 变量：hull=按有效顺序维护的凸包候选队列 hull。
 deque<Line> hull;
+// 接口：useless(a, b, c)：判断中间候选直线 b 是否可从凸包队列删除；返回 true 表示本节条件成立/操作成功。
+// 参数：按斜率顺序相邻的候选直线 a；按斜率顺序相邻的候选直线 b；按斜率顺序相邻的候选直线 c。
 bool useless(const Line& a, const Line& b, const Line& c) {
     // 交点顺序不再递增时，中间直线永远不会成为最优。
     // 用 __int128 防止交叉相乘时溢出。
@@ -128,6 +144,8 @@ bool useless(const Line& a, const Line& b, const Line& c) {
          >= (__int128)(c.b - b.b) * (a.k - b.k);
 }
 
+// 接口：add_line(line)：把一条候选直线插入当前李超树/单调凸包并删除失效候选；会修改当前结构；多测时重新构造或显式清空成员。
+// 参数：待插入候选直线 line。
 void add_line(Line line) {
     // 斜率顺序必须与 useless 的不等式方向一致；换成求最大值时通常要反号。
     while (hull.size() >= 2 &&
@@ -170,15 +188,22 @@ void add_line(Line line) {
 \begin{lstlisting}[language={C++}]
 // 典型形式：dp[layer][i] = min_j(dp[layer-1][j] + cost(j,i))。
 // optL/optR 是当前区间内“最优决策 j”可能出现的范围。
+// 接口：divide_conquer_dp(L, R, optL, optR)：计算 DP 下标闭区间 [L,R]，决策只搜索 [optL,optR]；无返回值；结果写入引用参数或当前结构状态。
+// 参数：闭区间左端点 L；闭区间右端点 R；真实最优决策允许范围左端 optL；真实最优决策允许范围右端 optR。
 void divide_conquer_dp(int L, int R, int optL, int optR) {
     if (L > R) return;
+    // 变量：mid=当前区间中点 mid。
     int mid = (L + R) >> 1;
+    // 变量：best=目前找到的最优值 best。
     long long best = INF;
+    // 变量：best_j=当前 DP 状态取得最优值的决策下标 best_j。
     int best_j = -1;
 
     // 没有单调性证明时不能把枚举范围缩成 optL..optR；
     // 这份模板的正确性前提就是 opt[mid] 位于该范围内。
+    // 变量：j=内层循环下标 j。
     for (int j = optL; j <= min(optR, mid); ++j) {
+        // 变量：cand=当前枚举得到的候选答案 cand。
         long long cand = old_dp[j] + cost(j, mid);
         if (cand < best) best = cand, best_j = j;
     }
@@ -194,11 +219,15 @@ void divide_conquer_dp(int L, int R, int optL, int optR) {
 
 \begin{lstlisting}[language={C++}]
 // Steiner 树状态：dp[mask][v] = 连接 mask 中关键点，并以 v 作为当前末端的最小代价。
+// 变量：mask=当前子集/博弈状态的二进制掩码 mask。
 for (int mask = 1; mask < (1 << K); ++mask) {
     // 把 mask 拆成两个非空子集，在同一个 v 汇合。
+    // 变量：sub=当前枚举的子掩码 sub。
     for (int sub = (mask - 1) & mask; sub; sub = (sub - 1) & mask) {
+        // 变量：other=当前移动后的另一堆/另一状态 other。
         int other = mask ^ sub;
         if (sub > other) continue; // 对称拆分只做一次，常数更小。
+        // 变量：v=当前相邻顶点/下一状态 v。
         for (int v = 0; v < n; ++v)
             dp[mask][v] = min(dp[mask][v],
                               dp[sub][v] + dp[other][v]);
@@ -221,17 +250,24 @@ for (int mask = 1; mask < (1 << K); ++mask) {
 struct Mat {
     long long a[2][2]{}; // a[i][j]：第 i 个状态对第 j 个状态的线性系数。
 };
+// 接口：mul(A, B)：返回两个转移矩阵的乘积；返回类型 Mat。
+// 参数：左操作数/矩阵 A；右操作数/矩阵 B。
 Mat mul(Mat A, Mat B) {
     Mat C{}; // 必须清零；矩阵乘法是累加，不是覆盖。
+    // 变量：i=当前循环下标 i。
     for (int i = 0; i < 2; ++i)
+        // 变量：k=当前排名、选取数量或循环层数 k。
         for (int k = 0; k < 2; ++k)
+            // 变量：j=内层循环下标 j。
             for (int j = 0; j < 2; ++j)
                 // C = A * B：先应用 B，再应用 A（按列向量约定）。
                 C.a[i][j] = (C.a[i][j] + A.a[i][k] * B.a[k][j]) % MOD;
     return C;
 }
 
+// 接口：identity()：返回当前状态维数的单位转移矩阵；返回类型 Mat。
 Mat identity() {
+    // 变量：I=单位矩阵/恒等转移 I。
     Mat I{};
     I.a[0][0] = I.a[1][1] = 1;
     return I;
@@ -239,6 +275,8 @@ Mat identity() {
 
 // 矩阵线段树的核心合并：左区间的转移先于右区间的转移。
 // 如果状态向量按行向量存储，合并顺序会反过来，必须从建模时保持一致。
+// 接口：merge_segment(left, right)：按从左到右的应用顺序合并两个区间转移矩阵；返回类型 Mat。
+// 参数：左区间转移矩阵 left；右区间转移矩阵 right。
 Mat merge_segment(Mat left, Mat right) {
     return mul(right, left);
 }
@@ -283,6 +321,4 @@ Mat merge_segment(Mat left, Mat right) {
 \end{lstlisting}
 
 前三组分别抓``漏除以 \passthrough{\lstinline!1-p!}''\,``把常数项放错侧''和``\passthrough{\lstinline!p=1!} 除零''。第四组抓高斯消元中的主元选择、无解判断与浮点误差。实际题目若保证期望存在，第四组应改成相容系统；测试代码本身仍应保留无解分支，避免模板在异常数据上产生假答案。
-
-
 

@@ -13,16 +13,23 @@
 小范围条件最多二十个时可以枚举子集：
 
 \begin{lstlisting}[language={C++}]
+// 变量：bad=当前状态是否无解/不合法的标记 bad。
 long long bad = 0;
+// 变量：mask=当前子集/博弈状态的二进制掩码 mask。
 for (int mask = 1; mask < (1 << m); ++mask) {
+    // 变量：l=当前区间左端点 l。
     long long l = 1;
+    // 变量：bits=当前值的有效二进制位数 bits。
     int bits = 0;
+    // 变量：overflow=当前乘法或容量是否溢出的标记 overflow。
     bool overflow = false;
+    // 变量：i=当前处理的二进制位/倍增层 i。
     for (int i = 0; i < m; ++i) if (mask >> i & 1) {
         ++bits;
         l = lcm_limit(l, a[i], n, overflow);
     }
     if (overflow || l > n) continue;
+    // 变量：ways=当前方案数/多项式 ways。
     long long ways = n / l;
     if (bits & 1) bad += ways;
     else bad -= ways;
@@ -64,6 +71,8 @@ for (int mask = 1; mask < (1 << m); ++mask) {
 \[C(n,m)\equiv C(\lfloor n/p\rfloor,\lfloor m/p\rfloor)\cdot C(n\bmod p,m\bmod p)\pmod p.\]
 
 \begin{lstlisting}[language={C++}]
+// 接口：mod_pow(a, e, p)：计算 a^e mod p；返回类型 long long。
+// 参数：输入值/数组 a（见本节定义）；非负指数 e；题目给定的质数/正模数 p。
 long long mod_pow(long long a, long long e, long long p) {
     long long r = 1 % p; // p=1 时返回 0，避免写死为 1。
     for (; e; e >>= 1, a = a * a % p) {
@@ -72,6 +81,8 @@ long long mod_pow(long long a, long long e, long long p) {
     }
     return r;
 }
+// 接口：Csmall(n, k, p, fac, ifac)：计算当前质数模数下的小组合数 C(n,k)；返回类型 long long。
+// 参数：规模/上界 n；排名/选取数量 k；题目给定的质数/正模数 p；阶乘数组 fac[i]=i! mod p；逆阶乘数组 ifac[i]=(i!)^{-1} mod p。
 long long Csmall(long long n, long long k, long long p,
                  const vector<long long>& fac,
                  const vector<long long>& ifac) {
@@ -81,6 +92,8 @@ long long Csmall(long long n, long long k, long long p,
     // C(n,k)=n!/(k!(n-k)!)，ifac 是阶乘逆元。
     return fac[n] * ifac[k] % p * ifac[n-k] % p;
 }
+// 接口：Lucas(n, k, p, fac, ifac)：用 Lucas 定理计算 C(n,k) mod p；返回类型 long long。
+// 参数：规模/上界 n；排名/选取数量 k；题目给定的质数/正模数 p；阶乘数组 fac[i]=i! mod p；逆阶乘数组 ifac[i]=(i!)^{-1} mod p。
 long long Lucas(long long n, long long k, long long p,
                 const vector<long long>& fac,
                 const vector<long long>& ifac) {
@@ -126,34 +139,47 @@ long long Lucas(long long n, long long k, long long p,
 令 \passthrough{\lstinline!x=a+m*t!}，得到 \passthrough{\lstinline!m*t ≡ b-a (mod n)!}。只有 \passthrough{\lstinline!gcd(m,n)!} 整除 \passthrough{\lstinline!b-a!} 时有解；用扩展欧几里得求 \passthrough{\lstinline!m/g!} 的逆元。
 
 \begin{lstlisting}[language={C++}]
+// 接口：exgcd(a, b, x, y)：求 gcd(a,b)，并通过 x,y 返回 ax+by=gcd(a,b) 的一组系数；返回类型 long long。
+// 参数：输入值/数组 a（见本节定义）；输入值/数组 b（见本节定义）；输出引用 x，满足 a*x+b*y=gcd(a,b)；输出引用 y，满足 a*x+b*y=gcd(a,b)。
 long long exgcd(long long a, long long b,
                 long long& x, long long& y) {
     // 返回 gcd(a,b)，同时求出 a*x+b*y=g。
     if (!b) { x = 1; y = 0; return a; }
+    // 变量：x1=递归子问题返回的 Bézout 系数 x1；y1=递归子问题返回的 Bézout 系数 y1。
     long long x1, y1;
+    // 变量：g=递归返回的 gcd(a,b) 值 g。
     long long g = exgcd(b, a % b, x1, y1);
     // 由 b*x1+(a%b)*y1=g 反推 a*y1+b*(x1-a/b*y1)=g。
     x = y1;
     y = x1 - (a / b) * y1;
     return g;
 }
+// 接口：merge(a, m, b, n)：合并两个兼容对象/同余式；返回值表示成功或新根；返回 true 表示本节条件成立/操作成功。
+// 参数：输入值/数组 a（见本节定义）；正模数 m；输入值/数组 b（见本节定义）；规模/上界 n。
 bool merge(long long& a, long long& m,
            long long b, long long n) {
     // 旧方程：x ≡ a (mod m)；新方程：x ≡ b (mod n)。
     // 合并后仍用 a,m 表示一个最小非负解和新的最小公倍数模数。
+    // 变量：x=当前输入值/查询值/坐标 x；y=当前输入值/查询值/坐标 y。
     long long x, y;
+    // 变量：g=递归返回的 gcd(a,b) 值 g。
     long long g = exgcd(m, n, x, y);
+    // 变量：d=当前距离、差值或覆盖增量 d。
     long long d = b - a;
     // 两同余式相容的充要条件：gcd(m,n) | (b-a)。
     if (d % g) return false;
     // 令 x=a+m*t，得到 (m/g)*t ≡ (b-a)/g (mod n/g)。
     // exgcd 返回的 x 正是 m/g 在模 n/g 意义下的逆元。
+    // 变量：t=测试用例数量或当前临时值 t。
     __int128 t = (__int128)(d / g) * x;
+    // 变量：mod=当前正模数 mod。
     long long mod = n / g;
     t %= mod;
     if (t < 0) t += mod;
     // 中间乘法可能超过 long long，所以 na/nm 使用 __int128。
+    // 变量：na=多项式 a 补齐后的 NTT 长度 na。
     __int128 na = (__int128)a + (__int128)m * t;
+    // 变量：nm=合并后需要的最小结果长度 nm。
     __int128 nm = (__int128)m / g * n;
     a = (long long)(na % nm);
     if (a < 0) a += (long long)nm;
@@ -198,23 +224,33 @@ No
 高斯消元的现场顺序：选主元 → 交换到当前行 → 消去其他行/下面的行 → 判断矛盾或自由元。模意义下每次除以主元要乘逆元；普通实数消元则要用 \passthrough{\lstinline!long double!} 并带 \passthrough{\lstinline!eps!}。
 
 \begin{lstlisting}[language={C++}]
+// 接口：gauss_mod(a, mod)：在模 mod 意义下对增广矩阵消元；返回类型 int。
+// 参数：输入值/数组 a（见本节定义）；正模数 mod。
 int gauss_mod(vector<vector<long long>> a, long long mod) {
     // a 是系数矩阵；如果是增广矩阵，最后一列还要单独解释为常数项。
     // 这里采用 Gauss-Jordan 消元：每个主元列都会把其他行一起消成 0。
+    // 变量：n=当前元素/顶点/状态数量 n；m=当前边数、操作数或第二维规模 m；row=当前高斯消元主元行 row。
     int n = a.size(), m = a[0].size(), row = 0;
+    // 变量：col=当前高斯消元列/扫描列 col。
     for (int col = 0; col < m && row < n; ++col) {
         int p = row; // 在当前列寻找主元行。
+        // 变量：i=当前循环下标 i。
         for (int i = row; i < n; ++i)
             if (a[i][col] > a[p][col]) p = i;
         // 没有非零主元，说明这一列是自由列，换下一列。
         if (a[p][col] == 0) continue;
         swap(a[p], a[row]);
         // 模意义下的除法必须乘逆元；这里默认 mod 是质数。
+        // 变量：inv=当前逆元/是否执行逆变换 inv。
         long long inv = mod_pow(a[row][col], mod - 2, mod);
+        // 变量：j=内层循环下标 j。
         for (int j = col; j < m; ++j) a[row][j] = a[row][j] * inv % mod;
+        // 变量：i=当前循环下标 i。
         for (int i = 0; i < n; ++i) if (i != row) {
+            // 变量：k=当前排名、选取数量或循环层数 k。
             long long k = a[i][col];
             // 用当前主元行消掉其它行的这一列。
+            // 变量：j=内层循环下标 j。
             for (int j = col; j < m; ++j)
                 a[i][j] = (a[i][j] - k * a[row][j]) % mod;
         }
@@ -269,16 +305,21 @@ int gauss_mod(vector<vector<long long>> a, long long mod) {
 竞赛中常见等价形式是``统计 gcd 恰好为 \passthrough{\lstinline!d!}''：先统计所有 gcd 是 \passthrough{\lstinline!d!} 的倍数，再从大到小用 \passthrough{\lstinline!f[d] -= f[k]!} 反演。
 
 \begin{lstlisting}[language={C++}]
-vector<int> mu, primes;
-vector<char> is_comp;
+vector<int> mu;       // mu[x]=莫比乌斯函数值，求完后合法下标为 [1,n]。
+vector<int> primes;   // 不超过 n 的全部质数，严格递增。
+vector<char> is_comp; // is_comp[x]=1 表示 x 是合数；0 还可能是 0/1。
+// 接口：linear_sieve_mu(n)：线性筛出 1..n 的莫比乌斯函数 mu；无返回值；结果写入引用参数或当前结构状态。
+// 参数：规模/上界 n。
 void linear_sieve_mu(int n) {
     // mu[1]=1；mu[p]=-1；有平方因子时 mu=0；不同质因子乘积时符号交替。
     mu.assign(n + 1, 0);
     is_comp.assign(n + 1, false);
     mu[1] = 1;
+    // 变量：i=当前循环下标 i。
     for (int i = 2; i <= n; ++i) {
         // i 没被标记说明是质数。
         if (!is_comp[i]) primes.push_back(i), mu[i] = -1;
+        // 变量：p=当前从质数表枚举出的质数 p。
         for (int p : primes) {
             if (1LL * i * p > n) break;
             is_comp[i * p] = true;
@@ -321,24 +362,33 @@ void linear_sieve_mu(int n) {
 离散对数题的目标是求最小 \passthrough{\lstinline!x!} 使 \passthrough{\lstinline!a\^x ≡ b (mod p)!}。当模数是质数且 \passthrough{\lstinline!a!} 可逆，用 Baby-step Giant-step：设 \passthrough{\lstinline!m=ceil(sqrt(p))!}，枚举 \passthrough{\lstinline!a\^j!} 存表，再枚举 \passthrough{\lstinline!b*a\^\{-im\}!} 查表，复杂度 \(O(\sqrt p)\)。
 
 \begin{lstlisting}[language={C++}]
+// 接口：bsgs(a, b, mod)：求最小非负 x 使 a^x=b (mod mod)，无解返回 -1；返回类型 long long。
+// 参数：输入值/数组 a（见本节定义）；输入值/数组 b（见本节定义）；正模数 mod。
 long long bsgs(long long a, long long b, long long mod) {
     // 求最小非负 x，使 a^x = b (mod mod)。
     // 基础版要求 gcd(a,mod)=1；下面用费马小定理求逆元，
     // 因而最安全的使用场景是 mod 为质数且 a!=0。
     a %= mod; b %= mod;
+    // 变量：m=当前边数、操作数或第二维规模 m。
     long long m = sqrtl(mod) + 1;
+    // 变量：baby=BSGS 中小步值到指数的哈希表 baby。
     unordered_map<long long, long long> baby;
+    // 变量：cur=当前扫描位置的累计状态 cur。
     long long cur = 1;
     // Baby step：保存 a^j -> j，j=0..m-1。
+    // 变量：j=内层循环下标 j。
     for (long long j = 0; j < m; ++j) {
         // 保留最小 j，保证找到的是更小的答案。
         baby.emplace(cur, j);
         cur = (__int128)cur * a % mod;
     }
     // Giant step 每次乘 a^{-m}，所以第 i 次对应 b*a^{-im}。
+    // 变量：factor=当前乘数/质因子贡献 factor。
     long long factor = mod_pow(mod_pow(a, m, mod), mod - 2, mod);
     cur = b;
+    // 变量：i=当前循环下标 i。
     for (long long i = 0; i <= m; ++i) {
+        // 变量：it=当前容器迭代器/当前弧位置 it。
         auto it = baby.find(cur);
         if (it != baby.end()) {
             // cur=a^j 时，b*a^{-im}=a^j，即 x=i*m+j。
@@ -379,11 +429,16 @@ long long bsgs(long long a, long long b, long long mod) {
 普通生成函数把数列 \passthrough{\lstinline!a\_n!} 写成 \passthrough{\lstinline!A(x)=sum a\_n x\^n!}。卷积就是多项式乘法：
 
 \begin{lstlisting}[language={C++}]
+// 接口：multiply(a, b)：返回两个多项式的卷积并按本节模数取模；返回类型 vector<long long>。
+// 参数：输入值/数组 a（见本节定义）；输入值/数组 b（见本节定义）。
 vector<long long> multiply(const vector<long long>& a,
                            const vector<long long>& b) {
     // a[i] / b[j] 分别是 x^i / x^j 的系数，卷积后下标一定是 i+j。
+    // 变量：c=当前字符、容量或第三个操作数 c。
     vector<long long> c(a.size() + b.size() - 1);
+    // 变量：i=当前循环下标 i。
     for (int i = 0; i < (int)a.size(); ++i)
+        // 变量：j=内层循环下标 j。
         for (int j = 0; j < (int)b.size(); ++j)
             // 先乘后加；每次取模避免系数过大。
             c[i + j] = (c[i + j] + a[i] * b[j]) % MOD;
@@ -424,16 +479,23 @@ Burnside 计算群作用下的不同染色数：
 \[A=\frac1{|G|}\sum_{g\in G} k^{\text{cycles}(g)}.\]
 
 \begin{lstlisting}[language={C++}]
+// 接口：burnside(perm, colors, mod)：按 Burnside 引理计算本质不同方案数；返回类型 long long。
+// 参数：一个 0-based 置换 perm；可用颜色数 colors；正模数 mod。
 long long burnside(const vector<vector<int>>& perm,
                    long long colors, long long mod) {
+    // 变量：sum=当前累计和 sum。
     long long sum = 0;
     for (auto& p : perm) {
         // p[i] 表示置换把位置 i 送到 p[i]。
+        // 变量：vis=访问或记忆化完成标记 vis。
         vector<char> vis(p.size());
+        // 变量：cycles=当前置换的环数量 cycles。
         int cycles = 0;
+        // 变量：i=当前循环下标 i。
         for (int i = 0; i < (int)p.size(); ++i) if (!vis[i]) {
             ++cycles;
             // 沿置换反复跳转，走一圈就是一个循环。
+            // 变量：u=当前顶点/状态编号 u。
             for (int u = i; !vis[u]; u = p[u]) vis[u] = 1;
         }
         // 一个置换固定的染色要求同一循环内颜色相同，故有 colors^cycles 种。
@@ -472,6 +534,8 @@ Pólya 是把大量具体置换按循环类型分组并求和。若旋转/翻转
 题目问 \passthrough{\lstinline!x\^2 ≡ n (mod p)!} 且 \passthrough{\lstinline!p!} 为奇质数时，先用欧拉判别：\passthrough{\lstinline!n\^((p-1)/2) == 1!} 才可能有解；\passthrough{\lstinline!n=0!} 单独处理。Tonelli-Shanks 在 \(O(\log^2 p)\) 内求平方根。
 
 \begin{lstlisting}[language={C++}]
+// 接口：tonelli_shanks(n, p)：求 x^2=n (mod p) 的一个根，无解返回 -1；返回类型 long long。
+// 参数：规模/上界 n；题目给定的质数/正模数 p。
 long long tonelli_shanks(long long n, long long p) {
     // 返回一个 r，使 r^2=n (mod p)；无解返回 -1。
     // 使用前确认 p 是奇素数；p=2 要单独写分支。
@@ -485,17 +549,24 @@ long long tonelli_shanks(long long n, long long p) {
     if (p % 4 == 3) return mod_pow(n, (p + 1) / 4, p);
 
     // 把 p-1 写成 q*2^s，其中 q 为奇数。
+    // 变量：q=当前查询对象 q；s=当前枚举的起点/源点 s。
     long long q = p - 1; int s = 0;
     while ((q & 1) == 0) q >>= 1, ++s;
 
     // 找一个二次非剩余 z，使 z^((p-1)/2)=-1。
+    // 变量：z=当前第三维坐标/临时值 z。
     long long z = 2;
     while (mod_pow(z, (p - 1) / 2, p) != p - 1) ++z;
+    // 变量：c=当前字符、容量或第三个操作数 c。
     long long c = mod_pow(z, q, p);
+    // 变量：x=当前输入值/查询值/坐标 x。
     long long x = mod_pow(n, (q + 1) / 2, p);
+    // 变量：t=测试用例数量或当前临时值 t。
     long long t = mod_pow(n, q, p);
+    // 变量：m=当前边数、操作数或第二维规模 m。
     int m = s;
     while (t != 1) {
+        // 变量：i=寻找满足 t^(2^i)=1 时的最小指数 i；tt=当前平方根修正量 t 的平方 tt。
         int i = 1; long long tt = t * t % p;
         // 找最小 i，使 t^(2^i)=1；这一步保证下一轮 m 变小。
         while (tt != 1) tt = tt * tt % p, ++i;
@@ -503,6 +574,7 @@ long long tonelli_shanks(long long n, long long p) {
         // 这里的指数是 2^(m-i-1)，不是 m-i-1。
         // p 为 long long 时 m 很小，移位安全；若改用更大整数，
         // 请改写为专门的幂指数计算，不能直接套 1LL 左移。
+        // 变量：b=Tonelli-Shanks 本轮把 x 调整到下一阶所乘的修正因子 b。
         long long b = mod_pow(c, 1LL << (m - i - 1), p);
         x = x * b % p;
         t = t * b % p * b % p;
@@ -560,26 +632,37 @@ Prüfer 序列把一棵 \passthrough{\lstinline!n!} 个点的标号树编码成�
 struct Mat {
     long long a[2][2]{}; // a[i][j]：第 i 个新状态对第 j 个旧状态的系数。
 };
+// 接口：operator*(A, B)：返回两个矩阵/几何量按本节定义相乘的结果；返回类型 Mat。
+// 参数：左操作数/矩阵 A；右操作数/矩阵 B。
 Mat operator*(const Mat& A, const Mat& B) {
     Mat C{}; // 矩阵乘法是累加，必须从全零矩阵开始。
+    // 变量：i=当前循环下标 i。
     for (int i = 0; i < 2; ++i)
+        // 变量：k=当前排名、选取数量或循环层数 k。
         for (int k = 0; k < 2; ++k)
+            // 变量：j=内层循环下标 j。
             for (int j = 0; j < 2; ++j)
                 // C=A*B；对列向量来说先应用 B，再应用 A。
                 C.a[i][j] = (C.a[i][j] + A.a[i][k] * B.a[k][j]) % MOD;
     return C;
 }
+// 接口：mpow(a, e)：返回矩阵 a 的 e 次幂；返回类型 Mat。
+// 参数：输入值/数组 a（见本节定义）；非负指数 e。
 Mat mpow(Mat a, long long e) {
     // r 是单位矩阵，代表“不做任何转移”。
+    // 变量：r=当前区间右端点 r。
     Mat r{{{1, 0}, {0, 1}}};
     for (; e; e >>= 1, a = a * a)
         // 当前二进制位为 1，就把这一段转移乘进答案。
         if (e & 1) r = r * a;
     return r;
 }
+// 接口：fibonacci(n)：返回第 n 项 Fibonacci 数（按本节矩阵定义）；返回类型 long long。
+// 参数：规模/上界 n。
 long long fibonacci(long long n) {
     // F_0=0 单独处理；n>=1 时 base^(n-1) 的左上角就是 F_n。
     if (n == 0) return 0;
+    // 变量：base=当前幂运算底数/基多项式 base。
     Mat base{{{1, 1}, {1, 0}}};
     return (mpow(base, n - 1).a[0][0]) % MOD;
 }
@@ -616,28 +699,40 @@ long long fibonacci(long long n) {
 如果题目要求概率、坐标或实数解，增广矩阵每一行是一条方程。选绝对值最大的主元可以减少误差；没有主元的行是自由变量，最后要区分唯一解、无解和多解。
 
 \begin{lstlisting}[language={C++}]
+// 接口：gauss_real(a, ans)：对实数增广矩阵消元并返回解的状态；返回类型 int。
+// 参数：输入值/数组 a（见本节定义）；输出答案容器/引用 ans。
 int gauss_real(vector<vector<long double>> a,
                vector<long double>& ans) {
     // a[i][0..m-1] 是系数，a[i][m] 是常数项；这里默认方程数=未知数数。
     // 返回 0=无解，1=唯一解，2=多解。
+    // 变量：n=当前元素/顶点/状态数量 n；m=当前边数、操作数或第二维规模 m；row=当前高斯消元主元行 row。
     int n = a.size(), m = n, row = 0;
+    // 变量：col=当前高斯消元列/扫描列 col。
     for (int col = 0; col < m && row < n; ++col) {
+        // 变量：p=当前质数、节点编号或指针 p；具体角色见所在公式。
         int p = row;
+        // 变量：i=当前循环下标 i。
         for (int i = row + 1; i < n; ++i)
             if (fabsl(a[i][col]) > fabsl(a[p][col])) p = i;
         // 选绝对值最大的主元可以减小浮点误差。
         if (fabsl(a[p][col]) < 1e-12L) continue;
         swap(a[p], a[row]);
+        // 变量：i=当前循环下标 i。
         for (int i = 0; i < n; ++i) if (i != row) {
+            // 变量：k=当前排名、选取数量或循环层数 k。
             long double k = a[i][col] / a[row][col];
             // Gauss-Jordan：把主元列在所有其它行都消成 0。
+            // 变量：j=内层循环下标 j。
             for (int j = col; j <= m; ++j)
                 a[i][j] -= k * a[row][j];
         }
         ++row;
     }
+    // 变量：i=当前循环下标 i。
     for (int i = row; i < n; ++i) {
+        // 变量：all_zero=方程当前行系数是否全为 0 的标记 all_zero。
         bool all_zero = true;
+        // 变量：j=内层循环下标 j。
         for (int j = 0; j < m; ++j)
             all_zero &= fabsl(a[i][j]) < 1e-12L;
         // 0=0 是多解的一部分；0=c(c!=0) 是矛盾，直接无解。
@@ -646,7 +741,9 @@ int gauss_real(vector<vector<long double>> a,
     // 主元个数小于未知数个数，存在自由变量。
     if (row < m) return 2; // 多解；题目若保证唯一可忽略
     ans.assign(m, 0);
+    // 变量：i=当前循环下标 i。
     for (int i = 0; i < n; ++i) {
+        // 变量：pivot=当前高斯消元选择的主元行 pivot。
         int pivot = 0;
         while (pivot < m && fabsl(a[i][pivot]) < 1e-12L) ++pivot;
         if (pivot < m) ans[pivot] = a[i][m] / a[i][pivot];
@@ -679,6 +776,5 @@ x+y=2
 第二组检查``系数全零但常数非零''的矛盾行，第三组检查秩小于未知数个数。不能只测试唯一解，否则 \passthrough{\lstinline!row<m!} 和无解判断很容易被抄掉。
 
 例题：\href{https://www.luogu.com.cn/problem/P3389}{P3389 高斯消元法}。输入的是 \passthrough{\lstinline!n!} 个方程和 \passthrough{\lstinline!n!} 个未知数，读入 \passthrough{\lstinline!a[i][0..n]!} 后直接调用；输出保留题目要求的小数位。模意义下则把除法换成逆元，且只能在主元与模数互质时做。
-
 
 

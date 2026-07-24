@@ -29,9 +29,13 @@ struct LinearBasis {
     using U = unsigned long long;
     U p[LOG]{}; // p[i] 的最高位是 i
 
+    // 接口：clear()：清空当前结构并恢复为刚构造的空状态；无返回值；结果写入引用参数或当前结构状态。
     void clear() { memset(p, 0, sizeof(p)); }
 
+    // 接口：insert(x)：把参数表示的数/字符串/版本插入当前结构；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：待处理值或点/状态 x。
     void insert(U x) {
+        // 变量：i=当前处理的二进制位/倍增层 i。
         for (int i = LOG - 1; i >= 0; --i) {
             if (((x >> i) & 1ULL) == 0) continue;
             if (!p[i]) {
@@ -42,7 +46,10 @@ struct LinearBasis {
         }
     }
 
+    // 接口：can(x)：判断 x 是否能由当前线性基中的向量异或得到；返回 true 表示本节条件成立/操作成功。
+    // 参数：待处理值或点/状态 x。
     bool can(U x) const {
+        // 变量：i=当前处理的二进制位/倍增层 i。
         for (int i = LOG - 1; i >= 0; --i) {
             if (!((x >> i) & 1ULL)) continue;
             if (!p[i]) return false;
@@ -51,7 +58,10 @@ struct LinearBasis {
         return true;
     }
 
+    // 接口：max_xor(x)：返回把 x 与当前集合/线性基元素组合后能得到的最大异或值；返回类型 U。
+    // 参数：待处理值或点/状态 x。
     U max_xor(U x = 0) const {
+        // 变量：i=当前处理的二进制位/倍增层 i。
         for (int i = LOG - 1; i >= 0; --i)
             x = max(x, x ^ p[i]);
         return x;
@@ -84,13 +94,16 @@ struct LinearBasis {
 例如输入集合为 \passthrough{\lstinline!1, 5, 9, 4!}：插入后可以得到 \passthrough{\lstinline!1 \^ 4 \^ 8 = 13!}，模板从最高位开始尝试，得到最大值 \passthrough{\lstinline!13!}。完整调用如下：
 
 \begin{lstlisting}[language={C++}]
+// 接口：main()：程序入口，负责 I/O 初始化并调用本节核心逻辑；入口函数；每组测试前按注释清空全局状态。
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
+    // 变量：n=当前元素/顶点/状态数量 n。
     int n;
     cin >> n;
     LinearBasis<61> basis;
     while (n--) {
+        // 变量：x=当前输入值/查询值/坐标 x。
         unsigned long long x;
         cin >> x;
         basis.insert(x);

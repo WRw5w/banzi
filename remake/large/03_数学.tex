@@ -3,7 +3,10 @@
 对质数/任意模数都成立：\passthrough{\lstinline!(a+b)\%p!}、\passthrough{\lstinline!(a-b+p)\%p!}、\passthrough{\lstinline!a*b\%p!}。除法不能直接取模，必须证明逆元存在。
 
 \begin{lstlisting}[language={C++}]
+// 接口：qpow(a, e, mod)：计算 a^e mod mod；返回类型 long long。
+// 参数：输入值/数组 a（见本节定义）；非负指数 e；正模数 mod。
 long long qpow(long long a, long long e, long long mod) {
+    // 变量：r=快速幂当前累计答案 r。
     a %= mod; long long r = 1 % mod;
     while (e) {
         if (e & 1) r = (__int128)r * a % mod;
@@ -16,8 +19,11 @@ long long qpow(long long a, long long e, long long mod) {
 \section{最大公约数、扩展欧几里得与同余}\label{ux6700ux5927ux516cux7ea6ux6570ux6269ux5c55ux6b27ux51e0ux91ccux5f97ux4e0eux540cux4f59}
 
 \begin{lstlisting}[language={C++}]
+// 接口：exgcd(a, b, x, y)：求 gcd(a,b)，并通过 x,y 返回 ax+by=gcd(a,b) 的一组系数；返回类型 long long。
+// 参数：输入值/数组 a（见本节定义）；输入值/数组 b（见本节定义）；输出引用 x，满足 a*x+b*y=gcd(a,b)；输出引用 y，满足 a*x+b*y=gcd(a,b)。
 long long exgcd(long long a, long long b, long long &x, long long &y) {
     if (!b) { x = 1; y = 0; return a; }
+    // 变量：x1=递归子问题返回的 Bézout 系数 x1；y1=递归子问题返回的 Bézout 系数 y1；g=递归返回的 gcd(a,b) 值 g。
     long long x1, y1, g = exgcd(b, a % b, x1, y1);
     x = y1; y = x1 - (a / b) * y1; return g;
 }
@@ -34,10 +40,15 @@ long long exgcd(long long a, long long b, long long &x, long long &y) {
 试除到 \passthrough{\lstinline!i*i<=n!}，每次除尽；单个 \passthrough{\lstinline!n≤1e12!} 适用。若只需判质数，复杂度 \passthrough{\lstinline!O(√n)!}。
 
 \begin{lstlisting}[language={C++}]
+// 接口：factor(n)：试除分解 n，返回 (质因子, 指数)；返回类型 vector<pair<long long, int>>。
+// 参数：规模/上界 n。
 vector<pair<long long, int>> factor(long long n) {
+    // 变量：res=准备返回的结果容器/结果值 res。
     vector<pair<long long, int>> res;
+    // 变量：p=当前试除的候选质因子 p。
     for (long long p = 2; p * p <= n; ++p) {
         if (n % p) continue;
+        // 变量：e=当前质因子 p 在原数中的指数 e。
         int e = 0;
         while (n % p == 0) n /= p, ++e;
         res.push_back({p, e});
@@ -52,17 +63,22 @@ vector<pair<long long, int>> factor(long long n) {
 埃氏筛复杂度 \passthrough{\lstinline!O(n log log n)!}；线性筛保证每个合数只被最小质因子筛一次，复杂度 \passthrough{\lstinline!O(n)!}，可同时求 \passthrough{\lstinline!phi!}、莫比乌斯等积性函数。
 
 \begin{lstlisting}[language={C++}]
-vector<int> primes, lp(N), phi(N);
-phi[1] = 1;
-for (int i = 2; i < N; ++i) {
+// N：数组长度；本模板筛 [1,N)，所以最大可查询 N-1。
+vector<int> primes; // primes：目前找到的全部质数，严格递增。
+vector<int> lp(N);  // lp[x]：x 的最小质因子；0 表示 x 还没被筛到。
+vector<int> phi(N); // phi[x]：1..x 中与 x 互质的整数个数。
+phi[1] = 1;         // 定义 phi(1)=1。
+for (int i = 2; i < N; ++i) { // i：当前正在确定的整数。
+    // lp[i]==0 说明 i 没被更小质数筛过，因此 i 是质数。
     if (!lp[i]) lp[i] = i, primes.push_back(i), phi[i] = i - 1;
-    for (int p : primes) {
+    for (int p : primes) { // p：从小到大枚举的质数因子。
         if (p > lp[i] || 1LL * i * p >= N) break;
-        lp[i * p] = p;
+        lp[i * p] = p;     // i*p：本次被筛掉的合数。
         if (p == lp[i]) phi[i * p] = phi[i] * p;
         else phi[i * p] = phi[i] * (p - 1);
     }
 }
+// 多测：若每组都重新筛，先 primes.clear()，并把 lp、phi 填 0。
 \end{lstlisting}
 
 \subsection{约数枚举与整除分块}\label{ux7ea6ux6570ux679aux4e3eux4e0eux6574ux9664ux5206ux5757}
@@ -70,7 +86,9 @@ for (int i = 2; i < N; ++i) {
 枚举约数成对出现，\passthrough{\lstinline!O(√n)!}。对 \passthrough{\lstinline!floor(n/i)!} 的求和，商相同的 \passthrough{\lstinline!i!} 区间为 \passthrough{\lstinline![i, n/(n/i)]!}，可在 \passthrough{\lstinline!O(√n)!} 个块内完成（数论分块）。
 
 \begin{lstlisting}[language={C++}]
+// 变量：l=当前区间左端点 l。
 for (long long l = 1, r; l <= n; l = r + 1) {
+    // 变量：quotient=当前整除分块内恒定的商 quotient=n/l。
     long long quotient = n / l;
     r = n / quotient;
     // [l, r] 内 n / i 都等于 quotient
@@ -85,22 +103,30 @@ for (long long l = 1, r; l <= n; l = r + 1) {
 莫比乌斯函数：\passthrough{\lstinline!μ(1)=1!}，含平方因子为 0，否则质因数个数奇偶决定 ±1。常见反演：若 \passthrough{\lstinline!f(n)=Σ\_\{d|n\}g(d)!}，则 \passthrough{\lstinline!g(n)=Σ\_\{d|n\} μ(d)f(n/d)!}。
 
 \begin{lstlisting}[language={C++}]
-vector<int> primes, lp(N), phi(N), mu(N);
-phi[1] = mu[1] = 1;
-for (int i = 2; i < N; ++i) {
+// N：数组长度；合法查询下标为 [1,N)。
+vector<int> primes; // primes：已经找到的全部质数，严格递增。
+vector<int> lp(N);  // lp[x]：x 的最小质因子；0 表示尚未筛到。
+vector<int> phi(N); // phi[x]：1..x 中与 x 互质的整数个数。
+vector<int> mu(N);  // mu[x]：莫比乌斯函数值，只可能是 -1、0、1。
+phi[1] = mu[1] = 1; // phi(1)=mu(1)=1。
+for (int i = 2; i < N; ++i) { // i：当前正在确定的整数。
+    // i 没被筛过，所以 i 是质数；质数只有一个不同质因子，mu=-1。
     if (!lp[i]) lp[i] = i, primes.push_back(i), phi[i] = i - 1, mu[i] = -1;
-    for (int p : primes) {
+    for (int p : primes) { // p：从小到大枚举的质数因子。
         if (1LL * i * p >= N) break;
-        lp[i * p] = p;
-        if (p == lp[i]) {
+        lp[i * p] = p;     // i*p：本次被筛掉的合数。
+        if (p == lp[i]) {  // i*p 含 p^2，因此 mu[i*p]=0。
             phi[i * p] = phi[i] * p;
             mu[i * p] = 0;
             break;
+        } else {           // p 不整除 i：新增一个不同质因子。
+            phi[i * p] = phi[i] * (p - 1);
+            mu[i * p] = -mu[i];
         }
-        phi[i * p] = phi[i] * (p - 1);
-        mu[i * p] = -mu[i];
     }
 }
+// mu[x]=0：x 含平方因子；否则 mu[x]=(-1)^(不同质因子个数)。
+// 多测：若每组都重新筛，先 primes.clear()，并把 lp/phi/mu 填 0。
 \end{lstlisting}
 
 \section{组合数与阶乘（Binomial Coefficients）}\label{ux7ec4ux5408ux6570ux4e0eux9636ux4e58}
@@ -110,12 +136,18 @@ for (int i = 2; i < N; ++i) {
 预处理 \passthrough{\lstinline!fac[i]!}、\passthrough{\lstinline!ifac[i]!}，\passthrough{\lstinline!C(n,k)=fac[n]ifac[k]ifac[n-k]!}，预处理 \passthrough{\lstinline!O(N)!}，查询 \passthrough{\lstinline!O(1)!}。
 
 \begin{lstlisting}[language={C++}]
+// 变量：MOD=当前取模运算使用的正模数。
 const long long MOD = 998244353;
+// 变量：fac=阶乘数组 fac；ifac=逆阶乘数组 ifac。
 vector<long long> fac(N), ifac(N);
 fac[0] = 1;
+// 变量：i=当前循环下标 i。
 for (int i = 1; i < N; ++i) fac[i] = fac[i - 1] * i % MOD;
 ifac[N - 1] = qpow(fac[N - 1], MOD - 2, MOD);
+// 变量：i=当前循环下标 i。
 for (int i = N - 1; i; --i) ifac[i - 1] = ifac[i] * i % MOD;
+// 接口：C(n, k)：供“组合数与阶乘（Binomial Coefficients）”当前语句回调；返回值含义见调用处条件。
+// 参数：规模/上界 n；排名/选取数量 k。
 auto C = [&](int n, int k) -> long long {
     if (k < 0 || k > n) return 0;
     return fac[n] * ifac[k] % MOD * ifac[n - k] % MOD;
@@ -127,15 +159,21 @@ auto C = [&](int n, int k) -> long long {
 质数 \passthrough{\lstinline!p!} 下：\passthrough{\lstinline!C(n,k) ≡ ∏ C(n\_i,k\_i) (mod p)!}，其中 \passthrough{\lstinline!n\_i,k\_i!} 是 \passthrough{\lstinline!p!} 进制位。适用于 \passthrough{\lstinline!n!} 很大、\passthrough{\lstinline!p!} 较小。
 
 \begin{lstlisting}[language={C++}]
+// 接口：Csmall(n, k, p)：计算当前质数模数下的小组合数 C(n,k)；返回类型 long long。
+// 参数：规模/上界 n；排名/选取数量 k；题目给定的质数/正模数 p。
 long long Csmall(long long n, long long k, long long p) {
     if (k < 0 || k > n) return 0;
+    // 变量：ans=当前累计答案 ans。
     long long ans = 1;
+    // 变量：i=当前循环下标 i。
     for (long long i = 1; i <= k; ++i) {
         ans = ans * (n - i + 1) % p;
         ans = ans * qpow(i, p - 2, p) % p;
     }
     return ans;
 }
+// 接口：lucas(n, k, p)：用 Lucas 定理计算 C(n,k) mod p；返回类型 long long。
+// 参数：规模/上界 n；排名/选取数量 k；题目给定的质数/正模数 p。
 long long lucas(long long n, long long k, long long p) {
     if (!k) return 1;
     return Csmall(n % p, k % p, p) * lucas(n / p, k / p, p) % p;
@@ -148,13 +186,19 @@ long long lucas(long long n, long long k, long long p) {
 
 \begin{lstlisting}[language={C++}]
 // 合并 x = a1 (mod m1), x = a2 (mod m2)，允许模数不互质
+// 接口：merge_congruence(a1, m1, a2, m2, a, m)：合并两个同余方程，结果写入 a,m；返回 true 表示本节条件成立/操作成功。
+// 参数：第一个同余式的余数 a1；第一个同余式的正模数 m1；第二个同余式的余数 a2；第二个同余式的正模数 m2；输入值/数组 a（见本节定义）；数量或模数 m（见本节公式）。
 bool merge_congruence(long long a1, long long m1,
                       long long a2, long long m2,
                       long long &a, long long &m) {
+    // 变量：x=当前输入值/查询值/坐标 x；y=当前输入值/查询值/坐标 y；g=递归返回的 gcd(a,b) 值 g。
     long long x, y, g = exgcd(m1, m2, x, y);
+    // 变量：d=当前距离、差值或覆盖增量 d。
     long long d = a2 - a1;
     if (d % g) return false;
+    // 变量：mod=当前正模数 mod。
     long long mod = m2 / g;
+    // 变量：t=测试用例数量或当前临时值 t。
     long long t = (__int128)(d / g) * x % mod;
     if (t < 0) t += mod;
     m = m1 / g * m2;
@@ -170,20 +214,33 @@ bool merge_congruence(long long a1, long long m1,
 
 \begin{lstlisting}[language={C++}]
 struct Mat {
-    int n; vector<vector<long long>> a;
+    int n;                         // 矩阵阶数；合法下标均为 [0,n)。
+    vector<vector<long long>> a;   // a[i][j]：第 i 行第 j 列，已对 MOD 取模。
+  // 接口：Mat(n, ident)：构造 n 阶零矩阵；ident=true 时构造单位矩阵；构造并初始化对象；每组测试建议重新构造。
+  // 参数：规模/上界 n；是否构造单位矩阵 ident。
     Mat(int n, bool ident = false): n(n), a(n, vector<long long>(n)) {
+        // 变量：i=当前循环下标 i。
         if (ident) for (int i = 0; i < n; ++i) a[i][i] = 1;
     }
 };
+// 接口：operator*(A, B)：返回两个矩阵/几何量按本节定义相乘的结果；返回类型 Mat。
+// 参数：左操作数/矩阵 A；右操作数/矩阵 B。
 Mat operator*(const Mat& A, const Mat& B) {
+    // 变量：C=当前组合数查询函数/结果矩阵 C。
     Mat C(A.n);
+    // 变量：i=当前循环下标 i。
     for (int i = 0; i < A.n; ++i)
+        // 变量：k=当前排名、选取数量或循环层数 k。
         for (int k = 0; k < A.n; ++k) if (A.a[i][k])
+            // 变量：j=内层循环下标 j。
             for (int j = 0; j < A.n; ++j)
                 C.a[i][j] = (C.a[i][j] + (__int128)A.a[i][k] * B.a[k][j]) % MOD;
     return C;
 }
+// 接口：mpow(a, e)：返回矩阵 a 的 e 次幂；返回类型 Mat。
+// 参数：输入值/数组 a（见本节定义）；非负指数 e。
 Mat mpow(Mat a, long long e) {
+    // 变量：r=当前区间右端点 r。
     Mat r(a.n, true);
     while (e) { if (e & 1) r = r * a; a = a * a; e >>= 1; }
     return r;
@@ -199,8 +256,11 @@ Mat mpow(Mat a, long long e) {
 条件独立/按质因子分解时可用容斥；条件数量大时优先找补集、莫比乌斯反演或 DP。
 
 \begin{lstlisting}[language={C++}]
+// 变量：ans=当前累计答案 ans。
 long long ans = 0;
+// 变量：mask=当前子集/博弈状态的二进制掩码 mask。
 for (int mask = 0; mask < (1 << m); ++mask) {
+    // 变量：bits=当前值的有效二进制位数 bits。
     int bits = __builtin_popcount((unsigned)mask);
     long long ways = count_satisfying(mask); // 同时满足 mask 中条件
     ans += (bits & 1) ? -ways : ways;
@@ -220,10 +280,13 @@ for (int mask = 0; mask < (1 << m); ++mask) {
 \end{itemize}
 
 \begin{lstlisting}[language={C++}]
+// 接口：expected_dag(u)：返回 DAG 上从指定状态出发的期望值；返回类型 double。
+// 参数：顶点/状态编号 u。
 double expected_dag(int u) {
     if (vis[u]) return E[u];
     vis[u] = true;
     E[u] = 1.0; // 走一步
+    // 变量：v=当前相邻顶点/下一状态 v；p=当前质数、节点编号或指针 p；具体角色见所在公式。
     for (auto [v, p] : transitions[u]) E[u] += p * expected_dag(v);
     return E[u];
 }
@@ -244,6 +307,8 @@ double expected_dag(int u) {
 \end{itemize}
 
 \begin{lstlisting}[language={C++}]
+// 接口：xor_prefix(n)：返回 0 xor 1 xor ... xor n；返回类型 long long。
+// 参数：规模/上界 n。
 long long xor_prefix(long long n) {
     switch (n & 3) {
         case 0: return n;
@@ -253,10 +318,14 @@ long long xor_prefix(long long n) {
     }
 }
 
+// 接口：fib(n)：返回 (F_n,F_{n+1})；返回类型 pair<long long, long long>。
+// 参数：规模/上界 n。
 pair<long long, long long> fib(long long n) { // (F_n, F_{n+1})
     if (!n) return {0, 1};
     auto [a, b] = fib(n >> 1);
+    // 变量：c=当前字符、容量或第三个操作数 c。
     long long c = a * (2 * b - a);
+    // 变量：d=当前距离、差值或覆盖增量 d。
     long long d = a * a + b * b;
     return (n & 1) ? pair{d, c + d} : pair{c, d};
 }
@@ -268,16 +337,24 @@ pair<long long, long long> fib(long long n) { // (F_n, F_{n+1})
 
 \begin{lstlisting}[language={C++}]
 using Poly = vector<long long>;
+// 接口：multiply(a, b, MOD)：返回两个多项式的卷积并按本节模数取模；返回类型 Poly。
+// 参数：输入值/数组 a（见本节定义）；输入值/数组 b（见本节定义）；运算使用的正模数 MOD。
 Poly multiply(const Poly& a, const Poly& b, long long MOD) {
+    // 变量：c=当前字符、容量或第三个操作数 c。
     Poly c(a.size() + b.size() - 1);
+    // 变量：i=当前循环下标 i。
     for (int i = 0; i < (int)a.size(); ++i)
+        // 变量：j=内层循环下标 j。
         for (int j = 0; j < (int)b.size(); ++j)
             c[i + j] = (c[i + j] + a[i] * b[j]) % MOD;
     return c;
 }
 
 // (1 + x + ... + x^m)^k 的系数：重复卷积或用 NTT 加速
+// 接口：ways(base, k, MOD)：返回当前计数模型下的方案数；返回类型 Poly。
+// 参数：幂运算的底多项式 base；排名/选取数量 k；运算使用的正模数 MOD。
 Poly ways(Poly base, int k, long long MOD) {
+    // 变量：ans=当前累计答案 ans。
     Poly ans{1};
     while (k) {
         if (k & 1) ans = multiply(ans, base, MOD);
@@ -293,18 +370,28 @@ Poly ways(Poly base, int k, long long MOD) {
 Burnside 引理：轨道数等于所有群作用下不动点数的平均值。对``颜色数为 \passthrough{\lstinline!c!}、置换 \passthrough{\lstinline!p!} 作用于位置''的染色问题，不动点数为 \passthrough{\lstinline!c\^\{cycles(p)\}!}；模数需要能除以群大小。
 
 \begin{lstlisting}[language={C++}]
+// 接口：mod_pow(a, e, mod)：计算 a^e mod p；返回类型 long long。
+// 参数：输入值/数组 a（见本节定义）；非负指数 e；正模数 mod。
 long long mod_pow(long long a, long long e, long long mod) {
+    // 变量：r=当前区间右端点 r。
     long long r = 1;
     for (; e; e >>= 1, a = a * a % mod) if (e & 1) r = r * a % mod;
     return r;
 }
+// 接口：burnside(group, colors, MOD)：按 Burnside 引理计算本质不同方案数；返回类型 long long。
+// 参数：所有群作用置换的列表 group；可用颜色数 colors；运算使用的正模数 MOD。
 long long burnside(const vector<vector<int>>& group, int colors, long long MOD) {
+    // 变量：sum=当前累计和 sum。
     long long sum = 0;
     for (const auto& perm : group) {
+        // 变量：n=当前元素/顶点/状态数量 n；cycles=当前置换的环数量 cycles。
         int n = perm.size(), cycles = 0;
+        // 变量：vis=访问或记忆化完成标记 vis。
         vector<char> vis(n);
+        // 变量：i=当前循环下标 i。
         for (int i = 0; i < n; ++i) if (!vis[i]) {
             ++cycles;
+            // 变量：u=当前顶点/状态编号 u。
             for (int u = i; !vis[u]; u = perm[u]) vis[u] = true;
         }
         sum = (sum + mod_pow(colors, cycles, MOD)) % MOD;
@@ -318,17 +405,27 @@ long long burnside(const vector<vector<int>>& group, int colors, long long MOD) 
 Prüfer 序列长度为 \passthrough{\lstinline!n-2!}，每棵标号树与一个序列一一对应；度数满足 \passthrough{\lstinline!deg[v]=出现次数+1!}。矩阵树定理把拉普拉斯矩阵删去一行一列后的行列式作为生成树数量。
 
 \begin{lstlisting}[language={C++}]
+// 接口：prufer_encode(g)：把 1..n 编号树编码为长度 n-2 的 Prüfer 序列；返回类型 vector<int>。
+// 参数：图的邻接表/生成树拉普拉斯矩阵 g（见本节）。
 vector<int> prufer_encode(const vector<vector<int>>& g) {
+    // 变量：n=当前元素/顶点/状态数量 n。
     int n = g.size() - 1;
+    // 变量：deg=顶点度数数组 deg；code=Prüfer 序列 code。
     vector<int> deg(n + 1), code;
+    // 变量：leaves=当前度数为 1 的叶子最小堆 leaves。
     priority_queue<int, vector<int>, greater<int>> leaves;
+    // 变量：u=当前顶点/状态编号 u。
     for (int u = 1; u <= n; ++u) {
         deg[u] = g[u].size();
         if (deg[u] == 1) leaves.push(u);
     }
+    // 变量：step=当前 NTT/FWT 合并跨度 step。
     for (int step = 0; step < n - 2; ++step) {
+        // 变量：leaf=当前取出的最小叶子 leaf。
         int leaf = leaves.top(); leaves.pop();
+        // 变量：v=当前相邻顶点/下一状态 v。
         int v = 0;
+        // 变量：x=当前输入值/查询值/坐标 x。
         for (int x : g[leaf]) if (deg[x]) { v = x; break; }
         code.push_back(v);
         if (--deg[v] == 1) leaves.push(v);
@@ -337,18 +434,29 @@ vector<int> prufer_encode(const vector<vector<int>>& g) {
     return code;
 }
 
+// 接口：prufer_decode(code)：把 Prüfer 序列还原为无向树边集；返回类型 vector<pair<int, int>>。
+// 参数：Prüfer 序列 code。
 vector<pair<int, int>> prufer_decode(const vector<int>& code) {
+    // 变量：n=当前元素/顶点/状态数量 n。
     int n = code.size() + 2;
+    // 变量：deg=顶点度数数组 deg。
     vector<int> deg(n + 1, 1);
+    // 变量：x=当前输入值/查询值/坐标 x。
     for (int x : code) ++deg[x];
+    // 变量：leaves=当前度数为 1 的叶子最小堆 leaves。
     priority_queue<int, vector<int>, greater<int>> leaves;
+    // 变量：i=当前循环下标 i。
     for (int i = 1; i <= n; ++i) if (deg[i] == 1) leaves.push(i);
+    // 变量：edges=输入或生成的边集合 edges。
     vector<pair<int, int>> edges;
+    // 变量：x=当前输入值/查询值/坐标 x。
     for (int x : code) {
+        // 变量：u=当前顶点/状态编号 u。
         int u = leaves.top(); leaves.pop(); edges.push_back({u, x});
         if (--deg[x] == 1) leaves.push(x);
     }
     edges.push_back({leaves.top(), leaves.top()});
+    // 变量：u=当前顶点/状态编号 u；v=当前相邻顶点/下一状态 v。
     int u = leaves.top(); leaves.pop(); int v = leaves.top();
     edges.back() = {u, v};
     return edges;
@@ -356,17 +464,26 @@ vector<pair<int, int>> prufer_decode(const vector<int>& code) {
 \end{lstlisting}
 
 \begin{lstlisting}[language={C++}]
+// 接口：tree_count(lap, MOD)：对删去一行一列的拉普拉斯矩阵求行列式，返回生成树数量；返回类型 long long。
+// 参数：删去一行一列后的拉普拉斯矩阵 lap；运算使用的正模数 MOD。
 long long tree_count(vector<vector<long long>> lap, long long MOD) {
+    // 变量：n=当前元素/顶点/状态数量 n；det=高斯消元过程中累计的行列式 det。
     int n = lap.size(); long long det = 1;
+    // 变量：col=当前高斯消元列/扫描列 col。
     for (int col = 0; col < n; ++col) {
+        // 变量：pivot=当前高斯消元选择的主元行 pivot。
         int pivot = col;
         while (pivot < n && lap[pivot][col] % MOD == 0) ++pivot;
         if (pivot == n) return 0;
         if (pivot != col) swap(lap[pivot], lap[col]), det = (MOD - det) % MOD;
         det = det * (lap[col][col] % MOD + MOD) % MOD;
+        // 变量：inv=当前逆元/是否执行逆变换 inv。
         long long inv = mod_pow((lap[col][col] % MOD + MOD) % MOD, MOD - 2, MOD);
+        // 变量：i=当前循环下标 i。
         for (int i = col + 1; i < n; ++i) {
+            // 变量：factor=当前乘数/质因子贡献 factor。
             long long factor = lap[i][col] % MOD * inv % MOD;
+            // 变量：j=内层循环下标 j。
             for (int j = col; j < n; ++j)
                 lap[i][j] = (lap[i][j] - factor * lap[col][j]) % MOD;
         }
@@ -381,27 +498,38 @@ long long tree_count(vector<vector<long long>> lap, long long MOD) {
 Legendre 符号判断 \passthrough{\lstinline!a!} 是否为模奇素数 \passthrough{\lstinline!p!} 的二次剩余；Tonelli--Shanks 在存在平方根时以 \passthrough{\lstinline!O(log²p)!} 求出一个根。
 
 \begin{lstlisting}[language={C++}]
+// 接口：legendre(a, p)：返回 Legendre 符号 (a/p)：1 为非零二次剩余，-1 为非剩余，0 表示 a=0；返回类型 long long。
+// 参数：输入值/数组 a（见本节定义）；题目给定的质数/正模数 p。
 long long legendre(long long a, long long p) {
     a %= p; if (a < 0) a += p;
     if (!a) return 0;
+    // 变量：x=当前输入值/查询值/坐标 x。
     long long x = mod_pow(a, (p - 1) / 2, p);
     return x == 1 ? 1 : -1;
 }
 
+// 接口：tonelli_shanks(n, p)：求 x^2=n (mod p) 的一个根，无解返回 -1；返回类型 long long。
+// 参数：规模/上界 n；题目给定的质数/正模数 p。
 long long tonelli_shanks(long long n, long long p) {
     n %= p; if (!n) return 0;
     if (p == 2) return n;
     if (legendre(n, p) != 1) return -1;
     if (p % 4 == 3) return mod_pow(n, (p + 1) / 4, p);
+    // 变量：q=当前查询对象 q；s=当前枚举的起点/源点 s。
     long long q = p - 1, s = 0;
     while (!(q & 1)) q >>= 1, ++s;
+    // 变量：z=当前第三维坐标/临时值 z。
     long long z = 2;
     while (legendre(z, p) != -1) ++z;
+    // 变量：c=当前字符、容量或第三个操作数 c；x=当前输入值/查询值/坐标 x。
     long long c = mod_pow(z, q, p), x = mod_pow(n, (q + 1) / 2, p);
+    // 变量：t=测试用例数量或当前临时值 t；m=当前边数、操作数或第二维规模 m。
     long long t = mod_pow(n, q, p), m = s;
     while (t != 1) {
+        // 变量：i=当前循环下标 i；tt=当前平方根修正量 t 的平方 tt。
         long long i = 1, tt = t * t % p;
         while (tt != 1) tt = tt * tt % p, ++i;
+        // 变量：b=Tonelli-Shanks 本轮把 x 调整到下一阶所乘的修正因子 b。
         long long b = mod_pow(c, 1LL << (m - i - 1), p);
         x = x * b % p; c = b * b % p; t = t * c % p; m = i;
     }
@@ -416,11 +544,17 @@ long long tonelli_shanks(long long n, long long p) {
 置换分解成不相交环；重复应用 \passthrough{\lstinline!k!} 次时每个位置在所属环内移动 \passthrough{\lstinline!k mod len!}。求置换逆、循环节、最少交换次数都从环分解出发。
 
 \begin{lstlisting}[language={C++}]
+// 变量：vis=访问或记忆化完成标记 vis；result=准备返回的结果 result。
 vector<int> vis(n), result(n);
+// 变量：i=当前循环下标 i。
 for (int i = 0; i < n; ++i) if (!vis[i]) {
+    // 变量：cyc=当前置换环长度/环计数 cyc。
     vector<int> cyc;
+    // 变量：u=当前顶点/状态编号 u。
     for (int u = i; !vis[u]; u = p[u]) vis[u] = 1, cyc.push_back(u);
+    // 变量：m=当前边数、操作数或第二维规模 m。
     int m = cyc.size();
+    // 变量：j=内层循环下标 j。
     for (int j = 0; j < m; ++j) result[cyc[j]] = cyc[(j + k) % m];
 }
 \end{lstlisting}
@@ -430,24 +564,36 @@ for (int i = 0; i < n; ++i) if (!vis[i]) {
 多项式卷积、计数合并、字符串匹配。NTT 要求模数为 \passthrough{\lstinline!c·2\^k+1!}（常用 \passthrough{\lstinline!998244353!}），每层蝶形乘原根；逆变换乘 \passthrough{\lstinline!n\^\{-1\}!}。只在卷积规模大于 \passthrough{\lstinline!O(n²)!} 时值得使用。
 
 \begin{lstlisting}[language={C++}]
+// 接口：ntt(a, inv)：对数组 a 做模 998244353 的 NTT；invert=true 时做逆变换；无返回值；结果写入引用参数或当前结构状态。
+// 参数：输入值/数组 a（见本节定义）；是否执行逆变换 inv。
 void ntt(vector<int>& a, bool inv) {
+    // 变量：n=当前元素/顶点/状态数量 n。
     int n = a.size();
+    // 变量：i=当前循环下标 i。
     for (int i = 1, j = 0; i < n; ++i) {
+        // 变量：bit=当前处理的二进制位/倍增层 bit。
         int bit = n >> 1; for (; j & bit; bit >>= 1) j ^= bit; j ^= bit;
         if (i < j) swap(a[i], a[j]);
     }
+    // 变量：len=当前长度 len。
     for (int len = 2; len <= n; len <<= 1) {
+        // 变量：wlen=当前 NTT 蝶形层使用的单位根 wlen。
         int wlen = qpow(G, (MOD - 1) / len);
         if (inv) wlen = qpow(wlen, MOD - 2);
+        // 变量：i=当前循环下标 i。
         for (int i = 0; i < n; i += len) {
+            // 变量：w=当前边权/转移代价 w。
             long long w = 1;
+            // 变量：j=内层循环下标 j。
             for (int j = 0; j < len / 2; ++j) {
+                // 变量：u=当前顶点/状态编号 u；v=当前相邻顶点/下一状态 v。
                 int u = a[i + j], v = w * a[i + j + len / 2] % MOD;
                 a[i + j] = (u + v) % MOD; a[i + j + len / 2] = (u - v + MOD) % MOD;
                 w = w * wlen % MOD;
             }
         }
     }
+    // 变量：ni=变换长度 n 在模 MOD 下的逆元 ni。
     if (inv) { long long ni = qpow(n, MOD - 2); for (int &x : a) x = x * ni % MOD; }
 }
 \end{lstlisting}
@@ -457,17 +603,27 @@ void ntt(vector<int>& a, bool inv) {
 解线性方程组、求秩、行列式。整数模数下用模逆；浮点版本选主元避免除以接近 0 的数。方程有自由变量时记录主元列并构造一组解。
 
 \begin{lstlisting}[language={C++}]
+// 接口：gauss(a)：对增广矩阵做高斯消元并返回解的状态；返回类型 int。
+// 参数：输入值/数组 a（见本节定义）。
 int gauss(vector<vector<long long>> a) {
+    // 变量：n=当前元素/顶点/状态数量 n；m=当前边数、操作数或第二维规模 m；rank=后缀/排列的当前排名数组或 Cantor 排名 rank。
     int n = a.size(), m = a[0].size(), rank = 0;
+    // 变量：col=当前高斯消元列/扫描列 col。
     for (int col = 0; col < m && rank < n; ++col) {
+        // 变量：pivot=当前高斯消元选择的主元行 pivot。
         int pivot = rank;
         while (pivot < n && a[pivot][col] == 0) ++pivot;
         if (pivot == n) continue;
         swap(a[pivot], a[rank]);
+        // 变量：inv=当前逆元/是否执行逆变换 inv。
         long long inv = qpow(a[rank][col], MOD - 2);
+        // 变量：j=内层循环下标 j。
         for (int j = col; j < m; ++j) a[rank][j] = a[rank][j] * inv % MOD;
+        // 变量：i=当前循环下标 i。
         for (int i = 0; i < n; ++i) if (i != rank && a[i][col]) {
+            // 变量：t=测试用例数量或当前临时值 t。
             long long t = a[i][col];
+            // 变量：j=内层循环下标 j。
             for (int j = col; j < m; ++j) a[i][j] = (a[i][j] - t * a[rank][j]) % MOD;
         }
         ++rank;
@@ -475,8 +631,3 @@ int gauss(vector<vector<long long>> a) {
     return rank;
 }
 \end{lstlisting}
-
-
-
-
-

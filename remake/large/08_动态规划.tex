@@ -32,15 +32,20 @@
 \end{itemize}
 
 \begin{lstlisting}[language={C++}]
+// 变量：tail=LIS 各长度对应的最小结尾值数组 tail。
 vector<int> tail;
+// 变量：x=当前输入值/查询值/坐标 x。
 for (int x : a) {
     auto it = lower_bound(tail.begin(), tail.end(), x); // 非降改 upper_bound
     if (it == tail.end()) tail.push_back(x);
     else *it = x;
 }
+// 变量：lis=当前最长递增子序列长度 lis。
 int lis = tail.size();
 
+// 变量：bestEnding=必须以当前位置结尾的最大子段和 bestEnding；maxSubarray=扫描至今的最大子段和 maxSubarray。
 long long bestEnding = a[0], maxSubarray = a[0];
+// 变量：i=当前循环下标 i。
 for (int i = 1; i < n; ++i) {
     bestEnding = max(a[i], bestEnding + a[i]);
     maxSubarray = max(maxSubarray, bestEnding);
@@ -48,8 +53,11 @@ for (int i = 1; i < n; ++i) {
 \end{lstlisting}
 
 \begin{lstlisting}[language={C++}]
+// 变量：lcs=最长公共子序列 DP 数组/答案 lcs。
 vector<vector<int>> lcs(n + 1, vector<int>(m + 1));
+// 变量：i=当前循环下标 i。
 for (int i = 1; i <= n; ++i)
+    // 变量：j=内层循环下标 j。
     for (int j = 1; j <= m; ++j)
         lcs[i][j] = (a[i - 1] == b[j - 1])
             ? lcs[i - 1][j - 1] + 1
@@ -76,11 +84,16 @@ for (int i = 1; i <= n; ++i)
 容量 \passthrough{\lstinline!W≤1e5!} 时常用 \passthrough{\lstinline!O(nW)!}；物品价值小则把``最小重量''作为状态；\passthrough{\lstinline!n≤40!} 可折半搜索。
 
 \begin{lstlisting}[language={C++}]
+// 变量：dp=动态规划状态数组 dp；下标含义见本节状态定义。
 vector<long long> dp(W + 1, 0);
+// 变量：w=当前边权/转移代价 w；v=当前相邻顶点/下一状态 v。
 for (auto [w, v] : items)
+    // 变量：j=内层循环下标 j。
     for (int j = W; j >= w; --j)
         dp[j] = max(dp[j], dp[j - w] + v); // 0/1 背包
+// 变量：w=当前边权/转移代价 w；v=当前相邻顶点/下一状态 v。
 for (auto [w, v] : items)
+    // 变量：j=内层循环下标 j。
     for (int j = w; j <= W; ++j)
         dp[j] = max(dp[j], dp[j - w] + v); // 完全背包
 \end{lstlisting}
@@ -90,10 +103,14 @@ for (auto [w, v] : items)
 按区间长度递增，枚举分割点：\passthrough{\lstinline!dp[l][r] = min/max(dp[l][k]+dp[k+1][r]+cost)!}。典型：石子合并、矩阵链乘、括号匹配、回文分割。若代价满足四边形不等式/决策单调性，可用四边形不等式优化，但先验证条件。
 
 \begin{lstlisting}[language={C++}]
+// 变量：len=当前长度 len。
 for (int len = 2; len <= n; ++len)
+    // 变量：l=当前区间左端点 l。
     for (int l = 1; l + len - 1 <= n; ++l) {
+        // 变量：r=当前区间右端点 r。
         int r = l + len - 1;
         dp[l][r] = INF;
+        // 变量：k=当前排名、选取数量或循环层数 k。
         for (int k = l; k < r; ++k)
             dp[l][r] = min(dp[l][r], dp[l][k] + dp[k + 1][r] + cost(l, r));
     }
@@ -104,12 +121,18 @@ for (int len = 2; len <= n; ++len)
 树上没有环，后序即可保证子树状态已知。独立集：\passthrough{\lstinline!f[u][0]=Σmax(f[v][0],f[v][1])!}，\passthrough{\lstinline!f[u][1]=w[u]+Σf[v][0]!}。换根时先从任意根求子树贡献，再将父亲的答案传给儿子，常见于``每个点到其他点距离和''。
 
 \begin{lstlisting}[language={C++}]
+// 接口：reroot1(u, p)：第一次 DFS，计算每个子树的向下 DP；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；当前节点 u 的父节点 p。
 void reroot1(int u, int p) {
     sz[u] = 1; down[u] = 0;
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : tree[u]) if (v != p)
         reroot1(v, u), sz[u] += sz[v], down[u] += down[v] + sz[v];
 }
+// 接口：reroot2(u, p)：第二次 DFS，把父侧贡献传给儿子并得到全树答案；无返回值；结果写入引用参数或当前结构状态。
+// 参数：顶点/状态编号 u；当前节点 u 的父节点 p。
 void reroot2(int u, int p) {
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : tree[u]) if (v != p) {
         ans[v] = ans[u] - sz[v] + (n - sz[v]);
         reroot2(v, u);
@@ -122,7 +145,9 @@ void reroot2(int u, int p) {
 拓扑序内转移；最长路用 \passthrough{\lstinline!-INF!} 初始化，最短路用 \passthrough{\lstinline!INF!}。若有多个源，把所有源初始化；要恢复路径保存 \passthrough{\lstinline!pre!}。在模数下统计方案时不要把不可达状态的 \passthrough{\lstinline!0!} 与真实方案混淆。
 
 \begin{lstlisting}[language={C++}]
+// 变量：u=当前顶点/状态编号 u。
 for (int u : topo) if (ways[u])
+    // 变量：v=当前边的终点 v；w=当前边权 w。
     for (auto [v, w] : dag[u]) {
         dp[v] = max(dp[v], dp[u] + w);
         ways[v] = (ways[v] + ways[u]) % MOD;
@@ -134,10 +159,14 @@ for (int u : topo) if (ways[u])
 \passthrough{\lstinline!mask!} 表示已选集合，转移 \passthrough{\lstinline!mask | (1<<i)!}。\passthrough{\lstinline!n≤20!} 的旅行商、集合覆盖、配对、棋盘放置都适用。优化：预处理 \passthrough{\lstinline!popcount!}、子集和、可行转移；枚举子集总复杂度 \passthrough{\lstinline!O(3\^n)!}。
 
 \begin{lstlisting}[language={C++}]
+// 变量：dp=动态规划状态数组 dp；下标含义见本节状态定义。
 vector<vector<long long>> dp(1 << n, vector<long long>(n, INF));
 dp[1][0] = 0;
+// 变量：mask=当前子集/博弈状态的二进制掩码 mask。
 for (int mask = 1; mask < (1 << n); ++mask)
+    // 变量：u=当前顶点/状态编号 u。
     for (int u = 0; u < n; ++u) if (mask >> u & 1)
+        // 变量：v=当前相邻顶点/下一状态 v。
         for (int v = 0; v < n; ++v) if (!(mask >> v & 1))
             dp[mask | (1 << v)][v] = min(dp[mask | (1 << v)][v], dp[mask][u] + w[u][v]);
 \end{lstlisting}
@@ -147,14 +176,19 @@ for (int mask = 1; mask < (1 << n); ++mask)
 按高位到低位处理，状态通常为 \passthrough{\lstinline!(pos, tight, started, remainder/计数)!}。\passthrough{\lstinline!tight!} 表示前缀是否贴合上界，\passthrough{\lstinline!started!} 区分前导零。求 \passthrough{\lstinline![L,R]!} 用 \passthrough{\lstinline!F(R)-F(L-1)!}。先写``不限制上界''的转移，再加入 tight。
 
 \begin{lstlisting}[language={C++}]
-long long memo[20][2][2][11];
-string digits;
+long long memo[20][2][2][11]; // -1=未计算；末维 rem 是模 11 余数 [0,10]。
+string digits; // 上界的十进制表示；pos 从 0 扫到 digits.size()-1。
+// 接口：solve_digit(pos, tight, started, rem)：返回给定数位 DP 状态的合法后缀方案数；返回类型 long long。
+// 参数：当前 0-based/DP 位置 pos；前缀是否仍贴住上界 tight；是否已经放置非前导零数字 started；当前余数状态 rem。
 long long solve_digit(int pos, int tight, int started, int rem) {
     if (pos == (int)digits.size()) return started && rem == 0;
+    // 变量：res=准备返回的结果容器/结果值 res。
     long long &res = memo[pos][tight][started][rem];
     if (!tight && res != -1) return res;
     res = 0;
+    // 变量：lim=当前允许的阈值/上界 lim。
     int lim = tight ? digits[pos] - '0' : 9;
+    // 变量：d=当前距离、差值或覆盖增量 d。
     for (int d = 0; d <= lim; ++d)
         res += solve_digit(pos + 1, tight && d == lim, started || d,
                            (rem * 10 + d) % mod);
@@ -168,9 +202,12 @@ long long solve_digit(int pos, int tight, int started, int rem) {
 
 \begin{lstlisting}[language={C++}]
 // 无环状态图上的期望：先按题意保证 next[u] 都比 u 更靠后
+// 变量：E=当前状态的期望值数组 E。
 vector<double> E(n, 0.0);
+// 变量：u=当前顶点/状态编号 u。
 for (int u = n - 1; u >= 0; --u) {
     E[u] = 1.0;
+    // 变量：v=当前相邻顶点/下一状态 v；p=当前质数、节点编号或指针 p；具体角色见所在公式。
     for (auto [v, p] : transitions[u]) E[u] += p * E[v];
 }
 \end{lstlisting}
@@ -180,11 +217,15 @@ for (int u = n - 1; u >= 0; --u) {
 当状态图是 DAG 或状态数量可控时，用 DFS + cache 比显式排序更自然。必须保证每个状态的所有后继已计算，含环问题不能直接记忆化递归。
 
 \begin{lstlisting}[language={C++}]
-int memo[MAXN];
+int memo[MAXN]; // -1=状态尚未计算；否则为 solve(u) 的缓存答案。
+// 接口：solve(u)：完成本节给出的单组测试/递归区间；入口函数；每组测试前按注释清空全局状态。
+// 参数：顶点/状态编号 u。
 int solve(int u) {
+    // 变量：res=准备返回的结果容器/结果值 res。
     int &res = memo[u];
     if (res != -1) return res;
     res = 0;
+    // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : next[u]) res = max(res, solve(v) + gain[u][v]);
     return res;
 }
@@ -197,9 +238,12 @@ int solve(int u) {
 只依赖上一层时把二维压一维；确认本轮不会读到已更新的状态，遍历方向是关键。
 
 \begin{lstlisting}[language={C++}]
+// 变量：prev=上一层/上一个状态的 DP 数组 prev；cur=当前扫描位置的累计状态 cur。
 vector<long long> prev(m + 1), cur(m + 1);
+// 变量：i=当前循环下标 i。
 for (int i = 1; i <= n; ++i) {
     cur[0] = 0;
+    // 变量：j=内层循环下标 j。
     for (int j = 1; j <= m; ++j)
         cur[j] = transition(prev[j], cur[j - 1], a[i], b[j]);
     swap(prev, cur);
@@ -211,7 +255,9 @@ for (int i = 1; i <= n; ++i) {
 形如 \passthrough{\lstinline!dp[i]=base(i)+min/max(dp[j]+g(j))!} 且 \passthrough{\lstinline!j!} 的合法范围滑动时，维护候选队列。若 \passthrough{\lstinline!g!} 可分离且窗口固定，复杂度从 \passthrough{\lstinline!O(nk)!} 降到 \passthrough{\lstinline!O(n)!}。
 
 \begin{lstlisting}[language={C++}]
+// 变量：q=当前 BFS/单调算法使用的队列 q。
 deque<int> q;
+// 变量：i=当前循环下标 i。
 for (int i = 0; i <= n; ++i) {
     while (!q.empty() && q.front() < i - k) q.pop_front();
     dp[i] = base[i] + (q.empty() ? INF : value(q.front()));
@@ -225,12 +271,22 @@ for (int i = 0; i <= n; ++i) {
 转移能化为 \passthrough{\lstinline!dp[i]=x\_i*k\_j+b\_j!}，把每个 \passthrough{\lstinline!j!} 看作直线，按斜率/查询单调性维护凸包。斜率不单调时用 Li Chao 树；确认除法比较不溢出，必要时用 \passthrough{\lstinline!\_\_int128!}。
 
 \begin{lstlisting}[language={C++}]
-struct Line { long long k, b; long long get(long long x) const { return k * x + b; } };
+struct Line {
+    long long k, b; // 候选直线 y=k*x+b 的斜率与截距。
+    // 接口：get(x)：返回该直线在横坐标 x 处的函数值 k*x+b。
+    // 参数：x=查询横坐标；返回 long long，乘法可能溢出时改 __int128。
+    long long get(long long x) const { return k * x + b; }
+};
+// 变量：hull=按有效顺序维护的凸包候选队列 hull。
 deque<Line> hull;
+// 接口：bad(a, b, c)：判断中间直线 b 是否因交点顺序而永远不会成为最优；返回 true 表示本节条件成立/操作成功。
+// 参数：按斜率顺序相邻的候选直线 a；按斜率顺序相邻的候选直线 b；按斜率顺序相邻的候选直线 c。
 bool bad(Line a, Line b, Line c) {
     return (__int128)(b.b - a.b) * (b.k - c.k)
          >= (__int128)(c.b - b.b) * (a.k - b.k);
 }
+// 接口：add_line(x)：把一条候选直线插入当前李超树/单调凸包并删除失效候选；会修改当前结构；多测时重新构造或显式清空成员。
+// 参数：待插入的候选直线 x。
 void add_line(Line x) {
     while (hull.size() >= 2 && bad(hull[hull.size() - 2], hull.back(), x)) hull.pop_back();
     hull.push_back(x);
@@ -242,9 +298,13 @@ void add_line(Line x) {
 若最优决策点单调，\passthrough{\lstinline!dp[i][j]!} 在分治递归中只枚举决策区间的一部分，常见 \passthrough{\lstinline!O(kn log n)!}。先证明四边形不等式或决策单调性。
 
 \begin{lstlisting}[language={C++}]
+// 接口：solve(l, r, optl, optr)：完成本节给出的单组测试/递归区间；入口函数；每组测试前按注释清空全局状态。
+// 参数：闭区间左端点 l；闭区间右端点 r；真实最优决策允许范围左端 optl；真实最优决策允许范围右端 optr。
 void solve(int l, int r, int optl, int optr) {
     if (l > r) return;
+    // 变量：mid=当前区间中点 mid；best=目前找到的最优值 best。
     int mid = (l + r) / 2, best = optl;
+    // 变量：k=当前排名、选取数量或循环层数 k。
     for (int k = optl; k <= min(mid, optr); ++k)
         if (cost(k, mid) < cost(best, mid)) best = k;
     dp[mid] = cost(best, mid);
@@ -258,10 +318,15 @@ void solve(int l, int r, int optl, int optr) {
 无环游戏状态标记胜负：存在一个后继为必败则当前必胜；所有后继必胜则当前必败。将多个独立游戏的 Grundy 值 xor。棋盘/取石子题先找周期或 SG。
 
 \begin{lstlisting}[language={C++}]
+// 接口：grundy(x)：返回状态 x/u 的 Sprague-Grundy 值；返回类型 int。
+// 参数：待处理值或点/状态 x。
 int grundy(int x) {
     if (memo[x] != -1) return memo[x];
+    // 变量：seen=“组合游戏动态规划（Combinatorial Game Dynamic Programming）”这段代码中的临时量 seen；值由本行初始化式确定。
     bool seen[MAXG] = {};
+    // 变量：y=当前输入值/查询值/坐标 y。
     for (int y : moves[x]) seen[grundy(y)] = true;
+    // 变量：g=图/树的邻接表 g。
     int g = 0; while (seen[g]) ++g;
     return memo[x] = g;
 }
@@ -282,8 +347,6 @@ int grundy(int x) {
 \item
   取模减法忘记加模；概率 DP 把浮点误差当精确相等。
 \end{itemize}
-
-
 
 
 

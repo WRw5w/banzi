@@ -150,6 +150,36 @@ vector<int> linear_sieve(int n) {
     return primes;
 }
 
+// 对应大版本接口：同时验证 primes/lp/phi/mu 的含义、下标和重复调用清空。
+void linear_sieve_phi_mu(int upper, vector<int>& primes,
+                         vector<int>& lp, vector<int>& phi,
+                         vector<int>& mu) {
+    primes.clear();
+    lp.assign(upper + 1, 0);
+    phi.assign(upper + 1, 0);
+    mu.assign(upper + 1, 0);
+    if (upper >= 1) phi[1] = mu[1] = 1;
+    for (int i = 2; i <= upper; ++i) {
+        if (!lp[i]) {
+            lp[i] = i;
+            primes.push_back(i);
+            phi[i] = i - 1;
+            mu[i] = -1;
+        }
+        for (int p : primes) {
+            if (1LL * i * p > upper) break;
+            lp[i * p] = p;
+            if (p == lp[i]) {
+                phi[i * p] = phi[i] * p;
+                mu[i * p] = 0;
+                break;
+            }
+            phi[i * p] = phi[i] * (p - 1);
+            mu[i * p] = -mu[i];
+        }
+    }
+}
+
 struct DSU {
     vector<int> p, sz;
     explicit DSU(int n) : p(n + 1), sz(n + 1, 1) {
@@ -335,6 +365,17 @@ int main() {
     assert(exgcd(30, 18, x, y) == 6 && 30 * x + 18 * y == 6);
     assert(phi(1) == 1 && phi(36) == 12);
     assert((linear_sieve(10) == vector<int>{2, 3, 5, 7}));
+    vector<int> primes, lp, phis, mu;
+    linear_sieve_phi_mu(10, primes, lp, phis, mu);
+    assert((primes == vector<int>{2, 3, 5, 7}));
+    assert((vector<int>(lp.begin() + 1, lp.end()) ==
+            vector<int>{0, 2, 3, 2, 5, 2, 7, 2, 3, 2}));
+    assert((vector<int>(phis.begin() + 1, phis.end()) ==
+            vector<int>{1, 1, 2, 2, 4, 2, 6, 4, 6, 4}));
+    assert((vector<int>(mu.begin() + 1, mu.end()) ==
+            vector<int>{1, -1, -1, 0, -1, 1, -1, 0, 0, 1}));
+    linear_sieve_phi_mu(1, primes, lp, phis, mu);
+    assert(primes.empty() && lp.size() == 2 && phis[1] == 1 && mu[1] == 1);
 
     DSU plain_dsu(3);
     assert(plain_dsu.unite(1, 2));

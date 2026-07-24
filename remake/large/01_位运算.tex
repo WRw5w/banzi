@@ -21,7 +21,10 @@
 \begin{lstlisting}[language={C++}]
 struct LinearBasis {
     long long b[61]{}; // b[i] 的最高位是 i；每个主元位只保留一个向量。
+    // 接口：insert(x)：把参数表示的数/字符串/版本插入当前结构；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：待处理值或点/状态 x。
     bool insert(long long x) {
+        // 变量：i=当前处理的二进制位/倍增层 i。
         for (int i = 60; i >= 0; --i) if (x >> i & 1) {
             // 从高位消元；如果该位已有主元，就异或消掉这一位。
             if (!b[i]) { b[i] = x; return true; }
@@ -30,8 +33,11 @@ struct LinearBasis {
         // 完全消成 0：x 属于已有线性空间，插入不会增加秩。
         return false;
     }
+    // 接口：maximum(x)：返回把 x 与线性基中若干向量异或后可得到的最大值；返回类型 long long。
+    // 参数：待处理值或点/状态 x。
     long long maximum(long long x = 0) const {
         // 从高位向低位贪心；异或后变大才保留，保证最高位最优。
+        // 变量：i=当前循环下标 i。
         for (int i = 60; i >= 0; --i) x = max(x, x ^ b[i]);
         return x;
     }
