@@ -2,6 +2,9 @@
 
 当前仓库以“现场可复制、可接入、可验证”为优先，不再把旧版合订本继续拼接扩展。
 
+> **当前唯一正式大版本：** [`banzi/板子_大版本.pdf`](banzi/板子_大版本.pdf)。
+> 它已经包含针对性测试、完整题例和可执行测试矩阵，不再单独维护“含例题测试”后缀版本。
+
 ## 文件导航
 
 | 文件 | 内容 |
@@ -9,10 +12,10 @@
 | [muban.cpp](muban.cpp) | 唯一代码地基；所有卡片从此文件复制后追加 |
 | [banzi/板子.pdf](banzi/板子.pdf) | 区域赛现场速查版，七个稳定章节，含压缩错题附录 |
 | [banzi/板子_详细验证.pdf](banzi/板子_详细验证.pdf) | 详细解释与验证协议，共享同一套主模板 |
-| [banzi/板子_大版本.pdf](banzi/板子_大版本.pdf) | 原 269 页大版本的去重重排版，保留完整专题覆盖 |
-| [banzi/板子_大版本_含例题测试.pdf](banzi/板子_大版本_含例题测试.pdf) | 大版本当前验证稿，补入接口注释、完整题例和可执行测试矩阵 |
+| [banzi/板子_大版本.pdf](banzi/板子_大版本.pdf) | 唯一正式大版本；保留完整专题覆盖，并包含接口注释、完整题例和测试矩阵 |
 | [banzi/板子.tex](banzi/板子.tex) | 现场版入口；章节源在 [remake/chapters](remake/chapters) |
 | [banzi/板子_大版本.tex](banzi/板子_大版本.tex) | 完整大版本入口；章节源在 [remake/large](remake/large) |
+| [docs/版本与归档.md](docs/版本与归档.md) | 正式版本、历史快照和发布规则 |
 | [remake/chapters/03_字符串.tex](remake/chapters/03_字符串.tex) | KMP、AC（总计数/逐模式计数）、SAM、后缀数组、PAM |
 | [tests/refactored_strings.cpp](tests/refactored_strings.cpp) | 高风险字符串模板的 C++17 回归测试 |
 | [tests/refactored_mst.cpp](tests/refactored_mst.cpp) | Kruskal 与 Kruskal 重构树的 C++17 回归测试 |
@@ -38,6 +41,15 @@
 `banzi/板子.tex` 是 42 页现场速查版，`banzi/板子_大版本.tex` 是完整大版本；
 两者用途不同，修改大版本时不要用现场版替代。
 
+## 版本规则
+
+- `banzi/板子_大版本.tex` 是大版本唯一编译入口；
+- `banzi/板子_大版本.pdf` 是大版本唯一正式 PDF；
+- 该入口已经引入 `remake/large/11_针对性测试.tex` 和
+  `remake/large/13_例题与测试.tex`，所以正式 PDF 本身就是含例题、含测试的完整版本；
+- 历史 PDF 只放在 `archive/YYYY-MM-DD/`，文件名必须标明来源提交和页数；
+- `new/`、`big-anwser/` 与 `output/pdf/` 是重构过程资料，不参与当前正式大版本编译。
+
 ## 编译与验证
 
 ```text
@@ -50,6 +62,7 @@ g++ -std=c++17 -O2 -Wall tests/refactored_dp_geometry.cpp
 g++ -std=c++17 -O2 -Wall tests/refactored_advanced.cpp
 xelatex -interaction=nonstopmode banzi/板子.tex
 xelatex -interaction=nonstopmode banzi/板子_详细验证.tex
+xelatex -interaction=nonstopmode -output-directory banzi banzi/板子_大版本.tex
 xelatex -interaction=nonstopmode -output-directory banzi banzi/板子_大版本.tex
 ```
 

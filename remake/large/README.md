@@ -6,13 +6,15 @@
 ## 入口
 
 - `banzi/板子_大版本.tex`：大版本入口；
-- `banzi/板子_大版本.pdf`：编译产物；
-- `banzi/板子_大版本_含例题测试.pdf`：当前补齐接口、例题和测试矩阵的验证稿；
+- `banzi/板子_大版本.pdf`：唯一正式编译产物，已经包含接口注释、例题和测试矩阵；
 - `remake/large/*.tex`：大版本唯一的专题章节源。
 - `remake/large/13_例题与测试.tex`：接口注释、正式题例和可执行测试矩阵。
 
 对应的 C++17 回归测试位于仓库根目录 `tests/`：基础/数学/数据结构、图论/树、
 字符串、最小生成树/重构树、动态规划/几何和进阶模板各有可直接编译的断言程序。
+
+不再生成或维护 `banzi/板子_大版本_含例题测试.pdf`。需要保留的里程碑快照统一放入
+`archive/YYYY-MM-DD/`，避免与正式产物并列后无法判断新旧。
 
 原来的 `banzi/板子.tex` 和 `banzi/板子.pdf` 是现场速查版，本次不修改其内容。
 
@@ -40,3 +42,6 @@
 xelatex -interaction=nonstopmode -output-directory banzi banzi/板子_大版本.tex
 xelatex -interaction=nonstopmode -output-directory banzi banzi/板子_大版本.tex
 ```
+
+两遍编译用于更新目录、书签和交叉引用；完成后只提交
+`banzi/板子_大版本.pdf`，不要另外复制出带功能后缀的 PDF。
