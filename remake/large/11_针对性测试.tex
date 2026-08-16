@@ -71,6 +71,19 @@ T=4
 
 \subsection{数学、筛法、生成函数与树计数}
 
+\subsubsection{任意精度整数：符号、整除、超 128 位与模幂}
+
+\begin{lstlisting}
+1) 10^50 + 12345                         -> 十进制输入输出不丢位
+2) a 和 -a 分别除以 97                   -> 都满足 a=(a/b)*b+a%b
+3) 10^50                                 -> 明显超过 __int128
+4) (-2)^5 mod 13                         -> 7
+\end{lstlisting}
+
+第三组抓误用 \passthrough{\lstinline!__int128!}；第四组抓负底数未先归一化。
+若题目要求余数位于 \passthrough{\lstinline![0,b)!}，不能直接把负数的
+\passthrough{\lstinline!a\%b!} 当答案。
+
 \subsubsection{试除分解、线性筛和欧拉函数：1、质数、平方数、重复质因子}
 
 \begin{lstlisting}
@@ -513,4 +526,3 @@ Kuhn--Munkres 最大权完备匹配：
 Steiner 树先用三点图手算：\passthrough{\lstinline!1-2=1,2-3=1,1-3=3!}，终端 \passthrough{\lstinline!\{1,3\}!} 的最小连通代价为 \passthrough{\lstinline!2!}；再测单终端代价 \passthrough{\lstinline!0!}、重复终端不能重复计费、不可达终端返回题面规定的无解。高斯消元则复用补充页的``唯一解、无解、多解''三组，另加交换行的主元为 \passthrough{\lstinline!0!} 的矩阵，确认会换到下面的非零行。
 
 这些自测不是随机数据集：每组都至少命中一个边界分支和一个正常分支。需要做更大压力测试时，保留同一批核心模式，用生成器重复 \passthrough{\lstinline!t!} 次；不要把 \passthrough{\lstinline!t=2345678!} 的数百万行文本直接塞进 PDF，现场测试应生成后通过标准输入喂给程序。
-

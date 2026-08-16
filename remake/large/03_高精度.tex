@@ -1,0 +1,375 @@
+\section{任意精度整数（纯 C++17）}
+
+当整数可能超过 \passthrough{\lstinline!__int128!}，且评测环境没有 Boost 时，使用下面的
+有符号十进制高精度模板。内部以 \(10^9\) 为一位，支持输入输出、比较、正负数加减乘除、
+取模、最大公约数和模快速幂，不依赖第三方库。
+
+\begin{lstlisting}[language={C++}]
+struct BigInteger {
+    // 变量：BASE=每个数组块的进制。
+    static constexpr uint32_t BASE = 1000000000;
+    // 变量：WIDTH=输出低位块时补齐的十进制位数。
+    static constexpr int WIDTH = 9;
+    // 变量：digit=以 BASE 为进制的小端绝对值。
+    vector<uint32_t> digit;
+    // 变量：negative=true 表示负数，零始终非负。
+    bool negative = false;
+
+    // 接口：BigInteger(value)：由 long long 构造高精度整数，默认构造零。
+    BigInteger(long long value = 0) { *this = value; }
+    // 接口：BigInteger(text)：由带可选正负号的十进制字符串构造高精度整数。
+    explicit BigInteger(const string& text) { read(text); }
+
+    // 接口：operator=(value)：用 long long（含 LLONG_MIN）重置当前高精度整数。
+    BigInteger& operator=(long long value) {
+        digit.clear();
+        negative = value < 0;
+        // 变量：magnitude=value 的无符号绝对值；写法可安全处理 LLONG_MIN。
+        unsigned long long magnitude = negative
+            ? 0ULL - static_cast<unsigned long long>(value)
+            : static_cast<unsigned long long>(value);
+        while (magnitude != 0) {
+            digit.push_back(magnitude % BASE);
+            magnitude /= BASE;
+        }
+        trim();
+        return *this;
+    }
+
+    // 接口：read(text)：从带可选正负号的十进制字符串重置当前值；非法格式抛异常。
+    void read(const string& text) {
+        digit.clear();
+        negative = false;
+        if (text.empty()) throw invalid_argument("empty BigInteger");
+        // 变量：pos=跳过可选正负号后的首个数字下标。
+        size_t pos = 0;
+        if (text[pos] == '+' || text[pos] == '-') {
+            negative = text[pos] == '-';
+            ++pos;
+        }
+        if (pos == text.size()) throw invalid_argument("invalid BigInteger");
+        // 变量：i=检查十进制输入格式的当前字符下标。
+        for (size_t i = pos; i < text.size(); ++i) {
+            if (!isdigit(static_cast<unsigned char>(text[i])))
+                throw invalid_argument("invalid BigInteger");
+        }
+        // 变量：end=当前尚未拆分部分的右端开区间下标。
+        for (size_t end = text.size(); end > pos;) {
+            // 变量：begin=当前九位十进制块的左端下标。
+            size_t begin = end >= pos + WIDTH ? end - WIDTH : pos;
+            digit.push_back(static_cast<uint32_t>(stoul(
+                text.substr(begin, end - begin))));
+            end = begin;
+        }
+        trim();
+    }
+
+    // 接口：str()：返回不含前导零的十进制表示，零返回 "0"。
+    string str() const {
+        if (digit.empty()) return "0";
+        stringstream out;
+        if (negative) out << '-';
+        out << digit.back();
+        // 变量：i=从高到低输出的内部数位块下标。
+        for (int i = static_cast<int>(digit.size()) - 2; i >= 0; --i)
+            out << setw(WIDTH) << setfill('0') << digit[i];
+        return out.str();
+    }
+
+    // 接口：is_zero()：返回当前值是否为零。
+    bool is_zero() const { return digit.empty(); }
+
+    // 接口：is_odd()：返回当前值的绝对值是否为奇数。
+    bool is_odd() const { return !digit.empty() && (digit[0] & 1); }
+
+    // 接口：divide_by_two()：把非负当前值原地除以 2，供快速幂缩小指数。
+    void divide_by_two() {
+        assert(!negative);
+        uint64_t carry = 0;
+        // 变量：i=从高到低执行短除法的内部数位块下标。
+        for (int i = static_cast<int>(digit.size()) - 1; i >= 0; --i) {
+            // 变量：current=本块加上高位余数后的被除数。
+            uint64_t current = digit[i] + carry * BASE;
+            digit[i] = current / 2;
+            carry = current % 2;
+        }
+        trim();
+    }
+
+    // 接口：trim()：删除绝对值最高端的零块，并把零的符号归一为正。
+    void trim() {
+        while (!digit.empty() && digit.back() == 0) digit.pop_back();
+        if (digit.empty()) negative = false;
+    }
+
+    // 接口：abs_compare(a,b)：比较绝对值；小于、等于、大于分别返回 -1、0、1。
+    static int abs_compare(const BigInteger& a, const BigInteger& b) {
+        if (a.digit.size() != b.digit.size())
+            return a.digit.size() < b.digit.size() ? -1 : 1;
+        // 变量：i=从最高块向最低块比较绝对值的下标。
+        for (int i = static_cast<int>(a.digit.size()) - 1; i >= 0; --i) {
+            if (a.digit[i] != b.digit[i])
+                return a.digit[i] < b.digit[i] ? -1 : 1;
+        }
+        return 0;
+    }
+
+    // 接口：abs_add(a,b)：返回两个绝对值之和，结果非负。
+    static BigInteger abs_add(const BigInteger& a, const BigInteger& b) {
+        // 变量：result=准备返回的非负绝对值之和。
+        BigInteger result;
+        uint64_t carry = 0;
+        // 变量：size=两个操作数内部数位块数量的较大值。
+        size_t size = max(a.digit.size(), b.digit.size());
+        // 变量：i=当前相加的内部数位块下标。
+        for (size_t i = 0; i < size || carry != 0; ++i) {
+            uint64_t current = carry;
+            if (i < a.digit.size()) current += a.digit[i];
+            if (i < b.digit.size()) current += b.digit[i];
+            result.digit.push_back(current % BASE);
+            carry = current / BASE;
+        }
+        return result;
+    }
+
+    // 接口：abs_sub(a,b)：返回 |a|-|b|；前置条件为 |a|>=|b|。
+    static BigInteger abs_sub(const BigInteger& a, const BigInteger& b) {
+        assert(abs_compare(a, b) >= 0);
+        // 变量：result=准备返回的非负绝对值之差。
+        BigInteger result;
+        int64_t borrow = 0;
+        // 变量：i=当前相减的内部数位块下标。
+        for (size_t i = 0; i < a.digit.size(); ++i) {
+            int64_t current = static_cast<int64_t>(a.digit[i]) - borrow
+                - (i < b.digit.size() ? b.digit[i] : 0);
+            if (current < 0) current += BASE, borrow = 1;
+            else borrow = 0;
+            result.digit.push_back(static_cast<uint32_t>(current));
+        }
+        result.trim();
+        return result;
+    }
+
+    // 接口：multiply_small(factor)：返回当前绝对值乘 [0,BASE) 内整数 factor，结果非负。
+    BigInteger multiply_small(uint32_t factor) const {
+        // 变量：result=准备返回的非负短乘结果。
+        BigInteger result;
+        if (factor == 0 || is_zero()) return result;
+        uint64_t carry = 0;
+        for (uint32_t block : digit) {
+            uint64_t current = static_cast<uint64_t>(block) * factor + carry;
+            result.digit.push_back(current % BASE);
+            carry = current / BASE;
+        }
+        if (carry != 0) result.digit.push_back(static_cast<uint32_t>(carry));
+        return result;
+    }
+
+    // 接口：shift_base_add(block)：原地执行当前非负值乘 BASE 再加一个低位块。
+    void shift_base_add(uint32_t block) {
+        assert(!negative && block < BASE);
+        digit.insert(digit.begin(), block);
+        trim();
+    }
+
+    // 接口：divmod(a,b)：返回向零截断的商和余数；前置条件 b!=0。
+    static pair<BigInteger, BigInteger> divmod(
+            const BigInteger& a, const BigInteger& b) {
+        if (b.is_zero()) throw domain_error("BigInteger division by zero");
+        // 变量：dividend=被除数 a 的绝对值。
+        BigInteger dividend = a.negative ? -a : a;
+        // 变量：divisor=除数 b 的绝对值。
+        BigInteger divisor = b.negative ? -b : b;
+        // 变量：quotient=逐块确定的非负商；remainder=当前非负余数。
+        BigInteger quotient, remainder;
+        quotient.digit.assign(dividend.digit.size(), 0);
+        // 变量：i=从高到低移入长除法的被除数块下标。
+        for (int i = static_cast<int>(dividend.digit.size()) - 1;
+             i >= 0; --i) {
+            remainder.shift_base_add(dividend.digit[i]);
+            uint32_t low = 0, high = BASE - 1, best = 0;
+            while (low <= high) {
+                uint32_t middle = low + (high - low) / 2;
+                if (abs_compare(divisor.multiply_small(middle), remainder) <= 0) {
+                    best = middle;
+                    low = middle + 1;
+                } else {
+                    if (middle == 0) break;
+                    high = middle - 1;
+                }
+            }
+            quotient.digit[i] = best;
+            remainder = abs_sub(remainder, divisor.multiply_small(best));
+        }
+        quotient.negative = a.negative != b.negative;
+        remainder.negative = a.negative;
+        quotient.trim();
+        remainder.trim();
+        return {quotient, remainder};
+    }
+
+    // 接口：operator-()：返回当前高精度整数的相反数，-0 仍为 0。
+    BigInteger operator-() const {
+        // 变量：result=当前值的副本，随后只翻转其符号。
+        BigInteger result = *this;
+        if (!result.is_zero()) result.negative = !result.negative;
+        return result;
+    }
+
+    // 接口：operator+(a,b)：返回两个有符号高精度整数之和。
+    friend BigInteger operator+(const BigInteger& a, const BigInteger& b) {
+        if (a.negative == b.negative) {
+            // 变量：result=同号操作数绝对值相加后的结果。
+            BigInteger result = abs_add(a, b);
+            result.negative = a.negative;
+            result.trim();
+            return result;
+        }
+        // 变量：order=操作数绝对值的比较结果。
+        int order = abs_compare(a, b);
+        if (order == 0) return BigInteger(0);
+        // 变量：result=异号操作数绝对值相减后的结果。
+        BigInteger result = order > 0 ? abs_sub(a, b) : abs_sub(b, a);
+        result.negative = order > 0 ? a.negative : b.negative;
+        return result;
+    }
+
+    // 接口：operator-(a,b)：返回两个有符号高精度整数之差 a-b。
+    friend BigInteger operator-(const BigInteger& a, const BigInteger& b) {
+        return a + (-b);
+    }
+
+    // 接口：operator*(a,b)：返回两个有符号高精度整数之积。
+    friend BigInteger operator*(const BigInteger& a, const BigInteger& b) {
+        // 变量：result=按块累加的高精度乘积。
+        BigInteger result;
+        if (a.is_zero() || b.is_zero()) return result;
+        result.digit.assign(a.digit.size() + b.digit.size(), 0);
+        // 变量：i=左操作数当前参与乘法的内部块下标。
+        for (size_t i = 0; i < a.digit.size(); ++i) {
+            uint64_t carry = 0;
+            // 变量：j=右操作数当前参与乘法的内部块下标。
+            for (size_t j = 0; j < b.digit.size() || carry != 0; ++j) {
+                uint64_t current = result.digit[i + j] + carry;
+                if (j < b.digit.size())
+                    current += static_cast<uint64_t>(a.digit[i]) * b.digit[j];
+                result.digit[i + j] = current % BASE;
+                carry = current / BASE;
+            }
+        }
+        result.negative = a.negative != b.negative;
+        result.trim();
+        return result;
+    }
+
+    // 接口：operator/(a,b)：返回 a/b 向零截断的商；前置条件 b!=0。
+    friend BigInteger operator/(const BigInteger& a, const BigInteger& b) {
+        return divmod(a, b).first;
+    }
+
+    // 接口：operator%(a,b)：返回 a/b 的余数，符号与 a 相同；前置条件 b!=0。
+    friend BigInteger operator%(const BigInteger& a, const BigInteger& b) {
+        return divmod(a, b).second;
+    }
+
+    // 接口：operator==(a,b)：返回 a 与 b 是否数值相等。
+    friend bool operator==(const BigInteger& a, const BigInteger& b) {
+        return a.negative == b.negative && a.digit == b.digit;
+    }
+
+    // 接口：operator!=(a,b)：返回 a 与 b 是否数值不等。
+    friend bool operator!=(const BigInteger& a, const BigInteger& b) {
+        return !(a == b);
+    }
+
+    // 接口：operator<(a,b)：返回 a 是否严格小于 b。
+    friend bool operator<(const BigInteger& a, const BigInteger& b) {
+        if (a.negative != b.negative) return a.negative;
+        // 变量：order=操作数绝对值的比较结果。
+        int order = abs_compare(a, b);
+        return a.negative ? order > 0 : order < 0;
+    }
+
+    // 接口：operator<=(a,b)：返回 a 是否小于等于 b。
+    friend bool operator<=(const BigInteger& a, const BigInteger& b) {
+        return !(b < a);
+    }
+
+    // 接口：operator>(a,b)：返回 a 是否严格大于 b。
+    friend bool operator>(const BigInteger& a, const BigInteger& b) {
+        return b < a;
+    }
+
+    // 接口：operator>=(a,b)：返回 a 是否大于等于 b。
+    friend bool operator>=(const BigInteger& a, const BigInteger& b) {
+        return !(a < b);
+    }
+
+    // 接口：operator>>(in,value)：从输入流读取一个十进制高精度整数。
+    friend istream& operator>>(istream& in, BigInteger& value) {
+        // 变量：text=从输入流读取的带符号十进制字符串。
+        string text;
+        if (in >> text) value.read(text);
+        return in;
+    }
+
+    // 接口：operator<<(out,value)：向输出流写出一个十进制高精度整数。
+    friend ostream& operator<<(ostream& out, const BigInteger& value) {
+        return out << value.str();
+    }
+};
+
+// 接口：abs_big(x)：返回任意精度整数 x 的绝对值。
+BigInteger abs_big(BigInteger x) {
+    return x < 0 ? -x : x;
+}
+
+// 接口：gcd_big(a,b)：返回任意精度整数 a,b 的非负最大公约数；gcd(0,0)=0。
+BigInteger gcd_big(BigInteger a, BigInteger b) {
+    a = abs_big(a);
+    b = abs_big(b);
+    while (!b.is_zero()) {
+        // 变量：remainder=本轮欧几里得算法的非负余数。
+        BigInteger remainder = a % b;
+        a = b;
+        b = remainder;
+    }
+    return a;
+}
+
+// 接口：pow_mod_big(base,exponent,mod)：返回 base^exponent mod mod。
+// 参数：任意精度底数 base；非负任意精度指数 exponent；正模数 mod。
+BigInteger pow_mod_big(
+        BigInteger base, BigInteger exponent, const BigInteger& mod) {
+    assert(!(exponent < 0) && 0 < mod);
+    base = base % mod;
+    if (base < 0) base = base + mod;
+    // 变量：result=快速幂当前累计答案，始终位于 [0,mod)。
+    BigInteger result = BigInteger(1) % mod;
+    while (!exponent.is_zero()) {
+        if (exponent.is_odd()) result = result * base % mod;
+        base = base * base % mod;
+        exponent.divide_by_two();
+    }
+    return result;
+}
+\end{lstlisting}
+
+\begin{warn}
+\begin{itemize}
+  \item 除法向零截断，余数与被除数同号，并满足
+        \passthrough{\lstinline!a == (a / b) * b + a \% b!}。若题目要求非负模且
+        \passthrough{\lstinline!b>0!}，用 \passthrough{\lstinline!r=(a\%b+b)\%b!} 归一化。
+  \item 除数为零会抛出 \passthrough{\lstinline!domain_error!}；字符串为空、只有符号或含非数字字符会抛出
+        \passthrough{\lstinline!invalid_argument!}。
+  \item 加减为 \(O(n)\)，朴素乘法为 \(O(nm)\)，本模板长除法约为
+        \(O(nm\log 10^9)\)。几万位乘除应改用 FFT/NTT 或专用大数库。
+  \item 本模板只实现整数算术，不支持小数和按位运算。若评测环境确认提供 Boost，且需要任意宽位运算，
+        可改用 \passthrough{\lstinline!boost::multiprecision::cpp_int!}。
+\end{itemize}
+\end{warn}
+
+\begin{tip}
+只超过 64 位但不超过约 38 位十进制时，优先使用 \passthrough{\lstinline!__int128!}；只需要
+高精度加法或高精度除以低精度时，也可以从本结构中裁掉乘法和完整长除法，缩短赛时代码。
+\end{tip}

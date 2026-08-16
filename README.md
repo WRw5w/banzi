@@ -22,7 +22,8 @@
 | [tests/refactored_core.cpp](tests/refactored_core.cpp) | 基础、数学与常用数据结构的 C++17 回归测试 |
 | [tests/refactored_graph.cpp](tests/refactored_graph.cpp) | 图论与树上接口的 C++17 回归测试 |
 | [tests/refactored_dp_geometry.cpp](tests/refactored_dp_geometry.cpp) | 动态规划与几何接口的 C++17 回归测试 |
-| [tests/refactored_advanced.cpp](tests/refactored_advanced.cpp) | 线性基、扩展 CRT、矩阵、消元、主席树与李超树回归测试 |
+| [tests/refactored_advanced.cpp](tests/refactored_advanced.cpp) | 高精度整数、线性基、扩展 CRT、矩阵、消元、主席树与李超树回归测试 |
+| [tests/support_big_integer.hpp](tests/support_big_integer.hpp) | 纯 C++17 有符号高精度整数的可执行测试副本 |
 | [remake/large/13_例题与测试.tex](remake/large/13_例题与测试.tex) | 大版本的接口注释、正式题例与测试矩阵 |
 | [修改意见.md](修改意见.md) | 本次重构验收标准与取舍边界 |
 

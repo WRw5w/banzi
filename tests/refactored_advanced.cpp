@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 #include <cassert>
+#include "support_big_integer.hpp"
 using namespace std;
 
 // 进阶模板仍采用最小题目接口；所有测试均可独立运行，不依赖 PDF 中的全局数组。
@@ -168,6 +169,51 @@ struct LiChao {
 };
 
 int main() {
+    BigInteger sample("123456789012345678901234567890");
+    assert((sample + 97).str() == "123456789012345678901234567987");
+    assert((sample - 97).str() == "123456789012345678901234567793");
+    assert((sample * 97).str() == "11975308534197530853419753085330");
+    assert((sample / 97).str() == "1272750402189130710322005854");
+    assert((sample % 97).str() == "52");
+    assert(BigInteger("-000000") == 0);
+    assert(BigInteger(LLONG_MIN).str() == to_string(LLONG_MIN));
+    stringstream big_stream("-123456789012345678901234567890");
+    BigInteger streamed;
+    big_stream >> streamed;
+    assert(streamed == -sample);
+
+    for (long long a = -100; a <= 100; ++a) {
+        for (long long b = -100; b <= 100; ++b) {
+            BigInteger big_a(a), big_b(b);
+            assert((big_a + big_b).str() == to_string(a + b));
+            assert((big_a - big_b).str() == to_string(a - b));
+            assert((big_a * big_b).str() == to_string(a * b));
+            assert((big_a < big_b) == (a < b));
+            assert((big_a <= big_b) == (a <= b));
+            assert((big_a > big_b) == (a > b));
+            assert((big_a >= big_b) == (a >= b));
+            if (b != 0) {
+                assert((big_a / big_b).str() == to_string(a / b));
+                assert((big_a % big_b).str() == to_string(a % b));
+            }
+        }
+    }
+
+    BigInteger ten_to_50(
+        "100000000000000000000000000000000000000000000000000");
+    BigInteger large = ten_to_50 + 12345;
+    BigInteger divisor("12345678901234567890");
+    assert((large / divisor) * divisor + large % divisor == large);
+    assert(abs_big(large % divisor) < abs_big(divisor));
+    assert((-large / divisor) * divisor + (-large) % divisor == -large);
+    assert((-large / -divisor) * (-divisor) + (-large) % (-divisor) == -large);
+    assert((-large) % divisor < 0);
+    assert(gcd_big(BigInteger(48) * ten_to_50,
+                   BigInteger(-18) * ten_to_50) == BigInteger(6) * ten_to_50);
+    assert(pow_mod_big(2, 1000, 1000000007) == 688423210);
+    assert(pow_mod_big(-2, 5, 13) == 7);
+    assert(large.str() == string("1") + string(45, '0') + "12345");
+
     LinearBasis basis;
     assert(basis.insert(3));
     assert(basis.insert(5));
