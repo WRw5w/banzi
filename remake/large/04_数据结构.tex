@@ -176,7 +176,7 @@ int first_at_least(int p, int l, int r, long long x) {
 }
 \end{lstlisting}
 
-\section{稀疏表（Sparse Table，ST）}\label{ux7a00ux758fux8868sparse-tablest}
+\section{ST 表（Sparse Table，静态区间查询）}\label{ux7a00ux758fux8868sparse-tablest}
 
 静态数组的幂等运算（min/max/gcd/and/or）预处理 \passthrough{\lstinline!O(n log n)!}，查询 \passthrough{\lstinline!O(1)!}：
 
@@ -193,7 +193,7 @@ for (int j = 1; j <= K; ++j)
     // 变量：i=当前处理的二进制位/倍增层 i。
     for (int i = 0; i + (1 << j) <= n; ++i)
         st[j][i] = min(st[j - 1][i], st[j - 1][i + (1 << (j - 1))]);
-// 接口：range_min(l, r)：供“稀疏表（Sparse Table，ST）”当前语句回调；返回值含义见调用处条件。
+// 接口：range_min(l, r)：供“ST 表（Sparse Table，静态区间查询）”当前语句回调；返回值含义见调用处条件。
 // 参数：闭区间左端点 l；闭区间右端点 r。
 auto range_min = [&](int l, int r) {
     // 变量：k=当前排名、选取数量或循环层数 k。
