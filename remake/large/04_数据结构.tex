@@ -181,24 +181,31 @@ int first_at_least(int p, int l, int r, long long x) {
 静态数组的幂等运算（min/max/gcd/and/or）预处理 \passthrough{\lstinline!O(n log n)!}，查询 \passthrough{\lstinline!O(1)!}：
 
 \passthrough{\lstinline!k=floor(log2(len))!}，答案为 \passthrough{\lstinline!merge(st[k][l], st[k][r-2\^k+1])!}。不可用于 sum 这类非幂等运算（重叠会重复计数）。
+下面的实现约定输入数组非空，数组下标和查询端点均为 \passthrough{\lstinline!0-based!}，查询区间为闭区间 \passthrough{\lstinline![l,r]!}。
 
 \begin{lstlisting}[language={C++}]
-// 变量：K=当前固定状态数/选取数 K。
-int K = __lg(n);
-// 变量：st=当前集合或自动机/DP 状态 st。
-vector<vector<int>> st(K + 1, vector<int>(n));
-st[0] = a;
-// 变量：j=内层循环下标 j。
-for (int j = 1; j <= K; ++j)
-    // 变量：i=当前处理的二进制位/倍增层 i。
-    for (int i = 0; i + (1 << j) <= n; ++i)
-        st[j][i] = min(st[j - 1][i], st[j - 1][i + (1 << (j - 1))]);
-// 接口：range_min(l, r)：供“ST 表（Sparse Table，静态区间查询）”当前语句回调；返回值含义见调用处条件。
-// 参数：闭区间左端点 l；闭区间右端点 r。
-auto range_min = [&](int l, int r) {
-    // 变量：k=当前排名、选取数量或循环层数 k。
-    int k = __lg(r - l + 1);
-    return min(st[k][l], st[k][r - (1 << k) + 1]);
+struct SparseTable {
+    vector<vector<int>> st;
+    vector<int> lg;
+
+    explicit SparseTable(const vector<int>& a) {
+        int n = a.size();
+        lg.assign(n + 1, 0);
+        for (int i = 2; i <= n; ++i)
+            lg[i] = lg[i / 2] + 1;
+
+        st.assign(lg[n] + 1, vector<int>(n));
+        st[0] = a;
+        for (int k = 1; k < (int)st.size(); ++k)
+            for (int i = 0; i + (1 << k) <= n; ++i)
+                st[k][i] = min(st[k - 1][i],
+                               st[k - 1][i + (1 << (k - 1))]);
+    }
+
+    int query(int l, int r) const {
+        int k = lg[r - l + 1];
+        return min(st[k][l], st[k][r - (1 << k) + 1]);
+    }
 };
 \end{lstlisting}
 
