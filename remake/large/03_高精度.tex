@@ -4,6 +4,14 @@
 有符号十进制高精度模板。内部以 \(10^9\) 为一位，支持输入输出、比较、正负数加减乘除、
 取模、最大公约数和模快速幂，不依赖第三方库。
 
+Python 3.11 及以上默认限制十进制字符串与大整数互转的位数；需要处理超长整数时，
+可在程序开头关闭该限制：
+
+\begin{lstlisting}[language={Python}]
+import sys
+sys.set_int_max_str_digits(0)
+\end{lstlisting}
+
 \begin{lstlisting}[language={C++}]
 struct BigInteger {
     // 变量：BASE=每个数组块的进制。
