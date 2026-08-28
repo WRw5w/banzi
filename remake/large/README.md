@@ -1,7 +1,7 @@
 # 大版本算法板子
 
-这是原 `banzi/板子.pdf` 的完整重构版，目标是保留大版本的覆盖面，同时删除
-“手写基础章节 + 合并专题章节”造成的重复代码和重复目录。
+本目录保存算法板子的唯一正式章节源。每个专题只保留一份主模板，详细解释紧跟
+主模板，避免重复代码和重复目录。
 
 ## 入口
 
@@ -15,8 +15,6 @@
 
 不再生成或维护 `banzi/板子_大版本_含例题测试.pdf`。需要保留的里程碑快照统一放入
 `archive/YYYY-MM-DD/`，避免与正式产物并列后无法判断新旧。
-
-原来的 `banzi/板子.tex` 和 `banzi/板子.pdf` 是现场速查版，本次不修改其内容。
 
 ## 章节组织
 
@@ -43,5 +41,5 @@ xelatex -interaction=nonstopmode -output-directory banzi banzi/板子_大版本.
 xelatex -interaction=nonstopmode -output-directory banzi banzi/板子_大版本.tex
 ```
 
-两遍编译用于更新目录、书签和交叉引用；完成后只提交
-`banzi/板子_大版本.pdf`，不要另外复制出带功能后缀的 PDF。
+两遍编译用于更新目录、书签和交叉引用。提交时同步源文件、测试、正式 PDF 与文档；
+正式 PDF 只保留 `banzi/板子_大版本.pdf`，不要复制出带功能后缀的变体。

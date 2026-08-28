@@ -1,74 +1,41 @@
 # 区域赛银牌 / Codeforces ≤ 2200 算法手册
 
-当前仓库以“现场可复制、可接入、可验证”为优先，不再把旧版合订本继续拼接扩展。
+本仓库只维护一份算法板子：[`banzi/板子_大版本.pdf`](banzi/板子_大版本.pdf)。
+它包含专题模板、接口注释、例题、边界说明和测试矩阵；不存在现场版、详细版、
+“含例题版”或“最终版”等并列版本。
 
-> **当前唯一正式大版本：** [`banzi/板子_大版本.pdf`](banzi/板子_大版本.pdf)。
-> 它已经包含针对性测试、完整题例和可执行测试矩阵，不再单独维护“含例题测试”后缀版本。
+## 唯一正式链路
 
-## 文件导航
-
-| 文件 | 内容 |
+| 位置 | 用途 |
 | --- | --- |
-| [muban.cpp](muban.cpp) | 唯一代码地基；所有卡片从此文件复制后追加 |
-| [banzi/板子.pdf](banzi/板子.pdf) | 区域赛现场速查版，七个稳定章节，含压缩错题附录 |
-| [banzi/板子_详细验证.pdf](banzi/板子_详细验证.pdf) | 详细解释与验证协议，共享同一套主模板 |
-| [banzi/板子_大版本.pdf](banzi/板子_大版本.pdf) | 唯一正式大版本；保留完整专题覆盖，并包含接口注释、完整题例和测试矩阵 |
-| [banzi/板子.tex](banzi/板子.tex) | 现场版入口；章节源在 [remake/chapters](remake/chapters) |
-| [banzi/板子_大版本.tex](banzi/板子_大版本.tex) | 完整大版本入口；章节源在 [remake/large](remake/large) |
-| [docs/版本与归档.md](docs/版本与归档.md) | 正式版本、历史快照和发布规则 |
-| [remake/chapters/03_字符串.tex](remake/chapters/03_字符串.tex) | KMP、AC（总计数/逐模式计数）、SAM、后缀数组、PAM |
-| [tests/refactored_strings.cpp](tests/refactored_strings.cpp) | 高风险字符串模板的 C++17 回归测试 |
-| [tests/refactored_mst.cpp](tests/refactored_mst.cpp) | Kruskal 与 Kruskal 重构树的 C++17 回归测试 |
-| [tests/refactored_core.cpp](tests/refactored_core.cpp) | 基础、数学与常用数据结构的 C++17 回归测试 |
-| [tests/refactored_graph.cpp](tests/refactored_graph.cpp) | 图论与树上接口的 C++17 回归测试 |
-| [tests/refactored_dp_geometry.cpp](tests/refactored_dp_geometry.cpp) | 动态规划与几何接口的 C++17 回归测试 |
-| [tests/refactored_advanced.cpp](tests/refactored_advanced.cpp) | 高精度整数、线性基、扩展 CRT、矩阵、消元、主席树与李超树回归测试 |
-| [tests/support_big_integer.hpp](tests/support_big_integer.hpp) | 纯 C++17 有符号高精度整数的可执行测试副本 |
-| [remake/large/13_例题与测试.tex](remake/large/13_例题与测试.tex) | 大版本的接口注释、正式题例与测试矩阵 |
-| [修改意见.md](修改意见.md) | 本次重构验收标准与取舍边界 |
+| [`banzi/板子_大版本.tex`](banzi/板子_大版本.tex) | 唯一编译入口 |
+| [`remake/large/`](remake/large/) | 唯一章节源目录 |
+| [`banzi/板子_大版本.pdf`](banzi/板子_大版本.pdf) | 唯一正式 PDF |
+| [`tests/`](tests/) | 六组 C++17 回归测试及测试副本 |
+| [`tools/`](tools/) | 接口与变量注释审计 |
+| [`docs/版本与归档.md`](docs/版本与归档.md) | 版本、归档和发布规则 |
+| [`archive/`](archive/) | 明确标注日期、提交和页数的历史快照 |
 
-## 重构后的目录
-
-1. 总览、代码地基与关键词索引；
-2. 基础算法与数据结构；
-3. 图论与树；
-4. 字符串；
-5. 数学与动态规划；
-6. 银牌档高频模板；
-7. 错题附录。
-
-同一算法只保留一份主模板；需要变体时在同一张卡片中说明差异，不再跨章节复制代码。
-
-`banzi/板子.tex` 是 42 页现场速查版，`banzi/板子_大版本.tex` 是完整大版本；
-两者用途不同，修改大版本时不要用现场版替代。
-
-## 版本规则
-
-- `banzi/板子_大版本.tex` 是大版本唯一编译入口；
-- `banzi/板子_大版本.pdf` 是大版本唯一正式 PDF；
-- 该入口已经引入 `remake/large/11_针对性测试.tex` 和
-  `remake/large/13_例题与测试.tex`，所以正式 PDF 本身就是含例题、含测试的完整版本；
-- 历史 PDF 只放在 `archive/YYYY-MM-DD/`，文件名必须标明来源提交和页数；
-- `new/`、`big-anwser/` 与 `output/pdf/` 是重构过程资料，不参与当前正式大版本编译。
+[`muban.cpp`](muban.cpp) 是复制算法卡片前使用的代码地基。
+[`错题本/`](错题本/) 是独立排错资料，不是另一版算法板子。
 
 ## 编译与验证
 
+从仓库根目录运行：
+
 ```text
-g++ -std=c++17 -O2 -Wall muban.cpp
+python tools/audit_large_interfaces.py
+python tools/audit_large_variables.py
 g++ -std=c++17 -O2 -Wall tests/refactored_strings.cpp
 g++ -std=c++17 -O2 -Wall tests/refactored_mst.cpp
 g++ -std=c++17 -O2 -Wall tests/refactored_core.cpp
 g++ -std=c++17 -O2 -Wall tests/refactored_graph.cpp
 g++ -std=c++17 -O2 -Wall tests/refactored_dp_geometry.cpp
 g++ -std=c++17 -O2 -Wall tests/refactored_advanced.cpp
-xelatex -interaction=nonstopmode banzi/板子.tex
-xelatex -interaction=nonstopmode banzi/板子_详细验证.tex
 xelatex -interaction=nonstopmode -output-directory banzi banzi/板子_大版本.tex
 xelatex -interaction=nonstopmode -output-directory banzi banzi/板子_大版本.tex
 ```
 
-高风险模板的卡片统一说明：适用条件、不能使用的情况、节点/数组含义、初始化、多测清空、复杂度、内存、完整样例和四组边界测试。
-
-## 备份
-
-首次重构前的完整目录副本位于 `D:\02_Projects\Algorithms\banzi_fork_20260723`，用于回退和差异对照。
+修改模板后必须运行两项审计和六组回归测试，连续编译两遍 XeLaTeX，并目视检查
+受影响页面。需要保留历史节点时只在 `archive/YYYY-MM-DD/` 新增快照，不在
+`banzi/` 或仓库根目录创建并列版本。

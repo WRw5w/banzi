@@ -18,15 +18,19 @@ $out/
 $outDir/
 *.exe
 
-# Historical generated variants; canonical PDFs live beside their source
-output/pdf/
+# Only the canonical handbook entry and PDF may live in banzi/
+banzi/*.tex
+!banzi/板子_大版本.tex
+banzi/*.pdf
+!banzi/板子_大版本.pdf
 
-# Legacy merged TeX fragments and superseded preview images
-banzi/新版*.tex
+# Retired source trees and generated variants
+new/
+big-anwser/
+output/
+remake/*.pdf
+/*.pdf
+
+# Legacy preview images
 remake/visual/
 remake/visual_sync/
-remake/comment_*.pdf
-remake/first_sync.pdf
-remake/second_build.pdf
-remake/second_final.pdf
-remake/second_sync.pdf
