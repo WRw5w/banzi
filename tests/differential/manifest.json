@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "strings.prefix_function",
+      "description": "KMP 前缀函数与朴素 border 枚举随机对拍",
+      "source": "remake/large/05_字符串.tex",
+      "contains": "vector<int> prefix_function(const string& s)",
+      "harness": "tests/differential/harnesses/strings_prefix_function.cpp",
+      "expected": "pass",
+      "run_timeout_seconds": 10
+    },
+    {
+      "id": "math.qpow_negative_base",
+      "description": "快速幂对负底数应返回标准非负模代表元",
+      "source": "remake/large/03_数学.tex",
+      "contains": "long long qpow(long long a, long long e, long long mod)",
+      "harness": "tests/differential/harnesses/math_qpow.cpp",
+      "regressions": [
+        "tests/differential/regressions/math_qpow_negative_base.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "expected=3 actual=-2",
+      "run_timeout_seconds": 10
+    }
+  ]
+}
