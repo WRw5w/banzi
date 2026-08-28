@@ -12,6 +12,8 @@
 4. `expected=pass` 表示必须通过；`expected=xfail` 表示问题已确认但尚未修复。
    `xfail` 意外通过会报告 `XPASS` 并返回失败，提醒维护者复核后升级状态。
    `xfail` 应配置 `expected_failure_contains`，避免把崩溃或新的失败原因当成旧问题。
+   默认验证运行阶段；若板子本身不能编译，另设
+   `expected_failure_stage=compile`，只把匹配既定诊断特征的编译失败算作 `XFAIL`。
 5. 代码块选择器必须在指定 `.tex` 中恰好命中一次；签名漂移或重复时测试直接报错。
 
 ## 使用

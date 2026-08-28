@@ -42,6 +42,13 @@ def load_manifest(path: Path) -> list[dict]:
             raise ValueError(f"duplicate case id: {case['id']}")
         if case["expected"] not in {"pass", "xfail"}:
             raise ValueError(f"invalid expected status for {case['id']}")
+        failure_stage = case.get("expected_failure_stage", "run")
+        if failure_stage not in {"compile", "run"}:
+            raise ValueError(f"invalid expected_failure_stage for {case['id']}")
+        if case["expected"] == "pass" and "expected_failure_stage" in case:
+            raise ValueError(
+                f"pass case {case['id']} must not define expected_failure_stage"
+            )
         if case["expected"] == "xfail" and not case.get("expected_failure_contains"):
             raise ValueError(f"xfail case {case['id']} requires expected_failure_contains")
         seen.add(case["id"])
@@ -112,6 +119,8 @@ def run_case(case: dict, compiler: str, build_dir: Path) -> Result:
             compile_cmd,
             cwd=ROOT,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             capture_output=True,
             timeout=case.get("compile_timeout_seconds", 30),
         )
@@ -119,7 +128,23 @@ def run_case(case: dict, compiler: str, build_dir: Path) -> Result:
         return Result(case_id, "ERROR", "compilation timed out")
     if compiled.returncode != 0:
         detail = (compiled.stdout + compiled.stderr).strip()
+        if case["expected"] == "xfail" and case.get(
+            "expected_failure_stage", "run"
+        ) == "compile":
+            signature = case["expected_failure_contains"]
+            if signature in detail:
+                return Result(case_id, "XFAIL", detail)
+            return Result(
+                case_id,
+                "FAIL",
+                f"compile failure did not contain expected signature {signature!r}\n{detail}",
+            )
         return Result(case_id, "ERROR", f"compile failed\n{detail}")
+
+    if case["expected"] == "xfail" and case.get(
+        "expected_failure_stage", "run"
+    ) == "compile":
+        return Result(case_id, "XPASS", "known compile failure unexpectedly compiled")
 
     regression_paths = [str(ROOT / item) for item in case.get("regressions", [])]
     try:
@@ -127,6 +152,8 @@ def run_case(case: dict, compiler: str, build_dir: Path) -> Result:
             [str(exe_path), *regression_paths],
             cwd=ROOT,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             capture_output=True,
             timeout=case.get("run_timeout_seconds", 10),
         )

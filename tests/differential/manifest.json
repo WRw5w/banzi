@@ -22,6 +22,525 @@
       "expected": "xfail",
       "expected_failure_contains": "expected=3 actual=-2",
       "run_timeout_seconds": 10
+    },
+    {
+      "id": "basic.difference_constraints_false_cycle",
+      "description": "差分约束不得因重复松弛次数把无环图误判为负环",
+      "source": "remake/large/02_基础.tex",
+      "contains": "struct Edge { int v, w; }",
+      "harness": "tests/differential/harnesses/basic_difference_constraints.cpp",
+      "regressions": [
+        "tests/differential/regressions/basic_difference_constraints_dag.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "expected=1 actual=0",
+      "run_timeout_seconds": 10
+    },
+    {
+      "id": "basic.lcm_zero",
+      "description": "手写 lcm 必须安全处理 gcd(0,0)=0",
+      "source": "remake/large/02_基础.tex",
+      "contains": "long long g = std::gcd(a, b);",
+      "harness": "tests/differential/harnesses/basic_lcm_zero.cpp",
+      "regressions": [
+        "tests/differential/regressions/basic_lcm_zero.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "lcm(0,0) division failure",
+      "run_timeout_seconds": 10
+    },
+    {
+      "id": "bit.linear_basis",
+      "description": "线性基 can/max_xor 与子集暴力随机对拍",
+      "source": "remake/large/01_线性基_详解.tex",
+      "contains": "template<int LOG = 61>",
+      "harness": "tests/differential/harnesses/bit_linear_basis.cpp",
+      "expected": "pass",
+      "run_timeout_seconds": 10
+    },
+    {
+      "id": "math.big_integer",
+      "description": "高精度加减乘除模与 __int128 随机对拍",
+      "source": "remake/large/03_高精度.tex",
+      "contains": "struct BigInteger",
+      "harness": "tests/differential/harnesses/math_big_integer.cpp",
+      "expected": "pass",
+      "run_timeout_seconds": 15
+    },
+    {
+      "id": "math.lucas",
+      "description": "Lucas 与 Pascal 暴力组合数小范围穷举",
+      "source": "remake/large/03_数学_详解.tex",
+      "contains": "long long Lucas(long long n, long long k, long long p,",
+      "harness": "tests/differential/harnesses/math_lucas.cpp",
+      "expected": "pass",
+      "run_timeout_seconds": 10
+    },
+    {
+      "id": "math.bsgs",
+      "description": "BSGS 最小离散对数与小质数群暴力穷举",
+      "source": "remake/large/03_数学_详解.tex",
+      "contains": "long long bsgs(long long a, long long b, long long mod)",
+      "harness": "tests/differential/harnesses/math_bsgs.cpp",
+      "expected": "pass",
+      "run_timeout_seconds": 10
+    },
+    {
+      "id": "math.tonelli_shanks",
+      "description": "Tonelli-Shanks 与小素数全部平方剩余暴力核对",
+      "source": "remake/large/03_数学_详解.tex",
+      "contains": "long long tonelli_shanks(long long n, long long p)",
+      "harness": "tests/differential/harnesses/math_tonelli_shanks.cpp",
+      "expected": "pass",
+      "run_timeout_seconds": 10
+    },
+    {
+      "id": "math.prufer",
+      "description": "Prüfer 随机序列解码再编码往返验证",
+      "source": "remake/large/03_数学.tex",
+      "contains": "vector<int> prufer_encode(const vector<vector<int>>& g)",
+      "harness": "tests/differential/harnesses/math_prufer.cpp",
+      "expected": "pass",
+      "run_timeout_seconds": 10
+    },
+    {
+      "id": "cpp.print_i128_min",
+      "description": "print_i128 输出 INT128_MIN 时不得对最小负数直接取反",
+      "source": "remake/large/01_模板.tex",
+      "contains": "void print_i128(i128 x)",
+      "harness": "tests/differential/harnesses/cpp_print_i128.cpp",
+      "regressions": [
+        "tests/differential/regressions/cpp_print_i128_min.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "print_i128(INT128_MIN) mismatch",
+      "run_timeout_seconds": 10
+    },
+    {
+      "id": "math.burnside_composite_mod",
+      "description": "Burnside 在合数模且群大小可逆时不能用费马逆元",
+      "source": "remake/large/03_数学.tex",
+      "contains": "long long burnside(const vector<vector<int>>& group, int colors, long long MOD)",
+      "harness": "tests/differential/harnesses/math_burnside.cpp",
+      "regressions": [
+        "tests/differential/regressions/math_burnside_composite_mod.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "expected=1 actual=3",
+      "run_timeout_seconds": 10
+    },
+    {
+      "id": "math.gauss_mod_negative",
+      "description": "模高斯应正确识别未归一化负数主元",
+      "source": "remake/large/03_数学_详解.tex",
+      "contains": "int gauss_mod(vector<vector<long long>> a, long long mod)",
+      "harness": "tests/differential/harnesses/math_gauss_mod.cpp",
+      "regressions": [
+        "tests/differential/regressions/math_gauss_mod_negative.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "expected=1 actual=0",
+      "run_timeout_seconds": 10
+    },
+    {
+      "id": "math.ntt_compile",
+      "description": "NTT 对本章三参数 qpow 的调用参数数量必须一致",
+      "source": "remake/large/03_数学.tex",
+      "contains": "void ntt(vector<int>& a, bool inv)",
+      "harness": "tests/differential/harnesses/math_ntt_compile.cpp",
+      "expected": "xfail",
+      "expected_failure_stage": "compile",
+      "expected_failure_contains": "too few arguments",
+      "compile_timeout_seconds": 30
+    },
+    {
+      "id": "math.ntt_root_compile",
+      "description": "NTT 必须在正式板子中定义所使用的原根 G",
+      "source": "remake/large/03_数学.tex",
+      "contains": "void ntt(vector<int>& a, bool inv)",
+      "harness": "tests/differential/harnesses/math_ntt_root_compile.cpp",
+      "expected": "xfail",
+      "expected_failure_stage": "compile",
+      "expected_failure_contains": "'G' was not declared",
+      "compile_timeout_seconds": 30
+    },
+    {
+      "id": "math.gauss_compile",
+      "description": "主版模高斯对本章三参数 qpow 的调用参数数量必须一致",
+      "source": "remake/large/03_数学.tex",
+      "contains": "int gauss(vector<vector<long long>> a)",
+      "harness": "tests/differential/harnesses/math_gauss_compile.cpp",
+      "expected": "xfail",
+      "expected_failure_stage": "compile",
+      "expected_failure_contains": "too few arguments",
+      "compile_timeout_seconds": 30
+    },
+    {
+      "id": "tree.dsu_on_tree_duplicate",
+      "description": "DSU on Tree 不得重复加入已保留的重子树",
+      "source": "remake/large/07_树上进阶.tex",
+      "contains": "void dsu(int u, int fa, bool keep)",
+      "harness": "tests/differential/harnesses/tree_dsu_on_tree.cpp",
+      "regressions": [
+        "tests/differential/regressions/tree_dsu_on_tree_duplicate.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "expected=2 actual=5"
+    },
+    {
+      "id": "game.misere_nim_zero_heap",
+      "description": "反常 Nim 的全一判断应忽略空堆",
+      "source": "remake/large/09_博弈.tex",
+      "contains": "bool misere_nim_first_win(const vector<int>& piles)",
+      "harness": "tests/differential/harnesses/game_misere_nim.cpp",
+      "regressions": [
+        "tests/differential/regressions/game_misere_zero_heap.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "expected=0 actual=1"
+    },
+    {
+      "id": "game.sg_period_short_table",
+      "description": "SG 周期检测的默认窗口应与示例规模一致",
+      "source": "remake/large/09_博弈_详解.tex",
+      "contains": "int find_period(const vector<int>& sg, int min_start = 0,",
+      "harness": "tests/differential/harnesses/game_sg_period.cpp",
+      "regressions": [
+        "tests/differential/regressions/game_sg_period_short_table.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "expected=3 actual=-1"
+    },
+    {
+      "id": "geometry.closest_main_unsorted_strip",
+      "description": "主版最近点对必须按 y 维护候选带",
+      "source": "remake/large/10_几何.tex",
+      "contains": "long double closest(vector<Point>& p, int l, int r)",
+      "harness": "tests/differential/harnesses/geometry_closest_main.cpp",
+      "regressions": [
+        "tests/differential/regressions/geometry_closest_unsorted_strip.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "expected=25 actual=68"
+    },
+    {
+      "id": "graph.hierholzer_reverse",
+      "description": "Hierholzer 输出应从逆后序翻转为欧拉路径",
+      "source": "remake/large/06_图论.tex",
+      "contains": "void hierholzer(int u)",
+      "harness": "tests/differential/harnesses/graph_hierholzer.cpp",
+      "regressions": [
+        "tests/differential/regressions/graph_hierholzer_reverse.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "expected=0,1, actual=1,0,"
+    },
+    {
+      "id": "geometry.closest_detailed",
+      "description": "详解最近点对与暴力枚举随机对拍",
+      "source": "remake/large/10_几何_详解.tex",
+      "contains": "long double closest(int l, int r)",
+      "harness": "tests/differential/harnesses/geometry_closest_detailed.cpp",
+      "expected": "pass"
+    },
+    {
+      "id": "graph.prim",
+      "description": "Prim 与小图生成树暴力枚举随机对拍",
+      "source": "remake/large/06_图论.tex",
+      "contains": "pair<bool, long long> prim(",
+      "harness": "tests/differential/harnesses/graph_prim.cpp",
+      "expected": "pass"
+    },
+    {
+      "id": "dp.dag_longest_count_suboptimal",
+      "description": "DAG 最长路计数不得累加较差转移的方案数",
+      "source": "remake/large/08_动态规划.tex",
+      "contains": "for (int u : topo) if (ways[u])",
+      "harness": "tests/differential/harnesses/dp_dag_longest_count.cpp",
+      "regressions": [
+        "tests/differential/regressions/dp_dag_longest_count_suboptimal.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "expected_dp=5 expected_ways=1 actual_dp=5 actual_ways=2"
+    },
+    {
+      "id": "dp.dag_longest_count_modzero",
+      "description": "DAG 最长路可达性不得由模意义方案数是否为零判断",
+      "source": "remake/large/08_动态规划.tex",
+      "contains": "for (int u : topo) if (ways[u])",
+      "harness": "tests/differential/harnesses/dp_dag_longest_count.cpp",
+      "regressions": [
+        "tests/differential/regressions/dp_dag_longest_count_modzero.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "expected_dp=7 expected_ways=0 actual_dp=-4000000000000000000 actual_ways=0"
+    },
+    {
+      "id": "dp.expected_terminal",
+      "description": "期望 DP 的终止态剩余代价应为零",
+      "source": "remake/large/08_动态规划.tex",
+      "contains": "vector<double> E(n, 0.0);",
+      "harness": "tests/differential/harnesses/dp_expected_terminal.cpp",
+      "regressions": [
+        "tests/differential/regressions/dp_expected_terminal.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "expected=0 actual=1"
+    },
+    {
+      "id": "geometry.diameter_single",
+      "description": "旋转卡壳直径必须处理单点凸包",
+      "source": "remake/large/10_几何.tex",
+      "contains": "long double diameter2(const vector<Point>& p)",
+      "harness": "tests/differential/harnesses/geometry_diameter_single.cpp",
+      "regressions": [
+        "tests/differential/regressions/geometry_diameter_single.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "Assertion '__n < this->size()' failed"
+    },
+    {
+      "id": "geometry.circle_point_division",
+      "description": "详解圆交模板使用 Point 除法时必须提供对应运算符",
+      "source": "remake/large/10_几何_详解.tex",
+      "contains": "vector<Point> circle_circle(Point a, long double r,",
+      "harness": "tests/differential/harnesses/geometry_circle_point_division.cpp",
+      "expected": "xfail",
+      "expected_failure_stage": "compile",
+      "expected_failure_contains": "no match for",
+      "compile_timeout_seconds": 30
+    },
+    {
+      "id": "tree.dsu_answer_type",
+      "description": "DSU on Tree 的答案类型必须容纳频次平方和",
+      "source": "remake/large/07_树上进阶.tex",
+      "contains": "void dsu(int u, int fa, bool keep)",
+      "harness": "tests/differential/harnesses/tree_dsu_answer_type.cpp",
+      "expected": "xfail",
+      "expected_failure_stage": "compile",
+      "expected_failure_contains": "DSU answer value_type must preserve n^2",
+      "compile_timeout_seconds": 30
+    },
+    {
+      "id": "ds.dsu",
+      "description": "并查集与朴素连通分量随机对拍",
+      "source": "remake/large/04_数据结构.tex",
+      "contains": "struct DSU {",
+      "harness": "tests/differential/harnesses/ds_dsu.cpp",
+      "expected": "pass"
+    },
+    {
+      "id": "ds.fenwick",
+      "description": "树状数组与朴素数组随机对拍",
+      "source": "remake/large/04_数据结构.tex",
+      "contains": "struct BIT {",
+      "harness": "tests/differential/harnesses/ds_fenwick.cpp",
+      "expected": "pass"
+    },
+    {
+      "id": "ds.segment_tree_range_add_sum",
+      "description": "区间加区间和线段树与朴素数组随机对拍",
+      "source": "remake/large/04_数据结构.tex",
+      "contains": "struct SegTree {",
+      "harness": "tests/differential/harnesses/ds_segment_tree_range_add_sum.cpp",
+      "expected": "pass"
+    },
+    {
+      "id": "ds.sparse_table",
+      "description": "ST 表区间最值与暴力扫描随机对拍",
+      "source": "remake/large/04_数据结构.tex",
+      "contains": "struct SparseTable {",
+      "harness": "tests/differential/harnesses/ds_sparse_table.cpp",
+      "expected": "pass"
+    },
+    {
+      "id": "ds.binary_trie",
+      "description": "二进制 Trie 最大异或与暴力枚举随机对拍",
+      "source": "remake/large/04_数据结构.tex",
+      "contains": "struct BinaryTrie {",
+      "harness": "tests/differential/harnesses/ds_binary_trie.cpp",
+      "expected": "pass"
+    },
+    {
+      "id": "ds.persistent_kth",
+      "description": "主席树区间第 k 小与排序暴力随机对拍",
+      "source": "remake/large/04_数据结构.tex",
+      "contains": "int kth(int u, int v, int l, int r, int k)",
+      "harness": "tests/differential/harnesses/ds_persistent_kth.cpp",
+      "expected": "pass"
+    },
+    {
+      "id": "ds.rollback_dsu",
+      "description": "可回滚并查集与快照重放随机对拍",
+      "source": "remake/large/04_数据结构.tex",
+      "contains": "struct RollbackDSU {",
+      "harness": "tests/differential/harnesses/ds_rollback_dsu.cpp",
+      "expected": "pass",
+      "run_timeout_seconds": 20
+    },
+    {
+      "id": "ds.segment_tree_beats",
+      "description": "Segment Tree Beats 与朴素数组随机对拍",
+      "source": "remake/large/04_数据结构.tex",
+      "contains": "struct SegBeats {",
+      "harness": "tests/differential/harnesses/ds_segment_tree_beats.cpp",
+      "expected": "pass"
+    },
+    {
+      "id": "ds.li_chao_positive_domain",
+      "description": "正坐标李超树与直线暴力枚举随机对拍",
+      "source": "remake/large/04_数据结构.tex",
+      "contains": "struct LiChao {",
+      "harness": "tests/differential/harnesses/ds_li_chao_positive_domain.cpp",
+      "expected": "pass"
+    },
+    {
+      "id": "strings.suffix_array",
+      "description": "主版后缀数组与后缀直接排序随机对拍",
+      "source": "remake/large/05_字符串.tex",
+      "contains": "vector<int> suffix_array(string s)",
+      "harness": "tests/differential/harnesses/strings_suffix_array.cpp",
+      "expected": "pass"
+    },
+    {
+      "id": "strings.min_rotation",
+      "description": "Booth 最小表示与所有轮转暴力比较",
+      "source": "remake/large/05_字符串.tex",
+      "contains": "int min_rotation(const string& s)",
+      "harness": "tests/differential/harnesses/strings_min_rotation.cpp",
+      "expected": "pass"
+    },
+    {
+      "id": "strings.sam",
+      "description": "后缀自动机不同子串集合与暴力集合随机对拍",
+      "source": "remake/large/05_字符串.tex",
+      "contains": "struct SAM {",
+      "harness": "tests/differential/harnesses/strings_sam.cpp",
+      "expected": "pass"
+    },
+    {
+      "id": "strings.pam",
+      "description": "回文自动机节点回文集合与暴力集合随机对拍",
+      "source": "remake/large/05_字符串.tex",
+      "contains": "struct PAM {",
+      "harness": "tests/differential/harnesses/strings_pam.cpp",
+      "expected": "pass"
+    },
+    {
+      "id": "strings.ac",
+      "description": "AC 自动机匹配计数与逐模式暴力搜索随机对拍",
+      "source": "remake/large/05_字符串.tex",
+      "contains": "struct AC {",
+      "harness": "tests/differential/harnesses/strings_ac.cpp",
+      "expected": "pass"
+    },
+    {
+      "id": "ds.range_add_linear",
+      "description": "高阶差分一次函数区间加后的单点值",
+      "source": "remake/large/04_数据结构_详解.tex",
+      "contains": "long long point_value(int i)",
+      "harness": "tests/differential/harnesses/ds_range_add_linear.cpp",
+      "regressions": [
+        "tests/differential/regressions/ds_range_add_linear.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "index=1 expected=5 actual=0"
+    },
+    {
+      "id": "ds.mo_one_based_window",
+      "description": "1-based 莫队窗口初始化不得访问位置 0",
+      "source": "remake/large/04_数据结构.tex",
+      "contains": "int block;",
+      "harness": "tests/differential/harnesses/ds_mo_one_based_window.cpp",
+      "regressions": [
+        "tests/differential/regressions/ds_mo_one_based_window.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "query=[1,1] invalid_position=0 from_initial_window=[0,-1]"
+    },
+    {
+      "id": "ds.persistent_trie_60bit",
+      "description": "持久化 Trie 的 60 位接口和值域必须全部使用 64 位类型",
+      "source": "remake/large/04_数据结构_详解.tex",
+      "contains": "int root[MAXN];",
+      "harness": "tests/differential/harnesses/ds_persistent_trie_60bit.cpp",
+      "regressions": [
+        "tests/differential/regressions/ds_persistent_trie_60bit.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "bit=60 value=1099511627776 expected=1099511627776 actual=0 int_interface_truncates_high_bits"
+    },
+    {
+      "id": "ds.li_chao_negative_domain",
+      "description": "李超树在负坐标区间递归时必须严格收缩",
+      "source": "remake/large/04_数据结构.tex",
+      "contains": "struct LiChao {",
+      "harness": "tests/differential/harnesses/ds_li_chao_negative_domain.cpp",
+      "regressions": [
+        "tests/differential/regressions/ds_li_chao_negative_domain.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "domain=[-1,0] x=-1 non_shrinking_recursion"
+    },
+    {
+      "id": "ds.segment_tree_beats_sentinel",
+      "description": "Segment Tree Beats 的次大值哨兵不得与合法值冲突",
+      "source": "remake/large/04_数据结构.tex",
+      "contains": "struct SegBeats {",
+      "harness": "tests/differential/harnesses/ds_segment_tree_beats_sentinel.cpp",
+      "regressions": [
+        "tests/differential/regressions/ds_segment_tree_beats_sentinel.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "value=-1152921504606846976 cap=-1152921504606846977 sentinel_recursion"
+    },
+    {
+      "id": "strings.kmp_delimiter",
+      "description": "KMP 拼接分隔符不得与输入字符冲突",
+      "source": "remake/large/05_字符串.tex",
+      "contains": "vector<int> kmp(const string& text, const string& pat)",
+      "harness": "tests/differential/harnesses/strings_kmp.cpp",
+      "regressions": [
+        "tests/differential/regressions/strings_kmp_delimiter.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "pattern=\"#\" expected=[0] actual=[]"
+    },
+    {
+      "id": "strings.z_zero",
+      "description": "Z 函数的 z[0] 应与接口定义一致",
+      "source": "remake/large/05_字符串.tex",
+      "contains": "vector<int> z_function(const string& s)",
+      "harness": "tests/differential/harnesses/strings_z_function.cpp",
+      "regressions": [
+        "tests/differential/regressions/strings_z_zero.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "input=\"a\" expected_z0=1 actual_z0=0"
+    },
+    {
+      "id": "strings.manacher_sentinel",
+      "description": "Manacher 输入含哨兵字符时不得越界",
+      "source": "remake/large/05_字符串.tex",
+      "contains": "string t = \"^#\";",
+      "harness": "tests/differential/harnesses/strings_manacher_bounds.cpp",
+      "regressions": [
+        "tests/differential/regressions/strings_manacher_sentinel.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "input=\"a^\" bounds_error"
+    },
+    {
+      "id": "strings.suffix_array_detail_empty",
+      "description": "详解版后缀数组应处理空串",
+      "source": "remake/large/05_字符串_详解.tex",
+      "contains": "vector<int> suffix_array(const string& s)",
+      "harness": "tests/differential/harnesses/strings_suffix_array_detail_empty.cpp",
+      "regressions": [
+        "tests/differential/regressions/strings_suffix_array_detail_empty.tsv"
+      ],
+      "expected": "xfail",
+      "expected_failure_contains": "input=\"\" empty_suffix_array_bounds_error"
     }
   ]
 }
