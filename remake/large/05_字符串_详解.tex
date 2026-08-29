@@ -236,6 +236,7 @@ AC 自动机把多个模式串建 Trie，再按 BFS 建 \passthrough{\lstinline!
 vector<int> suffix_array(const string& s) {
     // 变量：n=当前元素/顶点/状态数量 n。
     int n = s.size();
+    if (n == 0) return {};
     // 变量：sa=后缀数组 sa；sa[i] 是第 i 小后缀起点；rk=每个后缀/元素的当前排名 rk；tmp=本轮排序/合并使用的临时数组 tmp。
     vector<int> sa(n), rk(n), tmp(n);
     iota(sa.begin(), sa.end(), 0);
@@ -404,5 +405,4 @@ bab -> 1
 \passthrough{\lstinline!ab!} 是 \passthrough{\lstinline!a!} 的延长，\passthrough{\lstinline!bab!} 又是文本中较长的后缀模式；如果只读取当前 Trie 节点的 \passthrough{\lstinline!out!} 而不沿 fail 树汇总，\passthrough{\lstinline!a!} 的次数通常会少算。
 
 例题：\href{https://www.luogu.com.cn/problem/P3808}{P3808 【模板】AC 自动机（简单版）}。每个模式串的结束节点记录 \passthrough{\lstinline!id!}；扫描文本后，调用 \passthrough{\lstinline!dfs\_fail(0)!}，该节点的 \passthrough{\lstinline!out!} 就是模式串作为后缀出现的总次数。简单版只需问总出现次数，若要每个模式串分别输出，就保存插入时的节点编号。
-
 

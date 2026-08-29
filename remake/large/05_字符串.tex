@@ -42,18 +42,27 @@ vector<int> prefix_function(const string& s) {
 // 接口：kmp(text, pat)：返回模式串 pat 在 text 中所有 0-based 起点；返回类型 vector<int>。
 // 参数：主串 text；模式串 pat。
 vector<int> kmp(const string& text, const string& pat) {
-    // 变量：t=拼接串 pat+'#'+text，用于一次前缀函数匹配；pi=拼接串 t 的 KMP 前缀函数数组 pi；pos=所有匹配起点的返回数组 pos。
-    string t = pat + '#' + text; vector<int> pi = prefix_function(t), pos;
+    // 变量：pi=模式串 pat 的 KMP 前缀函数数组 pi；pos=所有匹配起点的返回数组 pos。
+    vector<int> pi = prefix_function(pat), pos;
+    if (pat.empty()) return pos; // 本接口约定空模式不返回匹配位置。
+    // 变量：j=当前已经匹配的模式串前缀长度 j。
+    int j = 0;
     // 变量：i=当前循环下标 i。
-    for (int i = pat.size() + 1; i < (int)t.size(); ++i)
-        if (pi[i] == (int)pat.size()) pos.push_back(i - 2 * pat.size());
+    for (int i = 0; i < (int)text.size(); ++i) {
+        while (j && text[i] != pat[j]) j = pi[j - 1];
+        if (text[i] == pat[j]) ++j;
+        if (j == (int)pat.size()) {
+            pos.push_back(i - (int)pat.size() + 1);
+            j = pi[j - 1];
+        }
+    }
     return pos;
 }
 \end{lstlisting}
 
 \section{Z 函数}\label{z-ux51fdux6570}
 
-\passthrough{\lstinline!z[i]!} 是 \passthrough{\lstinline!s[i..]!} 与 \passthrough{\lstinline!s[0..]!} 的最长公共前缀。维护当前最右匹配段 \passthrough{\lstinline![l,r)!}，落在段内时先继承 \passthrough{\lstinline!z[i-l]!}。把 \passthrough{\lstinline!pattern + '\#' + text!} 拼起来即可匹配。
+\passthrough{\lstinline!z[i]!} 是 \passthrough{\lstinline!s[i..]!} 与 \passthrough{\lstinline!s[0..]!} 的最长公共前缀，本模板约定 \passthrough{\lstinline!z[0]=n!}。维护当前最右匹配段 \passthrough{\lstinline![l,r)!}，落在段内时先继承 \passthrough{\lstinline!z[i-l]!}。用 Z 函数做匹配时，分隔符必须保证不在输入字符集中。
 
 \begin{lstlisting}[language={C++}]
 // 接口：z_function(s)：返回 Z 数组；z[i] 是 s 与 s[i..] 的最长公共前缀长度；返回类型 vector<int>。
@@ -61,6 +70,7 @@ vector<int> kmp(const string& text, const string& pat) {
 vector<int> z_function(const string& s) {
     // 变量：n=当前元素/顶点/状态数量 n；l=当前区间左端点 l；r=当前区间右端点 r；z=Z 函数数组 z；z[i] 是 s 与 s[i..] 的最长公共前缀。
     int n = s.size(), l = 0, r = 0; vector<int> z(n);
+    if (n) z[0] = n;
     // 变量：i=当前循环下标 i。
     for (int i = 1; i < n; ++i) {
         if (i < r) z[i] = min(r - i, z[i - l]);
@@ -90,14 +100,14 @@ auto get_hash = [&](int l, int r) { return h[r] - h[l] * pw[r - l]; }; // [l,r)
 
 \section{Manacher}\label{manacher}
 
-把字符串改为 \passthrough{\lstinline!\^\#a\#b\#$!}，求每个中心向外的回文半径 \passthrough{\lstinline!p[i]!}；维护最右回文段 \passthrough{\lstinline!(center,right)!}，线性求最长回文。若不想处理奇偶，也可分别对原串做奇/偶中心版本。
+把每个字节转成非负整数，在字符之间插入 \passthrough{\lstinline!-1!}，并在两端放不同的负数哨兵，求每个中心向外的回文半径 \passthrough{\lstinline!p[i]!}；维护最右回文段 \passthrough{\lstinline!(center,right)!}，线性求最长回文。整数哨兵不会与任意输入字节冲突。
 
 \begin{lstlisting}[language={C++}]
-// 变量：t=测试用例数量或当前临时值 t。
-string t = "^#";
-// 变量：c=当前字符、容量或第三个操作数 c。
-for (char c : s) t += c, t += '#';
-t += '$';
+// 变量：t=插入分隔符和两端哨兵后的整数串 t。
+vector<int> t = {-2, -1};
+// 变量：c=当前输入字节 c。
+for (unsigned char c : s) t.push_back(c), t.push_back(-1);
+t.push_back(-3);
 // 变量：p=Manacher 半径数组 p；center=Manacher 当前最右回文的中心 center；right=滑动窗口右端点 right。
 vector<int> p(t.size()); int center = 0, right = 0;
 // 变量：i=当前循环下标 i。

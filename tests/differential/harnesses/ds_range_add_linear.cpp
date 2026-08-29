@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
         fill(da.begin(), da.end(), 0);
         fill(db.begin(), db.end(), 0);
         range_add_linear(l, r, a, b);
-        long long actual = point_value(index);
+        long long actual = build_linear_values()[index];
         if (actual != expected) {
             cerr << "index=" << index << " expected=" << expected
                  << " actual=" << actual << '\n';

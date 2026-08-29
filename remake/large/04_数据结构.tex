@@ -380,7 +380,7 @@ sort(qs.begin(), qs.end(), [&](const Query& x, const Query& y) {
     return (bx & 1) ? x.r > y.r : x.r < y.r;
 });
 // 变量：L=当前左边界/左半部分 L；R=当前右边界/右半部分 R；distinct=当前窗口内不同值的数量 distinct。
-int L = 0, R = -1, distinct = 0;
+int L = 1, R = 0, distinct = 0; // 1-based 空窗口 [1,0]。
 // 接口：add(p)：供“莫队”当前语句回调；返回值含义见调用处条件。
 // 参数：当前节点/模数 p（见本节定义）。
 // 变量：add=当前增加量/仿射常数项 add。
@@ -489,7 +489,7 @@ struct LiChao {
     void add_line(Line nw, int p, int l, int r) {
         // 先比较新线和当前线在端点/中点的优劣。
         // 变量：m=当前边数、操作数或第二维规模 m。
-        int m = (l + r) / 2;
+        int m = l + (int)(((long long)r - l) / 2);
         // 变量：lef=新直线在区间左端是否更优 lef。
         bool lef = nw.get(l) < tr[p].get(l);
         // 变量：mid=当前区间中点 mid。
@@ -516,18 +516,18 @@ struct LiChao {
         ll ans = tr[p].get(x);
         if (l == r) return ans;
         // 变量：m=当前边数、操作数或第二维规模 m。
-        int m = (l + r) / 2;
+        int m = l + (int)(((long long)r - l) / 2);
         if (x <= m) return min(ans, query(x, p * 2, l, m));
         return min(ans, query(x, p * 2 + 1, m + 1, r));
     }
-    // x 必须落在构造时给出的 [L,R] 内；横坐标不连续时先离散化查询点。
+    // x 必须落在构造时给出的 [L,R] 内；大坐标范围应改用动态开点版本。
     // 接口：query(x)：返回本节数据结构在给定位置/区间上的查询结果；返回类型 ll。
     // 参数：待处理值或点/状态 x。
     ll query(ll x) const { return query(x, 1, L, R); }
 };
 \end{lstlisting}
 
-求最大值时把比较符号整体反向；若横坐标不是连续整数，先离散化所有查询点。
+求最大值时把比较符号整体反向。若只会在若干离散横坐标上查询，可以另存有序真实坐标 \passthrough{\lstinline!xs!}，递归用下标分区，但直线求值必须代入 \passthrough{\lstinline!xs[mid]!} 与 \passthrough{\lstinline!xs[index]!}，不能把压缩编号当成真实横坐标。
 
 \section{区间最值势能线段树（Segment Tree Beats）}\label{ux533aux95f4ux6700ux503cux52bfux80fdux7ebfux6bb5ux6811segment-tree-beats}
 
@@ -536,12 +536,12 @@ struct LiChao {
 \begin{lstlisting}[language={C++}]
 struct SegBeats {
     using ll = long long;
-    // 变量：NEG=空直线/不存在次大值使用的负无穷哨兵 NEG。
-    static constexpr ll NEG = -(1LL << 60);
+    // 变量：NEG=不存在次大值时使用的 __int128 负无穷哨兵 NEG。
+    static constexpr __int128 NEG = -((__int128)1 << 126);
     int n; // 原数组及所有公开区间接口均使用 1-based 闭区间 [1,n]。
     vector<ll> sum;       // 区间和。
     vector<ll> mx;        // 区间最大值。
-    vector<ll> second_mx; // 严格小于最大值的次大值。
+    vector<__int128> second_mx; // 严格小于最大值的次大值；宽类型使哨兵不与 ll 合法值冲突。
     vector<int> cnt_mx;   // 最大值出现次数。
   // 接口：SegBeats(a)：由 1-based 数组 a 构造区间 chmin + 区间和线段树；构造并初始化对象；每组测试建议重新构造。
   // 参数：输入点/向量 a。
@@ -563,7 +563,7 @@ struct SegBeats {
             int x = p * 2, y = p * 2 + 1;
             if (mx[x] < mx[y]) swap(x, y);
             mx[p] = mx[x]; cnt_mx[p] = cnt_mx[x];
-            second_mx[p] = max(second_mx[x], mx[y]);
+            second_mx[p] = max(second_mx[x], (__int128)mx[y]);
         }
     }
     // 接口：build(p, l, r, a)：由当前输入/成员状态完成数据结构预处理；完成初始化；多测时每组重新调用。

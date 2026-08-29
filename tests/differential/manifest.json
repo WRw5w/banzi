@@ -438,13 +438,12 @@
       "id": "ds.range_add_linear",
       "description": "高阶差分一次函数区间加后的单点值",
       "source": "remake/large/04_数据结构_详解.tex",
-      "contains": "long long point_value(int i)",
+      "contains": "vector<long long> build_linear_values()",
       "harness": "tests/differential/harnesses/ds_range_add_linear.cpp",
       "regressions": [
         "tests/differential/regressions/ds_range_add_linear.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "index=1 expected=5 actual=0"
+      "expected": "pass"
     },
     {
       "id": "ds.mo_one_based_window",
@@ -455,8 +454,7 @@
       "regressions": [
         "tests/differential/regressions/ds_mo_one_based_window.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "query=[1,1] invalid_position=0 from_initial_window=[0,-1]"
+      "expected": "pass"
     },
     {
       "id": "ds.persistent_trie_60bit",
@@ -467,8 +465,7 @@
       "regressions": [
         "tests/differential/regressions/ds_persistent_trie_60bit.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "bit=60 value=1099511627776 expected=1099511627776 actual=0 int_interface_truncates_high_bits"
+      "expected": "pass"
     },
     {
       "id": "ds.li_chao_negative_domain",
@@ -479,8 +476,7 @@
       "regressions": [
         "tests/differential/regressions/ds_li_chao_negative_domain.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "domain=[-1,0] x=-1 non_shrinking_recursion"
+      "expected": "pass"
     },
     {
       "id": "ds.segment_tree_beats_sentinel",
@@ -491,8 +487,7 @@
       "regressions": [
         "tests/differential/regressions/ds_segment_tree_beats_sentinel.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "value=-1152921504606846976 cap=-1152921504606846977 sentinel_recursion"
+      "expected": "pass"
     },
     {
       "id": "strings.kmp_delimiter",
@@ -503,8 +498,7 @@
       "regressions": [
         "tests/differential/regressions/strings_kmp_delimiter.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "pattern=\"#\" expected=[0] actual=[]"
+      "expected": "pass"
     },
     {
       "id": "strings.z_zero",
@@ -515,20 +509,18 @@
       "regressions": [
         "tests/differential/regressions/strings_z_zero.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "input=\"a\" expected_z0=1 actual_z0=0"
+      "expected": "pass"
     },
     {
       "id": "strings.manacher_sentinel",
       "description": "Manacher 输入含哨兵字符时不得越界",
       "source": "remake/large/05_字符串.tex",
-      "contains": "string t = \"^#\";",
+      "contains": "vector<int> t = {-2, -1};",
       "harness": "tests/differential/harnesses/strings_manacher_bounds.cpp",
       "regressions": [
         "tests/differential/regressions/strings_manacher_sentinel.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "input=\"a^\" bounds_error"
+      "expected": "pass"
     },
     {
       "id": "strings.suffix_array_detail_empty",
@@ -539,8 +531,7 @@
       "regressions": [
         "tests/differential/regressions/strings_suffix_array_detail_empty.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "input=\"\" empty_suffix_array_bounds_error"
+      "expected": "pass"
     }
   ]
 }

@@ -9,7 +9,7 @@
 最实用的现场做法是先把更新写成基函数，再分别维护系数的差分。比如区间 \passthrough{\lstinline![l,r]!} 加 \passthrough{\lstinline!a*i+b!}，维护两个差分数组 \passthrough{\lstinline!da, db!}：
 
 \begin{lstlisting}[language={C++}]
-// 变量：da=点/节点 a 的深度或差值 da；db=点/节点 b 的深度或差值 db。
+// 变量：da=一次项系数的差分数组 da；db=常数项系数的差分数组 db。
 vector<long long> da(n + 2), db(n + 2);
 // 接口：range_add_linear(l, r, a, b)：在闭区间 [l,r] 给位置 i 加上 a*i+b；无返回值；结果写入引用参数或当前结构状态。
 // 参数：闭区间左端点 l；闭区间右端点 r；输入值/数组 a（见本节定义）；输入值/数组 b（见本节定义）。
@@ -17,13 +17,18 @@ void range_add_linear(int l, int r, long long a, long long b) {
     da[l] += a; da[r + 1] -= a;
     db[l] += b; db[r + 1] -= b;
 }
-// 接口：point_value(i)：返回位置 i 的当前值；返回类型 long long。
-// 参数：当前 0/1-based 位置 i（见接口区间约定）。
-long long point_value(int i) {
-    // 变量：ca=圆/节点 a 的当前分类或余弦值 ca；cb=圆/节点 b 的当前分类或余弦值 cb。
-    static long long ca = 0, cb = 0;
-    // 按 i 从小到大扫描时更新 ca += da[i], cb += db[i]
-    return ca * i + cb;
+// 接口：build_linear_values()：在所有更新结束后还原 1..n 的点值；返回类型 vector<long long>。
+vector<long long> build_linear_values() {
+    // 变量：value=还原后的点值数组 value；ca=当前位置的一次项系数；cb=当前位置的常数项系数。
+    vector<long long> value(n + 1);
+    // 变量：ca=当前位置的一次项系数；cb=当前位置的常数项系数。
+    long long ca = 0, cb = 0;
+    // 变量：i=当前循环下标 i。
+    for (int i = 1; i <= n; ++i) {
+        ca += da[i]; cb += db[i];
+        value[i] = ca * i + cb;
+    }
+    return value;
 }
 \end{lstlisting}
 
@@ -372,7 +377,7 @@ CDQ 优化 DP 的识别句式是``转移来自满足下标/坐标偏序的前面
 当询问是``区间 \passthrough{\lstinline![l,r]!} 中与 \passthrough{\lstinline!x!} 异或最大/第 k 大''，前缀异或 Trie 的每个版本保存 \passthrough{\lstinline!1..i!} 的所有数。区间查询用版本 \passthrough{\lstinline!root[r]!} 减去 \passthrough{\lstinline!root[l-1]!} 的子树大小。
 
 \begin{lstlisting}[language={C++}]
-const int LOG = 30; // 如果 a[i] 可能达到 2^31 以上，要提高到 60。
+const int LOG = 60; // 覆盖 [0,2^61)；若值域更小可以相应降低。
 
 struct Node {
     int ch[2]{}; // 当前二进制位选择 0/1 后的儿子节点编号。
@@ -384,7 +389,7 @@ int root[MAXN];    // root[i] 是前 i 个数构成的版本。
 
 // 接口：insert(old, bit, x)：把参数表示的数/字符串/版本插入当前结构；会修改当前结构；多测时重新构造或显式清空成员。
 // 参数：旧版本根节点编号 old；当前处理的二进制位 bit；待处理值或点/状态 x。
-int insert(int old, int bit, int x) {
+int insert(int old, int bit, unsigned long long x) {
     // “持久化”的关键：复制旧根到新节点，只修改本次路径。
     // 变量：now=“可持久化字典树（Persistent Trie）”这段代码中的临时量 now；值由本行初始化式确定。
     int now = ++tot;
@@ -395,28 +400,29 @@ int insert(int old, int bit, int x) {
     if (bit < 0) return now;
 
     // 变量：b=当前输入数组/操作数 b。
-    int b = (x >> bit) & 1;
+    int b = (x >> bit) & 1ULL;
     // 旧版本的另一条分支仍然复用；当前分支递归创建新节点。
     tr[now].ch[b] = insert(tr[old].ch[b], bit - 1, x);
     return now;
 }
 
-// 接口：max_xor(left_root, right_root, bit, x)：返回把 x 与当前集合/线性基元素组合后能得到的最大异或值；返回类型 int。
+// 接口：max_xor(left_root, right_root, bit, x)：返回 x 与区间内元素的最大异或值；返回类型 unsigned long long。
 // 参数：区间左端前一个前缀版本根 left_root；区间右端前缀版本根 right_root；当前处理的二进制位 bit；待处理值或点/状态 x。
-int max_xor(int left_root, int right_root, int bit, int x) {
+unsigned long long max_xor(int left_root, int right_root, int bit,
+                           unsigned long long x) {
     // 两个版本相减：root[r] 的数量 - root[l-1] 的数量，正好保留 [l,r]。
     if (bit < 0) return 0;
 
     // 为了让异或结果当前位为 1，优先走和 x 当前位相反的分支。
     // 变量：want=当前查询希望找到的分支/值 want。
-    int want = ((x >> bit) & 1) ^ 1;
+    int want = ((x >> bit) & 1ULL) ^ 1;
     int a = tr[tr[right_root].ch[want]].cnt
           - tr[tr[left_root].ch[want]].cnt;
 
     if (a > 0) {
         // 目标分支在区间中存在，贪心保留这一位的 1。
-        return (1 << bit) | max_xor(tr[left_root].ch[want],
-                                    tr[right_root].ch[want], bit - 1, x);
+        return (1ULL << bit) | max_xor(tr[left_root].ch[want],
+                                       tr[right_root].ch[want], bit - 1, x);
     }
 
     // 目标分支为空，只能走相同位；这一位贡献 0。
@@ -567,11 +573,11 @@ long long query(int x, int p, int l, int r) {
 struct BeatNode {
     long long sum; // 区间和。
     long long mx1; // 区间最大值。
-    long long mx2; // 严格小于 mx1 的次大值；不存在时为 NEG。
+    __int128 mx2;  // 严格小于 mx1 的次大值；用更宽类型保存无冲突哨兵。
     int cnt;       // 最大值出现次数。
 };
-// 变量：NEG=空直线/不存在次大值使用的负无穷哨兵 NEG。
-const long long NEG = -(1LL << 60);
+// 变量：NEG=不存在次大值时使用的 __int128 负无穷哨兵 NEG。
+const __int128 NEG = -((__int128)1 << 126);
 
 // 接口：push_chmin(p, x)：把父节点的 chmin 约束下传到孩子；无返回值；结果写入引用参数或当前结构状态。
 // 参数：当前线段树节点编号 p（根通常为 1）；待处理值或点/状态 x。
@@ -596,7 +602,7 @@ void push_up(int p) {
             tr[p].cnt += tr[q].cnt;
             tr[p].mx2 = max(tr[p].mx2, tr[q].mx2);
         } else {
-            tr[p].mx2 = max(tr[p].mx2, tr[q].mx1);
+            tr[p].mx2 = max(tr[p].mx2, (__int128)tr[q].mx1);
         }
     }
 }
@@ -757,4 +763,3 @@ int merge_version(int root, int x, int y) {
 如果版本一和版本二都变成同一棵并查集，说明更新时修改了旧版本节点；如果从版本二继续合并时版本一也改变，说明没有真正复制根到叶子的路径。
 
 例题：\href{https://www.luogu.com.cn/problem/P3402}{P3402 可持久化并查集}。每个版本 \passthrough{\lstinline!root[i]!} 从 \passthrough{\lstinline!root[i-1]!} 继承；操作 \passthrough{\lstinline!0!} 复制某版本，操作 \passthrough{\lstinline!1!} 合并，操作 \passthrough{\lstinline!2!} 查询连通性。上面为了突出结构只展示 \passthrough{\lstinline!fa!}，正式提交要再维护按秩合并的深度，否则最坏会退化；不做路径压缩是为了保持版本不被修改。
-
