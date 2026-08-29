@@ -146,11 +146,17 @@ void reroot2(int u, int p) {
 
 \begin{lstlisting}[language={C++}]
 // 变量：u=当前顶点/状态编号 u。
-for (int u : topo) if (ways[u])
+for (int u : topo) if (dp[u] != NEG)
     // 变量：v=当前边的终点 v；w=当前边权 w。
     for (auto [v, w] : dag[u]) {
-        dp[v] = max(dp[v], dp[u] + w);
-        ways[v] = (ways[v] + ways[u]) % MOD;
+        // 变量：candidate=经 u 到达 v 的候选最长路长度 candidate。
+        long long candidate = dp[u] + w;
+        if (candidate > dp[v]) {
+            dp[v] = candidate;
+            ways[v] = ways[u];
+        } else if (candidate == dp[v]) {
+            ways[v] = (ways[v] + ways[u]) % MOD;
+        }
     }
 \end{lstlisting}
 
@@ -206,6 +212,7 @@ long long solve_digit(int pos, int tight, int started, int rem) {
 vector<double> E(n, 0.0);
 // 变量：u=当前顶点/状态编号 u。
 for (int u = n - 1; u >= 0; --u) {
+    if (transitions[u].empty()) continue; // 终止态没有后续操作，剩余代价为 0。
     E[u] = 1.0;
     // 变量：v=当前相邻顶点/下一状态 v；p=当前质数、节点编号或指针 p；具体角色见所在公式。
     for (auto [v, p] : transitions[u]) E[u] += p * E[v];
@@ -347,6 +354,5 @@ int grundy(int x) {
 \item
   取模减法忘记加模；概率 DP 把浮点误差当精确相等。
 \end{itemize}
-
 
 

@@ -190,6 +190,7 @@ vector<Point> convex_hull(vector<Point> p) {
 long double diameter2(const vector<Point>& p) {
     // 变量：n=当前元素/顶点/状态数量 n；j=内层循环下标 j；ans=当前累计答案 ans。
     int n = p.size(), j = 1; long double ans = 0;
+    if (n <= 1) return 0;
     // 变量：i=当前循环下标 i。
     for (int i = 0; i < n; ++i) {
         // 变量：ni=变换长度 n 在模 MOD 下的逆元 ni。
@@ -243,7 +244,12 @@ long double closest(vector<Point>& p, int l, int r) {
     int m = (l + r) / 2; Real mid = p[m].x;
     // 变量：ans=当前累计答案 ans。
     Real ans = min(closest(p, l, m), closest(p, m, r));
-    // 变量：strip=当前阶梯 Nim 的奇数层石子异或和 strip。
+    // 两半递归结束后各自按 y 有序，合并后整段按 y 有序。
+    // 接口：匿名 lambda(a, b)：供最近点对按纵坐标归并；返回 a 是否应排在 b 前。
+    // 参数：输入点/向量 a；输入点/向量 b。
+    inplace_merge(p.begin() + l, p.begin() + m, p.begin() + r,
+                  [](Point a, Point b) { return a.y < b.y; });
+    // 变量：strip=与分界线横向距离平方小于当前答案的候选点带 strip。
     vector<Point> strip;
     // 变量：i=当前循环下标 i。
     for (int i = l; i < r; ++i) if ((p[i].x - mid) * (p[i].x - mid) < ans) strip.push_back(p[i]);

@@ -37,7 +37,7 @@ bool misere_nim_first_win(const vector<int>& piles) {
     int x = 0, ones = 0;
     // 变量：v=当前相邻顶点/下一状态 v。
     for (int v : piles) {
-        all_one &= (v == 1);
+        if (v > 0) all_one &= (v == 1); // 空堆不参与“所有非空堆均为 1”的判断。
         x ^= v;
         ones += (v == 1);
     }

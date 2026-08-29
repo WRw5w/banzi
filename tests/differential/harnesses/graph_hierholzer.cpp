@@ -15,7 +15,6 @@ int main(int argc, char** argv) {
             g.assign(n, {});
             used.assign(m, false);
             ptr.assign(n, 0);
-            euler.clear();
             for (int id = 0; id < m; ++id) {
                 int u, v;
                 input >> u >> v;
@@ -23,12 +22,12 @@ int main(int argc, char** argv) {
             }
             vector<int> expected(m + 1);
             for (int& vertex : expected) input >> vertex;
-            hierholzer(start);
-            if (euler != expected) {
+            vector<int> actual = hierholzer(start);
+            if (actual != expected) {
                 cerr << "expected=";
                 for (int vertex : expected) cerr << vertex << ',';
                 cerr << " actual=";
-                for (int vertex : euler) cerr << vertex << ',';
+                for (int vertex : actual) cerr << vertex << ',';
                 cerr << '\n';
                 return 1;
             }

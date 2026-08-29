@@ -987,17 +987,28 @@ struct LCT {
 无向图存在欧拉回路当且仅当非零度点连通且所有度为偶；欧拉路径有且仅有 0 或 2 个奇度点。有向图对应入度=出度，路径起点出度比入度多 1、终点相反。Hierholzer 用栈在线性时间构造。哈密顿路径一般是 NP-hard，不要把两者混淆。
 
 \begin{lstlisting}[language={C++}]
-// 变量：ptr=当前遍历邻接边/数组的位置指针 ptr；euler=欧拉路径最终顶点序列 euler。
-vector<int> ptr(n), euler;
-// 接口：hierholzer(u)：从 start 构造欧拉路径，返回顶点序列；无返回值；结果写入引用参数或当前结构状态。
-// 参数：顶点/状态编号 u。
-void hierholzer(int u) {
-    while (ptr[u] < (int)g[u].size()) {
-        auto [v, id] = g[u][ptr[u]++];
-        if (used[id]) continue;
-        used[id] = true; hierholzer(v);
+// 变量：ptr=每个顶点下一条尚未扫描的邻接边位置 ptr。
+vector<int> ptr(n);
+// 接口：hierholzer(start)：从 start 构造欧拉路径并返回正向顶点序列；返回类型 vector<int>。
+// 参数：欧拉路径的起点 start。
+vector<int> hierholzer(int start) {
+    // 变量：st=当前 DFS 路径栈 st；euler=按退栈顺序得到的逆序欧拉路径 euler。
+    vector<int> st{start}, euler;
+    while (!st.empty()) {
+        // 变量：u=当前路径栈顶顶点 u。
+        int u = st.back();
+        while (ptr[u] < (int)g[u].size() &&
+               used[g[u][ptr[u]].second])
+            ++ptr[u];
+        if (ptr[u] == (int)g[u].size()) {
+            euler.push_back(u); st.pop_back();
+        } else {
+            auto [v, id] = g[u][ptr[u]++];
+            used[id] = true; st.push_back(v);
+        }
     }
-    euler.push_back(u);
+    reverse(euler.begin(), euler.end());
+    return euler;
 }
 \end{lstlisting}
 

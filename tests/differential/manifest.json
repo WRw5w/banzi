@@ -184,8 +184,7 @@
       "regressions": [
         "tests/differential/regressions/tree_dsu_on_tree_duplicate.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "expected=2 actual=5"
+      "expected": "pass"
     },
     {
       "id": "game.misere_nim_zero_heap",
@@ -196,8 +195,7 @@
       "regressions": [
         "tests/differential/regressions/game_misere_zero_heap.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "expected=0 actual=1"
+      "expected": "pass"
     },
     {
       "id": "game.sg_period_short_table",
@@ -208,8 +206,7 @@
       "regressions": [
         "tests/differential/regressions/game_sg_period_short_table.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "expected=3 actual=-1"
+      "expected": "pass"
     },
     {
       "id": "geometry.closest_main_unsorted_strip",
@@ -220,20 +217,18 @@
       "regressions": [
         "tests/differential/regressions/geometry_closest_unsorted_strip.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "expected=25 actual=68"
+      "expected": "pass"
     },
     {
       "id": "graph.hierholzer_reverse",
       "description": "Hierholzer 输出应从逆后序翻转为欧拉路径",
       "source": "remake/large/06_图论.tex",
-      "contains": "void hierholzer(int u)",
+      "contains": "vector<int> hierholzer(int start)",
       "harness": "tests/differential/harnesses/graph_hierholzer.cpp",
       "regressions": [
         "tests/differential/regressions/graph_hierholzer_reverse.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "expected=0,1, actual=1,0,"
+      "expected": "pass"
     },
     {
       "id": "geometry.closest_detailed",
@@ -255,25 +250,23 @@
       "id": "dp.dag_longest_count_suboptimal",
       "description": "DAG 最长路计数不得累加较差转移的方案数",
       "source": "remake/large/08_动态规划.tex",
-      "contains": "for (int u : topo) if (ways[u])",
+      "contains": "for (int u : topo) if (dp[u] != NEG)",
       "harness": "tests/differential/harnesses/dp_dag_longest_count.cpp",
       "regressions": [
         "tests/differential/regressions/dp_dag_longest_count_suboptimal.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "expected_dp=5 expected_ways=1 actual_dp=5 actual_ways=2"
+      "expected": "pass"
     },
     {
       "id": "dp.dag_longest_count_modzero",
       "description": "DAG 最长路可达性不得由模意义方案数是否为零判断",
       "source": "remake/large/08_动态规划.tex",
-      "contains": "for (int u : topo) if (ways[u])",
+      "contains": "for (int u : topo) if (dp[u] != NEG)",
       "harness": "tests/differential/harnesses/dp_dag_longest_count.cpp",
       "regressions": [
         "tests/differential/regressions/dp_dag_longest_count_modzero.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "expected_dp=7 expected_ways=0 actual_dp=-4000000000000000000 actual_ways=0"
+      "expected": "pass"
     },
     {
       "id": "dp.expected_terminal",
@@ -284,8 +277,7 @@
       "regressions": [
         "tests/differential/regressions/dp_expected_terminal.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "expected=0 actual=1"
+      "expected": "pass"
     },
     {
       "id": "geometry.diameter_single",
@@ -296,8 +288,7 @@
       "regressions": [
         "tests/differential/regressions/geometry_diameter_single.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "Assertion '__n < this->size()' failed"
+      "expected": "pass"
     },
     {
       "id": "geometry.circle_point_division",
@@ -305,9 +296,7 @@
       "source": "remake/large/10_几何_详解.tex",
       "contains": "vector<Point> circle_circle(Point a, long double r,",
       "harness": "tests/differential/harnesses/geometry_circle_point_division.cpp",
-      "expected": "xfail",
-      "expected_failure_stage": "compile",
-      "expected_failure_contains": "no match for",
+      "expected": "pass",
       "compile_timeout_seconds": 30
     },
     {
@@ -316,9 +305,7 @@
       "source": "remake/large/07_树上进阶.tex",
       "contains": "void dsu(int u, int fa, bool keep)",
       "harness": "tests/differential/harnesses/tree_dsu_answer_type.cpp",
-      "expected": "xfail",
-      "expected_failure_stage": "compile",
-      "expected_failure_contains": "DSU answer value_type must preserve n^2",
+      "expected": "pass",
       "compile_timeout_seconds": 30
     },
     {

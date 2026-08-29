@@ -369,16 +369,16 @@ vector<int> subtraction_sg(int N, const vector<int>& moves) {
 发现周期不能只看``最后几个数像了''。可靠流程是：先打到足够大 \passthrough{\lstinline!N!}，枚举候选周期 \passthrough{\lstinline!p!}，检查一段连续窗口是否满足 \passthrough{\lstinline!sg[i] == sg[i-p]!}，再用更大的窗口或数学证明确认。模板如下：
 
 \begin{lstlisting}[language={C++}]
-// 接口：find_period(sg, min_start, min_len)：在 SG 序列中寻找可验证周期并返回周期信息；返回类型 int。
-// 参数：已计算的 SG 数列 sg；允许作为周期起点的最小下标 min_start；允许的最短周期长度 min_len。
+// 接口：find_period(sg, min_start, min_len)：在 SG 序列中寻找可验证周期并返回周期长度；找不到时返回 -1。
+// 参数：已计算的 SG 数列 sg；允许作为周期起点的最小下标 min_start；除两段完整周期外还要验证的最少位置数 min_len。
 int find_period(const vector<int>& sg, int min_start = 0,
-                int min_len = 30) {
+                int min_len = 10) {
     // 变量：n=当前元素/顶点/状态数量 n。
     int n = (int)sg.size();
 
     // p 是候选周期。至少需要两段长度为 p 的数据进行比较。
     // 变量：p=当前质数、节点编号或指针 p；具体角色见所在公式。
-    for (int p = 1; p * 2 < n; ++p) {
+    for (int p = 1; p * 2 <= n; ++p) {
         // st 是周期开始位置；不要默认周期从 0 开始，很多题有前导非周期段。
         // 变量：st=当前集合或自动机/DP 状态 st。
         for (int st = min_start; st + 2 * p + min_len <= n; ++st) {
@@ -557,5 +557,4 @@ unordered_map<State, int, StateHash> table;
 \begin{quote}
 调用测试说明：\passthrough{\lstinline!StateHash!} 的样例必须和具体 \passthrough{\lstinline!State!} 一起写。至少构造两个``棋盘内容相同但轮到不同玩家''的状态，确认哈希表键不同；再用两个不同走法到达的同一规范局面，确认查表命中同一个状态。不能只打印哈希值判断正确，因为哈希相等不是状态相等。
 \end{quote}
-
 

@@ -144,6 +144,7 @@ vector<Point> circle_circle(Point a, long double r,
     Point d = b - a;
     // 变量：len=当前长度 len。
     long double len = hypotl(d.x, d.y);
+    if (len < EPS) return {}; // 同心圆无有限个交点，统一交给调用者单独分类。
     if (len > r + R + EPS || len < fabsl(r - R) - EPS) return {};
 
     // 两圆公共弦所在直线到圆心 a 的距离方向投影为 x。
@@ -154,7 +155,7 @@ vector<Point> circle_circle(Point a, long double r,
     // 变量：h2=“圆几何与扫描线”这段代码中的临时量 h2；值由本行初始化式确定。
     long double h2 = max((long double)0, r*r - x*x);
     // 变量：e=当前指数、质因子次数或边对象 e；base=当前幂运算底数/基多项式 base。
-    Point e = d / len, base = a + e * x;
+    Point e = d * (1 / len), base = a + e * x;
     // 变量：per=当前周长/周期 per。
     Point per = {-e.y, e.x};
 
@@ -372,5 +373,4 @@ long long union_area(vector<Event> e) {
 \end{lstlisting}
 
 第二组检查相邻坐标是否被错误重复计算；第三组检查覆盖层数从 \passthrough{\lstinline!2!} 降回 \passthrough{\lstinline!1!} 时是否错误清空长度；第四组检查 \passthrough{\lstinline!cover>0!} 时是否直接取整段长度。每个调用都必须清空 \passthrough{\lstinline!xs!}、事件数组、线段树 \passthrough{\lstinline!tag/len!}，否则把四组放进同一个 \passthrough{\lstinline!t!} 中会暴露多测污染。
-
 
