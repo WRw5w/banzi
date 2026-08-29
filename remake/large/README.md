@@ -14,9 +14,12 @@
 字符串、最小生成树/重构树、动态规划/几何和进阶模板各有可直接编译的断言程序。
 `tests/differential/` 还会从本目录的正式 LaTeX 代码块中提取完整模板，与小规模暴力
 实现随机对拍；纯思路或依赖题意的框架不登记为已验证模板。
+`tests/contracts/` 对能由明确 harness 补齐调用环境的完整实现进行直接提取、真实编译
+和运行契约测试；LCT、Dinic、Kruskal 重构树等长实现也走这条链路。
 `tools/audit_listing_coverage.py` 则从正式入口枚举全部代码块，生成
-`docs/代码块检验清单.md`；`tools/run_framework_checks.py` 对依赖题意或调用约定的
-框架做摘要绑定的静态结构检查。验证状态只保存在测试资料中，不写入正式章节或 PDF。
+`docs/代码块检验清单.md`；`tools/run_framework_checks.py` 对真正依赖题意或外部钩子的
+框架执行逐块登记的结构契约。结构契约不等于编译或算法验证。验证状态只保存在测试
+资料中，不写入正式章节或 PDF。
 
 不再生成或维护 `banzi/板子_大版本_含例题测试.pdf`。需要保留的里程碑快照统一放入
 `archive/YYYY-MM-DD/`，避免与正式产物并列后无法判断新旧。
@@ -42,9 +45,9 @@
 从仓库根目录执行：
 
 ```text
-xelatex -interaction=nonstopmode -output-directory banzi banzi/板子_大版本.tex
-xelatex -interaction=nonstopmode -output-directory banzi banzi/板子_大版本.tex
+python tools/build_formal_pdf.py
 ```
 
-两遍编译用于更新目录、书签和交叉引用。提交时同步源文件、测试、正式 PDF 与文档；
-正式 PDF 只保留 `banzi/板子_大版本.pdf`，不要复制出带功能后缀的变体。
+构建器把辅助文件放在 `tmp/pdfs/`，并持续编译到目录、书签和交叉引用稳定且不再要求
+rerun；不能机械停在固定遍数。提交时同步源文件、测试、正式 PDF 与文档；`banzi/`
+只保留正式 TeX/PDF，不要复制出带功能后缀的变体。

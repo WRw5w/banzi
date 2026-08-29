@@ -21,6 +21,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 ENTRY = ROOT / "banzi" / "板子_大版本.tex"
 DIFFERENTIAL_MANIFEST = ROOT / "tests" / "differential" / "manifest.json"
+CONTRACT_MANIFEST = ROOT / "tests" / "contracts" / "manifest.json"
 CLASSIFICATION_MANIFEST = ROOT / "tests" / "listing_coverage" / "classification.json"
 REPORT = ROOT / "docs" / "代码块检验清单.md"
 
@@ -31,9 +32,10 @@ HEADING_START_RE = re.compile(
     r"\\(chapter|section|subsection|subsubsection)\s*\{"
 )
 ALLOWED_EXPLICIT_CATEGORIES = {"framework", "pseudocode", "explanatory"}
-ALLOWED_FRAMEWORK_CHECKS = {"static"}
+ALLOWED_FRAMEWORK_CHECKS = {"structural_contract"}
 STATUS_LABELS = {
     "differential": "DIFFERENTIAL",
+    "contract": "CONTRACT",
     "framework": "FRAMEWORK",
     "pseudocode": "PSEUDOCODE",
     "explanatory": "EXPLANATORY",
@@ -49,9 +51,13 @@ class Listing:
     body: str
     headings: dict[str, str]
     differential_cases: list[str] = field(default_factory=list)
+    contract_cases: list[str] = field(default_factory=list)
     category: str = "pending"
     note: str = ""
     check: str = ""
+    required_patterns: list[str] = field(default_factory=list)
+    forbidden_patterns: list[str] = field(default_factory=list)
+    allowed_empty_hooks: list[str] = field(default_factory=list)
 
     @property
     def block_id(self) -> str:
@@ -207,6 +213,33 @@ def inventory_formal_tree() -> tuple[list[Listing], list[str]]:
     return listings, rendered_sources
 
 
+def extract_listing(source: Path, needle: str) -> str:
+    """Return the unique lstlisting body in source containing needle."""
+    text = source.read_text(encoding="utf-8")
+    matches: list[str] = []
+    cursor = 0
+    while True:
+        begin = text.find(BEGIN_LISTING, cursor)
+        if begin < 0:
+            break
+        header_end = text.find("\n", begin)
+        if header_end < 0:
+            raise ValueError(f"unterminated listing header in {relative(source)}")
+        end = text.find(END_LISTING, header_end)
+        if end < 0:
+            raise ValueError(f"unterminated listing in {relative(source)}")
+        body = text[header_end + 1 : end].rstrip() + "\n"
+        if needle in body:
+            matches.append(body)
+        cursor = end + len(END_LISTING)
+    if len(matches) != 1:
+        raise ValueError(
+            f"selector {needle!r} matched {len(matches)} listings in "
+            f"{relative(source)}; expected exactly one"
+        )
+    return matches[0]
+
+
 def load_json(path: Path) -> dict:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -263,6 +296,65 @@ def apply_differential_cases(listings: list[Listing]) -> int:
     return len(data["cases"])
 
 
+def apply_contract_cases(listings: list[Listing]) -> int:
+    data = load_json(CONTRACT_MANIFEST)
+    if data.get("schema_version") != 1 or not isinstance(data.get("cases"), list):
+        raise ValueError("tests/contracts/manifest.json has an unsupported schema")
+    seen_case_ids: set[str] = set()
+    for case in data["cases"]:
+        if not isinstance(case, dict):
+            raise ValueError("contract case must be a JSON object")
+        case_id = case.get("id", "")
+        if not isinstance(case_id, str) or not case_id:
+            raise ValueError("contract case id must be a non-empty string")
+        if case_id in seen_case_ids:
+            raise ValueError(f"duplicate contract case id: {case_id}")
+        seen_case_ids.add(case_id)
+        snippets = case.get("snippets")
+        if not isinstance(snippets, list) or not snippets:
+            raise ValueError(f"contract case {case_id} must define non-empty snippets")
+        seen_blocks: set[tuple[str, int]] = set()
+        evidence_blocks = 0
+        for snippet_index, snippet in enumerate(snippets, start=1):
+            if not isinstance(snippet, dict):
+                raise ValueError(f"contract case {case_id} snippet {snippet_index} is invalid")
+            required = {"source", "contains", "marker"}
+            if not required <= snippet.keys():
+                raise ValueError(
+                    f"contract case {case_id} snippet {snippet_index} must define "
+                    f"{sorted(required)}"
+                )
+            listing = select_listing(
+                listings,
+                snippet["source"],
+                snippet["contains"],
+                f"contract case {case_id} snippet {snippet_index}",
+            )
+            block_key = (listing.source, listing.ordinal)
+            if block_key in seen_blocks:
+                raise ValueError(
+                    f"contract case {case_id} selects {listing.block_id} more than once"
+                )
+            seen_blocks.add(block_key)
+            support = snippet.get("support", False)
+            if not isinstance(support, bool):
+                raise ValueError(
+                    f"contract case {case_id} snippet {snippet_index}: support must be boolean"
+                )
+            if support:
+                continue
+            evidence_blocks += 1
+            if listing.differential_cases:
+                raise ValueError(
+                    f"contract case {case_id}: {listing.block_id} already has differential evidence"
+                )
+            listing.contract_cases.append(case_id)
+            listing.category = "contract"
+        if evidence_blocks == 0:
+            raise ValueError(f"contract case {case_id} has no evidence-bearing snippet")
+    return len(data["cases"])
+
+
 def apply_explicit_classifications(listings: list[Listing]) -> None:
     data = load_json(CLASSIFICATION_MANIFEST)
     if data.get("schema_version") != 1 or not isinstance(data.get("classifications"), list):
@@ -271,6 +363,7 @@ def apply_explicit_classifications(listings: list[Listing]) -> None:
         )
     seen: set[tuple[str, str]] = set()
     classified_blocks: set[tuple[str, int]] = set()
+    framework_notes: set[str] = set()
     for index, item in enumerate(data["classifications"], start=1):
         owner = f"classification #{index}"
         required = {"source", "category", "note"}
@@ -304,9 +397,9 @@ def apply_explicit_classifications(listings: list[Listing]) -> None:
         if block_key in classified_blocks:
             raise ValueError(f"{owner}: {listing.block_id} is classified more than once")
         classified_blocks.add(block_key)
-        if listing.differential_cases:
+        if listing.differential_cases or listing.contract_cases:
             raise ValueError(
-                f"{owner}: {listing.block_id} already has differential evidence"
+                f"{owner}: {listing.block_id} already has executable test evidence"
             )
         check = item.get("check", "")
         if category == "framework" and check not in ALLOWED_FRAMEWORK_CHECKS:
@@ -316,6 +409,47 @@ def apply_explicit_classifications(listings: list[Listing]) -> None:
             )
         if category != "framework" and check:
             raise ValueError(f"{owner}: only framework entries may define check")
+        if category == "framework":
+            required_patterns = item.get("required_patterns")
+            if not isinstance(required_patterns, list) or not required_patterns:
+                raise ValueError(f"{owner}: framework must define required_patterns")
+            if not all(isinstance(pattern, str) and pattern for pattern in required_patterns):
+                raise ValueError(f"{owner}: required_patterns must contain non-empty strings")
+            normalized_note = re.sub(r"\s+", " ", item["note"].strip())
+            if normalized_note in framework_notes:
+                raise ValueError(
+                    f"{owner}: framework note is duplicated; every framework needs a "
+                    "block-specific classification basis"
+                )
+            framework_notes.add(normalized_note)
+            forbidden_patterns = item.get("forbidden_patterns", [])
+            if not isinstance(forbidden_patterns, list) or not all(
+                isinstance(pattern, str) and pattern for pattern in forbidden_patterns
+            ):
+                raise ValueError(
+                    f"{owner}: forbidden_patterns must be a list of non-empty strings"
+                )
+            listing.required_patterns = required_patterns
+            listing.forbidden_patterns = forbidden_patterns
+            allowed_empty_hooks = item.get("allowed_empty_hooks", [])
+            if not isinstance(allowed_empty_hooks, list) or not all(
+                isinstance(name, str) and re.fullmatch(r"[A-Za-z_]\w*", name)
+                for name in allowed_empty_hooks
+            ):
+                raise ValueError(
+                    f"{owner}: allowed_empty_hooks must contain C++ identifiers"
+                )
+            listing.allowed_empty_hooks = allowed_empty_hooks
+        elif any(name in item for name in (
+            "required_patterns", "forbidden_patterns", "allowed_empty_hooks"
+        )):
+            raise ValueError(
+                f"{owner}: only framework entries may define structural patterns"
+            )
+        if "验证由测试运行器承担" in item["note"]:
+            raise ValueError(
+                f"{owner}: unsupported execution claim without an executable test id"
+            )
         listing.category = category
         listing.note = item["note"]
         listing.check = check
@@ -326,7 +460,10 @@ def escape_cell(value: str) -> str:
 
 
 def build_report(
-    listings: list[Listing], rendered_sources: list[str], differential_case_count: int
+    listings: list[Listing],
+    rendered_sources: list[str],
+    differential_case_count: int,
+    contract_case_count: int,
 ) -> str:
     category_counts = Counter(listing.category for listing in listings)
     lines = [
@@ -334,9 +471,10 @@ def build_report(
         "",
         "本清单由 `tools/audit_listing_coverage.py` 从正式入口",
         "`banzi/板子_大版本.tex` 的实际渲染树生成。`PENDING` 只表示尚未归类，",
-        "不表示代码已确认错误；`DIFFERENTIAL` 表示该正式代码块至少登记了一个直接",
-        "提取源码的差分测试，是否通过以测试运行器的当次结果为准。测试用例数与",
-        "代码块数不能混为一谈。验证状态只保存在测试与本报告中，不写回正式",
+        "不表示代码已确认错误；`DIFFERENTIAL` 与 `CONTRACT` 都要求直接提取正式",
+        "源码并真实编译/运行，是否通过以测试运行器的当次结果为准。`FRAMEWORK`",
+        "只有逐块结构契约，明确不算编译或算法验证。测试用例数与代码块数不能",
+        "混为一谈。验证状态只保存在测试与本报告中，不写回正式",
         "TeX/PDF。",
         "",
         "## 汇总",
@@ -344,22 +482,25 @@ def build_report(
         f"- 正式源文件：{len(rendered_sources)} 个",
         f"- `lstlisting`：{len(listings)} 段",
         f"- 差分测试用例：{differential_case_count} 个",
+        f"- 编译/契约测试用例：{contract_case_count} 个",
         f"- 有差分证据的唯一代码块：{category_counts['differential']} 段",
-        f"- 已登记静态检查的框架代码块：{category_counts['framework']} 段",
+        f"- 有编译/契约证据的唯一代码块：{category_counts['contract']} 段",
+        f"- 仅有逐块结构契约的框架代码块：{category_counts['framework']} 段",
         f"- 待归类代码块：{category_counts['pending']} 段",
         "",
         "| 分类 | 代码块数 | 含义 |",
         "| --- | ---: | --- |",
         f"| DIFFERENTIAL | {category_counts['differential']} | 已登记直接提取正式源的差分/性质测试 |",
-        f"| FRAMEWORK | {category_counts['framework']} | 已登记摘要绑定的静态结构检查；结果以当次运行器为准 |",
+        f"| CONTRACT | {category_counts['contract']} | 已登记直接提取正式源的真实编译/运行契约测试 |",
+        f"| FRAMEWORK | {category_counts['framework']} | 缺少统一可执行语义；仅保留逐块结构契约，不称为算法验证 |",
         f"| PSEUDOCODE | {category_counts['pseudocode']} | 伪代码，不宣称可直接编译 |",
         f"| EXPLANATORY | {category_counts['explanatory']} | 命令、配置或说明性代码片段 |",
         f"| PENDING | {category_counts['pending']} | 尚未人工归类 |",
         "",
         "## 按源文件统计",
         "",
-        "| 正式源 | 总数 | 差分 | 框架 | 伪代码 | 说明 | 待归类 |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| 正式源 | 总数 | 差分 | 契约 | 框架 | 伪代码 | 说明 | 待归类 |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
 
     for source in rendered_sources:
@@ -367,7 +508,7 @@ def build_report(
         counts = Counter(item.category for item in source_listings)
         lines.append(
             f"| `{source}` | {len(source_listings)} | {counts['differential']} | "
-            f"{counts['framework']} | {counts['pseudocode']} | "
+            f"{counts['contract']} | {counts['framework']} | {counts['pseudocode']} | "
             f"{counts['explanatory']} | {counts['pending']} |"
         )
 
@@ -394,6 +535,8 @@ def build_report(
         )
         for listing in source_listings:
             evidence = ", ".join(f"`{case}`" for case in listing.differential_cases)
+            if listing.contract_cases:
+                evidence = ", ".join(f"`{case}`" for case in listing.contract_cases)
             if not evidence:
                 prefix = f"`{listing.check.upper()}`；" if listing.check else ""
                 evidence = prefix + (escape_cell(listing.note) or "—")
@@ -431,8 +574,11 @@ def main() -> int:
     try:
         listings, rendered_sources = inventory_formal_tree()
         differential_case_count = apply_differential_cases(listings)
+        contract_case_count = apply_contract_cases(listings)
         apply_explicit_classifications(listings)
-        report = build_report(listings, rendered_sources, differential_case_count)
+        report = build_report(
+            listings, rendered_sources, differential_case_count, contract_case_count
+        )
     except ValueError as exc:
         print(f"listing coverage error: {exc}", file=sys.stderr)
         return 2
@@ -458,7 +604,9 @@ def main() -> int:
     print(
         f"{action} {relative(REPORT)}: sources={len(rendered_sources)}, "
         f"listings={len(listings)}, differential_cases={differential_case_count}, "
+        f"contract_cases={contract_case_count}, "
         f"differential_listings={counts['differential']}, "
+        f"contract_listings={counts['contract']}, "
         f"pending={counts['pending']}"
     )
     if counts["pending"] and not args.allow_pending:

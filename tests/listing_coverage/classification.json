@@ -5,1821 +5,1567 @@
       "source": "remake/large/00_总览.tex",
       "digest": "3569782d37ef",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "说明片段（赛场决策树）：内容属于接口说明、调用示意或手工检查材料，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "099d54d584a5",
-      "category": "framework",
-      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "category": "explanatory",
+      "note": "可编辑程序骨架（竞赛主模板）：`solve` 故意没有题目算法主体，仅示范 I/O、常量和多测入口；未执行，不作为正确性证据。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "9cc223c3415c",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（vector）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "0406bf1693a8",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（array）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "57612fd5a13c",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（string）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "af3891f7aecb",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（multiset）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "5693a8ea9c81",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（map）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "06198b62a17e",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（unordered_set）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "474e1e7f7ce2",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（unordered_set）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "bb814ecdd774",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（priority_queue）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "cd437312df68",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（deque）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "02bff6b14abd",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（stack）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "247c77935e54",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（list）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "6377e1211d84",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（常用算法）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "b6c61d6c1e68",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（tuple）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "836fd043d272",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（bitset）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "180996659f52",
       "category": "framework",
-      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（子集和可行性；循环/状态更新语句）：块内缺少容量上界 `MAXV`、物品序列、目标容量以及多测清空方式；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "bitset<MAXV>\\ bs;",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "5acb66d02ec5",
       "category": "framework",
-      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（bitset 优化传递闭包（Floyd）；循环/状态更新语句）：块内缺少顶点数/编号、`MAXN`、边集初始化和最终可达性查询；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "bitset<MAXN>\\s+reach\\[MAXN\\]",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "beaed06f0098",
       "category": "framework",
-      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "banzi/板子_大版本.tex",
-      "digest": "2196d6a3c07b",
-      "category": "framework",
-      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（bitset 优化字符串匹配（Shift-And）；循环/状态更新语句）：块内缺少模式长度 `MAXM`、字符集、模式位集初始化及文本扫描后的匹配输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "bitset<MAXM>\\ B\\[256\\],\\ D;",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "0264fff26d44",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（__builtin 系列）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "e57d0679e846",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（数值函数）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "8788cd45ac6b",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（区间操作函数）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "b292098ba177",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（排列与组合）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "05404aff598e",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
-    },
-    {
-      "source": "banzi/板子_大版本.tex",
-      "digest": "a25516c33002",
-      "category": "framework",
-      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "banzi/板子_大版本.tex",
-      "digest": "37bb1c3cd706",
-      "category": "framework",
-      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "说明片段（prev_permutation））：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "017ab6f4134e",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（字符串处理函数）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "9bcb3272c12b",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
-    },
-    {
-      "source": "banzi/板子_大版本.tex",
-      "digest": "e407388d32e8",
-      "category": "framework",
-      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "说明片段（其他实用工具）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "b51a77af0cf8",
       "category": "framework",
-      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（超集和）；循环/状态更新语句）：块内缺少调用处的数据结构声明、初始化、合法输入范围、题意转移/判定和最终输出约定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "for\\ \\(int\\ i\\ =\\ 0;\\ i\\ <\\ n;\\ i\\+\\+\\)",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "5ec68847c43d",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
-    },
-    {
-      "source": "remake/large/01_位运算.tex",
-      "digest": "618aabf88c1c",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/01_线性基_详解.tex",
-      "digest": "11ca619f9714",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "说明片段（常用技巧）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "remake/large/01_线性基_详解.tex",
       "digest": "81c8ca3b9c5c",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：线性基必须按 void solve() 包装）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/02_基础.tex",
       "digest": "e59d3bb81851",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（子集枚举；循环/状态更新语句）：块内缺少位数 `n`、枚举结果的消费逻辑和移位溢出上界；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "for\\ \\(int\\ mask\\ =\\ 0;\\ mask\\ <\\ \\(1\\ <<\\ n\\);\\ \\+\\+mask\\)\\ \\{",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/02_基础.tex",
       "digest": "b40014727cad",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（回溯剪枝；`dfs` 接口）：块内缺少候选集合、合法性判定、撤销状态和答案收集方式；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\bdfs\\s*\\(",
+        "\\bif\\b"
+      ]
     },
     {
       "source": "remake/large/02_基础.tex",
       "digest": "5f4faa28cfc7",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（折半搜索（Meet-in-the-middle）；`gen` 接口）：块内缺少数组 `a`、`n`、上界 `limit` 和无可行子集时的答案约定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\bgen\\s*\\(",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/02_基础.tex",
       "digest": "b5e9e02a5bf5",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（一维差分；循环/状态更新语句）：块内缺少数组长度、原数组、区间更新输入、0/1-based 边界和输出内容；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<long\\ long>\\ pre\\(n\\ \\+\\ 1\\),\\ diff\\(n\\ \\+\\ 2\\);",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/02_基础.tex",
       "digest": "f5cb38abede9",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（扫描线思想；循环/状态更新语句）：块内缺少区间端点开闭约定、同坐标事件顺序和需要累计的长度/计数；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<pair<int,\\ int>>\\ event;\\ //\\ \\{坐标,\\ \\+1\\ 开始\\ /\\ \\-1\\ 结束\\}",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/02_基础.tex",
       "digest": "a264503c15e7",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（二分查找；循环/状态更新语句）：块内缺少有序数组、查找目标和不存在时的返回约定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "int\\ l\\ =\\ 0,\\ r\\ =\\ n;",
+        "\\bwhile\\b"
+      ]
     },
     {
       "source": "remake/large/02_基础.tex",
       "digest": "bdea7fc38249",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（二分答案；`check` 接口）：块内缺少`check(limit)` 的题意可行性、单调方向以及搜索上下界；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\bcheck\\s*\\(",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/02_基础.tex",
       "digest": "953b9e1a2035",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（双指针/滑动窗口；循环/状态更新语句）：块内缺少窗口合法条件、计数维护、左端收缩规则和答案定义；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<int>\\ cnt\\(alphabet\\);",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/02_基础.tex",
       "digest": "0570ac786caf",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（三分与凸性；循环/状态更新语句）：块内缺少窗口合法条件、计数维护、左端收缩规则和答案定义；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "while\\ \\(r\\ \\-\\ l\\ >\\ 3\\)\\ \\{",
+        "\\bwhile\\b"
+      ]
     },
     {
       "source": "remake/large/02_基础.tex",
       "digest": "a432c7d3afa9",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（典型证明模式；循环/状态更新语句）：块内缺少区间输入、端点开闭、选择目标以及排序后冲突判定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "sort\\(intervals\\.begin\\(\\),\\ intervals\\.end\\(\\),",
+        "\\bsort\\b"
+      ]
     },
     {
       "source": "remake/large/02_基础.tex",
       "digest": "67213d994d2e",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（反悔贪心；循环/状态更新语句）：块内缺少任务的截止期/收益字段、可撤销候选和最终目标函数；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "sort\\(jobs\\.begin\\(\\),\\ jobs\\.end\\(\\),",
+        "\\bsort\\b"
+      ]
     },
     {
       "source": "remake/large/02_基础.tex",
       "digest": "2274eadd4de6",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（单调栈；循环/状态更新语句）：块内缺少输入数组、严格/非严格比较选择和相等元素的处理；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<int>\\ nextGreater\\(n,\\ \\-1\\),\\ st;",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/02_基础.tex",
       "digest": "edddd769330b",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（单调队列；循环/状态更新语句）：块内缺少输入数组、严格/非严格比较选择和相等元素的处理；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "deque<int>\\ q;",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/02_基础.tex",
       "digest": "e23da23c4f06",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（离散化与坐标压缩；声明与调用片段）：块内缺少原坐标集合、查询采用 lower/upper_bound 的边界语义和输出索引基准；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<long\\ long>\\ xs\\ =\\ coordinates;",
+        "\\bsort\\b"
+      ]
     },
     {
       "source": "remake/large/02_基础.tex",
       "digest": "349144bcd556",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（常见构造套路；循环/状态更新语句）：块内缺少题目要求的排列性质、不可构造条件和输出格式；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<int>\\ ans;",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/02_基础.tex",
       "digest": "075a7a6b48ee",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（随机化与哈希技巧；声明与调用片段）：块内缺少随机种子、允许失败概率、`k` 的合法范围和需要被随机化的输入；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "mt19937_64\\ rng\\(chrono::steady_clock::now\\(\\)\\.time_since_epoch\\(\\)\\.count\\(\\)\\);"
+      ]
     },
     {
       "source": "remake/large/02_基础.tex",
       "digest": "e8d507326fbc",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/03_数学.tex",
-      "digest": "2bff715ab9c8",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/03_数学.tex",
-      "digest": "491f1a8691e2",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（位集优化；循环/状态更新语句）：块内缺少顶点数/容量、位集含义、初始化和查询输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "const\\ int\\ N\\ =\\ 2000;",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/03_数学.tex",
       "digest": "8c0532bf73d7",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（埃氏筛与线性筛；循环/状态更新语句）：块内缺少常量 `N`、查询上界、筛后需要的质数/最小质因子输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<int>\\ primes;\\ //\\ primes：目前找到的全部质数，严格递增。",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/03_数学.tex",
       "digest": "2fe57ec990ca",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（约数枚举与整除分块；循环/状态更新语句）：块内缺少整数 `n`、分块内需累计的题目函数和大数乘法范围；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "for\\ \\(long\\ long\\ l\\ =\\ 1,\\ r;\\ l\\ <=\\ n;\\ l\\ =\\ r\\ \\+\\ 1\\)\\ \\{",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/03_数学.tex",
       "digest": "05882dfe6063",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（欧拉函数、莫比乌斯与积性函数；循环/状态更新语句）：块内缺少常量 `N`、多测清空、需要输出的 `phi/mu` 范围及积性函数定义；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<int>\\ primes;\\ //\\ primes：已经找到的全部质数，严格递增。",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/03_数学.tex",
       "digest": "8b2953954844",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/03_数学.tex",
-      "digest": "1866487712aa",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/03_数学.tex",
-      "digest": "ffa6a5ddf333",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/03_数学.tex",
-      "digest": "682f3f7dc432",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（质数模且 n 不大；循环/状态更新语句）：块内缺少预处理上界、质数模 `MOD`、查询 `(n,k)` 范围和越界返回约定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "const\\ long\\ long\\ MOD\\ =\\ 998244353;",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/03_数学.tex",
       "digest": "54e6181c8e7a",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（容斥与组合计数；循环/状态更新语句）：块内缺少待排除集合、交集计数函数、符号规则和溢出处理；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "long\\ long\\ ans\\ =\\ 0;",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/03_数学.tex",
       "digest": "71665839a847",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/03_数学.tex",
-      "digest": "76a585c8e83a",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/03_数学.tex",
-      "digest": "97ece652f60b",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/03_数学.tex",
-      "digest": "b3d9bbd3c302",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/03_数学.tex",
-      "digest": "d70572d2258d",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（概率与期望；`expected_dag` 接口）：块内缺少DAG 状态图、转移概率/代价、终止状态和不可达/环的处理；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\bexpected_dag\\s*\\(",
+        "\\bif\\b"
+      ]
     },
     {
       "source": "remake/large/03_数学.tex",
       "digest": "321bcd38fca8",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（置换与循环；循环/状态更新语句）：块内缺少输入置换的编号基准、合法性、每个循环的聚合规则和输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<int>\\ vis\\(n\\),\\ result\\(n\\);",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/03_高精度.tex",
       "digest": "2763f5575fd8",
       "category": "explanatory",
-      "note": "Python 解释器开放超长整数字符串限制的环境设置。"
+      "note": "说明片段（任意精度整数（纯 C++17））：内容属于接口说明、调用示意或手工检查材料，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "remake/large/03_数学_详解.tex",
       "digest": "5bbfc3735373",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（高级容斥与倍数容斥；循环/状态更新语句）：块内缺少待排除集合、交集计数函数、符号规则和溢出处理；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "long\\ long\\ bad\\ =\\ 0;",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/03_数学_详解.tex",
       "digest": "d290810dad06",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：容斥的重复覆盖和最小公倍数溢出分支）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/03_数学_详解.tex",
       "digest": "142fa1dd4203",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/03_数学_详解.tex",
-      "digest": "b30deeb0228e",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：Lucas 的低位进位、k=0 和组合数为零）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/03_数学_详解.tex",
       "digest": "c422df2a4ec9",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：扩展中国剩余定理的互质、非互质和无解）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/03_数学_详解.tex",
       "digest": "850e2dc3a298",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/03_数学_详解.tex",
-      "digest": "2ffc37b71ed7",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：模高斯消元的零秩、满秩和相关行）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/03_数学_详解.tex",
       "digest": "115c0a124b96",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：莫比乌斯函数的平方因子和多测重建）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/03_数学_详解.tex",
       "digest": "a7b45c7da1a4",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/03_数学_详解.tex",
-      "digest": "a0f0f32d30bb",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：离散对数的零次幂、最小解和无解）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/03_数学_详解.tex",
       "digest": "e4f65fd76b70",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：卷积下标、单位多项式和重复系数）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/03_数学_详解.tex",
       "digest": "c021dd0709cc",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：Burnside 的单位群、交换群和旋转群）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/03_数学_详解.tex",
       "digest": "efc39a3836e6",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/03_数学_详解.tex",
-      "digest": "689ff8984ae7",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：二次剩余的零、平方剩余、非剩余）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/03_数学_详解.tex",
       "digest": "f1e5a37fc6d9",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/03_数学_详解.tex",
-      "digest": "c1684569896c",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：矩阵快速幂的零次幂、初值和普通项）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/03_数学_详解.tex",
       "digest": "54032890bf8c",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：实数高斯消元的唯一解、无解和多解）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/04_数据结构.tex",
       "digest": "5e2430e82f8c",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/04_数据结构.tex",
-      "digest": "b5aed7244413",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/04_数据结构.tex",
-      "digest": "41a3a6678d48",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（STL 必会组件；循环/状态更新语句）：块内缺少输入容器、比较器、查询目标和需要输出的统计；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<int>\\ a\\ =\\ input;",
+        "\\bsort\\b"
+      ]
     },
     {
       "source": "remake/large/04_数据结构.tex",
       "digest": "4a98bb250f19",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/04_数据结构.tex",
-      "digest": "48ab70a08685",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/04_数据结构.tex",
-      "digest": "dc563bc2e93b",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（单调结构与差分约束；循环/状态更新语句）：块内缺少约束图、源点初始化、负环判定和不可达距离约定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<int>\\ dist\\(n,\\ INF\\);",
+        "\\bwhile\\b"
+      ]
     },
     {
       "source": "remake/large/04_数据结构_详解.tex",
       "digest": "bd4d8e10ebae",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（多懒标记与仿射标记线段树；`apply`、`push` 接口）：块内缺少`tr` 节点数组、正模数 `MOD`、建树/区间更新/查询入口与下标范围；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\bapply\\s*\\(",
+        "\\bpush\\s*\\(",
+        "\\bstruct\\s+Tag\\b"
+      ]
     },
     {
       "source": "remake/large/04_数据结构_详解.tex",
       "digest": "9babe2a6fae6",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/04_数据结构_详解.tex",
-      "digest": "927e9f04406c",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：仿射标记的合成顺序）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/04_数据结构_详解.tex",
       "digest": "261c98406590",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（莫队、带修改莫队与回滚莫队；`add_pos`、`process_query` 接口）：块内缺少题目答案维护器 `add_pos`/`del_pos`、数组 `a`、修改表 `changes`、答案数组和莫队排序规则；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\badd_pos\\s*\\(",
+        "\\bprocess_query\\s*\\(",
+        "\\bstruct\\s+Query\\b"
+      ],
+      "allowed_empty_hooks": [
+        "add_pos",
+        "del_pos"
+      ]
     },
     {
       "source": "remake/large/04_数据结构_详解.tex",
       "digest": "a627822c8f4e",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/04_数据结构_详解.tex",
-      "digest": "411e3a944495",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：带修改莫队的区间、时间双向移动）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/04_数据结构_详解.tex",
       "digest": "8731669a77fe",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：三维偏序的相等坐标与重复点）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/04_数据结构_详解.tex",
       "digest": "f529b1e1b30d",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/04_数据结构_详解.tex",
-      "digest": "99dba61289ee",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：版本相减和区间端点）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/04_数据结构_详解.tex",
       "digest": "366caebefefc",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：直线交叉、端点和空树）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/04_数据结构_详解.tex",
       "digest": "5241ec31b88e",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（区间最值势能线段树（Segment Tree Beats）；`push_chmin`、`push_up`、`push_down`、`range_chmin` 接口）：块内缺少`tr` 节点数组、建树初始化、区间和/点值查询入口以及数值上界；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\bpush_chmin\\s*\\(",
+        "\\bpush_up\\s*\\(",
+        "\\bstruct\\s+BeatNode\\b"
+      ]
     },
     {
       "source": "remake/large/04_数据结构_详解.tex",
       "digest": "cd2417580e0d",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/04_数据结构_详解.tex",
-      "digest": "85650f55b7f1",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：区间取最小值的整段标记与递归分支）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/04_数据结构_详解.tex",
       "digest": "af1554524234",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "说明片段（调用测试：历史版本不能被后续合并污染）：内容属于接口说明、调用示意或手工检查材料，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "remake/large/05_字符串.tex",
       "digest": "79aab1922b5c",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/05_字符串_详解.tex",
-      "digest": "d2e914f9e47d",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（字符串哈希；循环/状态更新语句）：块内缺少字符串 `s`、长度 `n`、双哈希或碰撞容忍策略和子串下标约定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "const\\ unsigned\\ long\\ long\\ BASE\\ =\\ 911382323ull;",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/05_字符串_详解.tex",
       "digest": "9428347f07a8",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/05_字符串_详解.tex",
-      "digest": "3a9ed29fd9bb",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：最小表示的重复字符、周期和首尾交叉）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/05_字符串_详解.tex",
       "digest": "42df72f463d5",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/05_字符串_详解.tex",
-      "digest": "461b5c82ac07",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：回文自动机的根、重复回文和多测清空）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/05_字符串_详解.tex",
       "digest": "fa71e88f163d",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "说明片段（调用测试：后缀自动机的空串、重复字符和克隆状态）：内容属于接口说明、调用示意或手工检查材料，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "remake/large/05_字符串_详解.tex",
       "digest": "6767771816b5",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/05_字符串_详解.tex",
-      "digest": "b11a404d7be4",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：后缀排序和 LCP 的经典字符串）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/05_字符串_详解.tex",
       "digest": "2878bc708588",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：AC 自动机的后缀模式和重复出现）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/06_图论.tex",
       "digest": "bd41e28bc39d",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（图的表示与基础遍历；循环/状态更新语句）：块内缺少顶点/边输入、0/1-based 编号、遍历起点和访问结果消费逻辑；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<vector<int>>\\ g\\(n\\);",
+        "\\bwhile\\b"
+      ]
     },
     {
       "source": "remake/large/06_图论.tex",
       "digest": "2044fb0883cb",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（多源 BFS；循环/状态更新语句）：块内缺少顶点/边输入、0/1-based 编号、遍历起点和访问结果消费逻辑；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<vector<int>>\\ g\\(n\\);",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/06_图论.tex",
       "digest": "9ed422eb0668",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（有向无环图（Directed Acyclic Graph，DAG）与拓扑排序；循环/状态更新语句）：块内缺少顶点数、入度与邻接表初始化，以及有环时的失败输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "queue<int>\\ q;",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/06_图论.tex",
       "digest": "114c19220b8f",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（最短路；循环/状态更新语句）：块内缺少图、源点、边权限制、无穷值和不可达输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "using\\ P\\ =\\ pair<long\\ long,\\ int>;",
+        "\\bwhile\\b"
+      ]
     },
     {
       "source": "remake/large/06_图论.tex",
       "digest": "61e64298542a",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "5a08159f09b9",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "e6a68200e341",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "0f0eb14b4a80",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "a8fbb5e545b3",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（06_图论:005：最短路；循环/状态更新语句）：块内缺少图、源点、边权限制、无穷值和不可达输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "deque<int>\\ q;",
+        "\\bwhile\\b"
+      ]
     },
     {
       "source": "remake/large/06_图论.tex",
       "digest": "c9555a7338aa",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（染色判定；循环/状态更新语句）：块内缺少无向图输入、连通分量遍历、颜色初值和冲突时输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<int>\\ color\\(n,\\ \\-1\\);",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/06_图论.tex",
       "digest": "af2ac39ac4fa",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "4d24a89359e6",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "5a463a7c9fb3",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "8f1bd2d312ee",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "2e0f00fb0316",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "ad2e743ec101",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "21abdf47c467",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "f6b697baf8a0",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "c25e59092c17",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（最大匹配；`aug` 接口）：块内缺少左右部编号、邻接表、每轮访问标记和需要返回的匹配方案；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\baug\\s*\\(",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/06_图论.tex",
       "digest": "d3fb80492ee8",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（点分治（入门）；`get_size`、`get_centroid`、`divide` 接口）：块内缺少重心选取所需的子树大小/删除标记初始化，以及每层围绕重心执行的题目统计或更新钩子；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\bget_size\\s*\\(",
+        "\\bget_centroid\\s*\\("
+      ]
     },
     {
       "source": "remake/large/06_图论.tex",
       "digest": "d70c51530a92",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "6ed0ca842510",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "d4e2598e9cfc",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（树上启发式合并（Disjoint Set Union on Tree，DSU on Tree）；`dfs_size`、`add_subtree`、`dsu_on_tree` 接口）：块内缺少颜色/频次容器、`answer` 的统计含义、清空策略以及需要保留还是撤销子树贡献的题意；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\bdfs_size\\s*\\(",
+        "\\badd_subtree\\s*\\("
+      ]
     },
     {
       "source": "remake/large/07_树上进阶.tex",
       "digest": "2ab9c28ea06a",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/07_树上进阶.tex",
-      "digest": "30506b75f69a",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：树上启发式合并必须统计整棵子树）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/07_树上进阶.tex",
       "digest": "b460fa98283e",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：长链、星形树和超过根深度）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/07_树上进阶.tex",
       "digest": "436109c0a399",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（点分治与点分树；`collect`、`decompose` 接口）：块内缺少点分树查询所需的距离容器、更新接口、答案聚合规则和 `removed/sub/parent` 初始化；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\bcollect\\s*\\(",
+        "\\bdecompose\\s*\\("
+      ]
     },
     {
       "source": "remake/large/07_树上进阶.tex",
       "digest": "4abaa14522cb",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（伸展树、文艺平衡树与 Link-Cut Tree 动态树；声明与调用片段）：块内缺少完整 LCT 节点结构、splay/access 实现、编号范围与非法 link/cut 的处理约定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "makeroot\\(x\\);",
+        "\\bif\\b"
+      ]
     },
     {
       "source": "remake/large/07_树上进阶.tex",
       "digest": "98e2ea939555",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：动态树的路径、修改、连边和断边）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/08_动态规划.tex",
       "digest": "e72b0855aab8",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（线性 DP；循环/状态更新语句）：块内缺少输入序列、状态定义、初值以及空序列/重复值边界；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<int>\\ tail;",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/08_动态规划.tex",
       "digest": "78db33a36ddd",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（08_动态规划:002：线性 DP；循环/状态更新语句）：块内缺少输入序列、状态定义、初值以及空序列/重复值边界；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<vector<int>>\\ lcs\\(n\\ \\+\\ 1,\\ vector<int>\\(m\\ \\+\\ 1\\)\\);",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/08_动态规划.tex",
       "digest": "f8deed91b77f",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（背包；循环/状态更新语句）：块内缺少容量、物品重量/价值、0-1 或完全背包方向和不可达初值；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<long\\ long>\\ dp\\(W\\ \\+\\ 1,\\ 0\\);",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/08_动态规划.tex",
       "digest": "d1ceca2b4744",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/08_动态规划.tex",
-      "digest": "f21ddc748b68",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（区间 DP；循环/状态更新语句）：块内缺少区间状态含义、合并代价函数、长度 1 初值和答案区间；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "for\\ \\(int\\ len\\ =\\ 2;\\ len\\ <=\\ n;\\ \\+\\+len\\)",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/08_动态规划.tex",
       "digest": "08a9ff9baa04",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/08_动态规划.tex",
-      "digest": "299aeea0a381",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/08_动态规划.tex",
-      "digest": "e88d28f536bb",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（状态压缩动态规划；循环/状态更新语句）：块内缺少状态位含义、转移合法条件、初态和不可达哨兵；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<vector<long\\ long>>\\ dp\\(1\\ <<\\ n,\\ vector<long\\ long>\\(n,\\ INF\\)\\);",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/08_动态规划.tex",
       "digest": "c2ad2e3ff514",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（滚动数组；循环/状态更新语句）：块内缺少完整二维转移、上一层初值、当前层清零和最终层选择；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "vector<long\\ long>\\ prev\\(m\\ \\+\\ 1\\),\\ cur\\(m\\ \\+\\ 1\\);",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/08_动态规划.tex",
       "digest": "06b52122bf94",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（单调队列优化；循环/状态更新语句）：块内缺少窗口宽度、输入数组、最大值或最小值方向和过期下标规则；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "deque<int>\\ q;",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/08_动态规划.tex",
       "digest": "5c5f0f87f05e",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（斜率优化（Convex Hull Trick，CHT）；`bad`、`add_line` 接口）：块内缺少斜率单调性、查询横坐标单调性、同斜率去重和最小/最大值方向；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\bbad\\s*\\(",
+        "\\badd_line\\s*\\(",
+        "\\bstruct\\s+Line\\b"
+      ]
     },
     {
       "source": "remake/large/08_动态规划.tex",
       "digest": "c1478be353f1",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/08_动态规划.tex",
-      "digest": "5498d1982df3",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（分治优化；`solve` 接口）：块内缺少代价函数 `cost`、上一层 `prev`、决策单调性的题目证明和边界；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\bsolve\\s*\\(",
+        "\\bif\\b"
+      ]
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
       "digest": "2b48aaf2decf",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（复杂数位动态规划与自动机数位动态规划；`dfs` 接口）：块内缺少自动机/题目状态 `STATE`、`next_state`、`accept`、模数和前导零语义；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\bdfs\\s*\\(",
+        "\\bif\\b"
+      ]
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
       "digest": "f20f3c6b2318",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：数位 DP 的前导零和上下界差分）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
       "digest": "f9ac320e8492",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（所有子集和动态规划、轮廓线动态规划与状态压缩；循环/状态更新语句）：块内缺少状态位含义、转移合法条件、初态和不可达哨兵；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "for\\ \\(int\\ bit\\ =\\ 0;\\ bit\\ <\\ K;\\ \\+\\+bit\\)",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
       "digest": "c8e45baa7f63",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：SOS 动态规划的子集和方向）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
       "digest": "b35f489af1f6",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（单调队列、斜率优化与李超树优化动态规划；循环/状态更新语句）：块内缺少窗口宽度、输入数组、最大值或最小值方向和过期下标规则；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "deque<int>\\ q;",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
       "digest": "b1479754d17a",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（单调队列、斜率优化与李超树优化动态规划；`useless`、`add_line` 接口）：块内缺少窗口宽度、输入数组、最大值或最小值方向和过期下标规则；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\buseless\\s*\\(",
+        "\\badd_line\\s*\\(",
+        "\\bstruct\\s+Line\\b"
+      ]
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
       "digest": "cd106b44292b",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "说明片段（调用测试：斜率优化只能在顺序条件成立时使用）：内容属于接口说明、调用示意或手工检查材料，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
       "digest": "3aa12b8cfd9d",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "说明片段（调用测试：分治优化的决策范围必须覆盖真实最优点）：内容属于接口说明、调用示意或手工检查材料，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
       "digest": "fa5491fe5de9",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "说明片段（调用测试：分治优化的决策范围必须覆盖真实最优点）：内容属于接口说明、调用示意或手工检查材料，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
       "digest": "ce9a2d3611eb",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/08_动态规划_详解.tex",
-      "digest": "e5e2181c5376",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "说明片段（调用测试：分治优化的决策范围必须覆盖真实最优点）：内容属于接口说明、调用示意或手工检查材料，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
       "digest": "ed8eea9b30a4",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/09_博弈.tex",
-      "digest": "aad292652b77",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/09_博弈.tex",
-      "digest": "1688166a31fe",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/09_博弈.tex",
-      "digest": "ecd18e3ed40c",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/09_博弈.tex",
-      "digest": "05d53e2e7600",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：概率自环的除法和无限期望）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/09_博弈.tex",
       "digest": "ec7395148286",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/09_博弈_详解.tex",
-      "digest": "ed5bba72b1d5",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（极大极小搜索（Minimax）与 Alpha-Beta 剪枝；`minimax` 接口）：块内缺少题目定义的 `State`、终局判定、局面估值、合法走法生成以及 apply/undo 钩子；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\bminimax\\s*\\(",
+        "\\bif\\b"
+      ]
     },
     {
       "source": "remake/large/09_博弈_详解.tex",
       "digest": "02a6451e3474",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/09_博弈_详解.tex",
-      "digest": "e052c7afd339",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：必胜态/必败态的多测和状态清空）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/09_博弈_详解.tex",
       "digest": "9d03455c4920",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/09_博弈_详解.tex",
-      "digest": "0b1f325f2364",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：mex 的空集合、单后继和时间戳复用）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/09_博弈_详解.tex",
       "digest": "f7b71f9cd7b1",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/09_博弈_详解.tex",
-      "digest": "f1b5dd6d01cf",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/09_博弈_详解.tex",
-      "digest": "a5dfc0f8eb07",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/09_博弈_详解.tex",
-      "digest": "37440b807c67",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：普通 Nim 必胜操作恢复）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/09_博弈_详解.tex",
       "digest": "cf5ef6218d14",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/09_博弈_详解.tex",
-      "digest": "5a5c935184b4",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：Bash、反常 Nim、阶梯 Nim 的分界）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/09_博弈_详解.tex",
       "digest": "542ea975735f",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：周期不能只看一小段）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/09_博弈_详解.tex",
       "digest": "3145ee39e441",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（图游戏建模、状压博弈和记忆化；`dfs_mask` 接口）：块内缺少状态位含义、`legal(mask,i)` 走法判定、终止局面和最大状态数；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\bdfs_mask\\s*\\(",
+        "\\bif\\b"
+      ]
     },
     {
       "source": "remake/large/09_博弈_详解.tex",
       "digest": "5ee890ad8948",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "说明片段（调用测试：先固定 legal，再测试记忆化）：内容属于接口说明、调用示意或手工检查材料，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "remake/large/09_博弈_详解.tex",
       "digest": "08b5651f317f",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（极大极小搜索（Minimax）与 Alpha-Beta 剪枝；`alpha_beta` 接口）：块内缺少题目定义的 `State`、终局判定、估值函数、走法生成与 apply/undo 可逆性；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\balpha_beta\\s*\\(",
+        "\\bif\\b"
+      ]
     },
     {
       "source": "remake/large/09_博弈_详解.tex",
       "digest": "089a4cae260b",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/10_几何.tex",
-      "digest": "e63e62b4ba38",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/10_几何.tex",
-      "digest": "b102190a6b1c",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/10_几何.tex",
-      "digest": "6018ebe0383c",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/10_几何.tex",
-      "digest": "946db0893e63",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/10_几何.tex",
-      "digest": "19a7808ec1c7",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/10_几何.tex",
-      "digest": "7ac766ed9229",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（状态去重、哈希与有环博弈；循环/状态更新语句）：块内缺少`State` 的相等关系与稳定序列化字段；哈希组合方式必须与相等关系一致；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\bstruct\\s+StateHash\\b",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/10_几何.tex",
       "digest": "77a0c0098729",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/10_几何.tex",
-      "digest": "edaba29a061c",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/10_几何.tex",
-      "digest": "1550139b3988",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（扫描线；循环/状态更新语句）：块内缺少矩形/线段事件输入、同坐标事件顺序、离散坐标和覆盖长度维护器；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\bstruct\\s+Event\\b",
+        "\\bsort\\b"
+      ]
     },
     {
       "source": "remake/large/10_几何.tex",
       "digest": "075a7a6b48ee",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（几何中的随机化与哈希技巧；声明与调用片段）：块内缺少随机种子、允许失败概率、`k` 的合法范围和需要被随机化的输入；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "mt19937_64\\ rng\\(chrono::steady_clock::now\\(\\)\\.time_since_epoch\\(\\)\\.count\\(\\)\\);"
+      ]
     },
     {
       "source": "remake/large/10_几何.tex",
       "digest": "e8d507326fbc",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（几何中的位集优化；循环/状态更新语句）：块内缺少顶点数/容量、位集含义、初始化和查询输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "const\\ int\\ N\\ =\\ 2000;",
+        "\\bfor\\b"
+      ]
     },
     {
       "source": "remake/large/10_几何.tex",
       "digest": "65d6156364fd",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "remake/large/10_几何_详解.tex",
-      "digest": "b16d68fd0f79",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（几何快速小技巧；声明与调用片段）：块内缺少整数点/向量输入、零向量约定、归一化符号和溢出范围；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "long\\ long\\ g\\ =\\ std::gcd\\(a,\\ b\\);",
+        "\\bsort\\b"
+      ]
     },
     {
       "source": "remake/large/10_几何_详解.tex",
       "digest": "69294a4607a7",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：最近点对的单点、重合点和跨分治边界）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/10_几何_详解.tex",
       "digest": "4737c2781421",
       "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "结构框架（半平面交（Half-Plane Intersection）；`outside`、`intersection` 接口）：块内缺少半平面排序、同向去重、双端队列循环以及空交/无界交的返回约定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "\\boutside\\s*\\(",
+        "\\bintersection\\s*\\(",
+        "\\bstruct\\s+HalfPlane\\b"
+      ]
     },
     {
       "source": "remake/large/10_几何_详解.tex",
       "digest": "1391082d7d81",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "说明片段（调用测试：半平面交的方向、平行边和空交集）：内容属于接口说明、调用示意或手工检查材料，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "remake/large/10_几何_详解.tex",
       "digest": "98753bc78de4",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/10_几何_详解.tex",
-      "digest": "eb3b8f290dc3",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：圆相交的无交、相切和双交点）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/10_几何_详解.tex",
       "digest": "1a10e960ee72",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：直线圆交、最小圆覆盖的退化点集）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/10_几何_详解.tex",
       "digest": "91a8afba8ee0",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
-    },
-    {
-      "source": "remake/large/10_几何_详解.tex",
-      "digest": "686dac4e240f",
-      "category": "framework",
-      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "未执行样例/验收说明（测试样例：直线圆交、最小圆覆盖的退化点集）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/10_几何_详解.tex",
       "digest": "ebd675728843",
       "category": "explanatory",
-      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+      "note": "未执行样例/验收说明（测试样例：矩形并面积的相邻、重叠、嵌套）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "aeaf8a811003",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（超过十行模板的针对性自测）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "97a83bae0bea",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（折半搜索：空半边、没有可行解、恰好命中上界）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "369865072ee0",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（一维差分：单点、整段、重叠更新和负数更新）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "871fdb369e47",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（二分答案：答案在端点、每组一段和多组切分）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "492e9974cc19",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（差分约束：无约束、可行环、负环和多条链）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "a2c64a156103",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（任意精度整数：符号、整除、超 128 位与模幂）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "9513437b81c8",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（试除分解、线性筛和欧拉函数：1、质数、平方数、重复质因子）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "3efceea85231",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（整除分块：商相同区间和边界 n/i）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "5d670860142f",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（非质数模的同余合并：互质、相容非互质、相同模数和无解）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "31dff9e7bce2",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（异或前缀和与普通小卷积：周期四、单位元和重复系数）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "ff0e6336d5c6",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（Prüfer 序列与矩阵树定理：最小树、星形树、路径树和不连通图）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "e48b93d25206",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（Prüfer 序列与矩阵树定理：最小树、星形树、路径树和不连通图）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "879708b65218",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（并查集、树状数组和普通线段树：单点、整段、重复操作、多测清空）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "ad4d0d1b0731",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（并查集、树状数组和普通线段树：单点、整段、重复操作、多测清空）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "55504bfcb316",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（线段树上二分与稀疏表：第一个位置、找不到、重复最值）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "1cf110c944c1",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（线段树上二分与稀疏表：第一个位置、找不到、重复最值）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "73414a583988",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（二进制字典树、主席树和块状数组：零值、重复值、跨边界）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "0f976303312f",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（二进制字典树、主席树和块状数组：零值、重复值、跨边界）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "d152695926c1",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（二进制字典树、主席树和块状数组：零值、重复值、跨边界）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "0848b91808e0",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（Treap 与可回滚并查集：空树、重复键、快照恢复）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "54205c24a0be",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（Treap 与可回滚并查集：空树、重复键、快照恢复）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "ac0638894f5d",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（拓扑排序：单点、链、分支和有向环）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "622805acc7d2",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（Dijkstra 与 0-1 BFS：重复堆项、不可达点和零边）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "972b9b9b6a58",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（Dijkstra 与 0-1 BFS：重复堆项、不可达点和零边）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "115cb8fc46d7",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（最小生成树：单点、重边、环和不连通图）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "02d777b29ae2",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（强连通分量、割点和桥：空边、全环、重边）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "fcd71a294662",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（二分图染色与最大匹配：孤立点、增广链、奇环）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "f98a7971bb22",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（最大流与最小费用最大流：零容量、瓶颈、拆路和需求不足）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "eb67c4fef5c6",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（最大流与最小费用最大流：零容量、瓶颈、拆路和需求不足）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "7682356050a3",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（最近公共祖先、树上差分、直径和树形动态规划）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "51153e846b2b",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（最近公共祖先、树上差分、直径和树形动态规划）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "c510feec56cf",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（深度优先序、重链剖分与长链剖分：链、星、跨链路径）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "87e7c5f3d055",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（线性动态规划、树形动态规划和数位动态规划）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "39afae3b7c80",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（线性动态规划、树形动态规划和数位动态规划）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "3f04370b9a5f",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（Knuth--Morris--Pratt 字符串匹配：首位、重叠和无匹配）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "72551f19f6a0",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（整体二分与线段树分治时间）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "3270a1d85c7a",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（二可满足性算法与约束状态图）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "02048ca641e7",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（快速傅里叶变换/数论变换与 Kuhn--Munkres 加权匹配）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "5b8107779b3a",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（快速傅里叶变换/数论变换与 Kuhn--Munkres 加权匹配）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/11_针对性测试.tex",
       "digest": "a311c7838f42",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（笛卡尔树、虚树、Steiner 树和高斯消元）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/13_例题与测试.tex",
       "digest": "3625b0792778",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（统一卡片接口注释）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/13_例题与测试.tex",
       "digest": "004db2d3bb32",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（子集和、区间加与二分答案）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/13_例题与测试.tex",
       "digest": "71a127e2fd81",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（树状数组、线段树与回滚并查集）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/13_例题与测试.tex",
       "digest": "a073831610d0",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（高精度整数四则运算）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/13_例题与测试.tex",
       "digest": "fcb53eca2238",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（最短路、拓扑与最大流）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/13_例题与测试.tex",
       "digest": "9452943d6f8f",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（SCC、桥、匹配与 LCA）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/13_例题与测试.tex",
       "digest": "6d26ed730528",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（字符串、动态规划与几何：完整小题例）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "remake/large/13_例题与测试.tex",
       "digest": "a342b2ed0d2c",
       "category": "explanatory",
-      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+      "note": "未执行样例/验收说明（一键验收）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "ffaf71c6bf78",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（macOS（Bash））：内容属于命令、脚本或工具配置，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "9534e1b3db6c",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
-    },
-    {
-      "source": "banzi/板子_大版本.tex",
-      "digest": "52765c62c8bb",
-      "category": "framework",
-      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "note": "说明片段（Windows（BAT））：内容属于命令、脚本或工具配置，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "8a8365a4fbd1",
-      "category": "framework",
-      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
-      "check": "static"
-    },
-    {
-      "source": "banzi/板子_大版本.tex",
-      "digest": "58d7ad255788",
-      "category": "framework",
-      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
-      "check": "static"
+      "category": "explanatory",
+      "note": "可编辑程序骨架（暴力解法）：双重循环体故意留空，必须按具体题目填入枚举和判定；未执行，不作为算法实现或正确性证据。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "b485bf8c59fd",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（编译与运行）：内容属于命令、脚本或工具配置，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "7ef9d3c3dd47",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（文件操作）：内容属于命令、脚本或工具配置，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "4251208685cc",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（进程与调试）：内容属于命令、脚本或工具配置，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "13ab4caddd70",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（常用技巧）：内容属于命令、脚本或工具配置，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "aec31ae50b75",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（文件与编辑）：内容属于命令、脚本或工具配置，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "11a5ea26c03c",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（查找与替换）：内容属于命令、脚本或工具配置，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "b9875cabfa69",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（多光标与选择）：内容属于命令、脚本或工具配置，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "59f69b6ddc07",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（终端）：内容属于命令、脚本或工具配置，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "e5e9f2234f6d",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（调试）：内容属于命令、脚本或工具配置，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "200d558b5752",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（其他实用操作）：内容属于命令、脚本或工具配置，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "7f46599af7d5",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（一键编译运行（tasks.json））：内容属于命令、脚本或工具配置，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "17b876e72435",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（调试配置（launch.json））：内容属于命令、脚本或工具配置，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
       "digest": "9cd12aefee06",
       "category": "explanatory",
-      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+      "note": "说明片段（推荐用户设置（settings.json 片段））：内容属于命令、脚本或工具配置，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     }
   ]
 }

@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "graph.kruskal_reconstruction",
+      "description": "Kruskal 重构树瓶颈与阈值连通块和 Floyd/暴力 BFS 随机对拍",
+      "harness": "tests/contracts/harnesses/graph_kruskal_reconstruction.cpp",
+      "snippets": [
+        {
+          "source": "remake/large/06_图论.tex",
+          "contains": "struct KruskalTree {",
+          "marker": "// @@@KRUSKAL_RECONSTRUCTION@@@"
+        }
+      ],
+      "run_timeout_seconds": 20
+    },
+    {
+      "id": "graph.dinic",
+      "description": "Dinic 由 harness 补最大流控制循环并与 Edmonds-Karp 随机对拍",
+      "harness": "tests/contracts/harnesses/graph_dinic.cpp",
+      "snippets": [
+        {
+          "source": "remake/large/06_图论.tex",
+          "contains": "vector<vector<Edge>> fg;",
+          "marker": "// @@@DINIC@@@"
+        }
+      ],
+      "run_timeout_seconds": 20
+    },
+    {
+      "id": "graph.lct",
+      "description": "LCT 动态森林连边、断边、改点权、连通性和路径和与朴素森林随机对拍",
+      "harness": "tests/contracts/harnesses/graph_lct.cpp",
+      "snippets": [
+        {
+          "source": "remake/large/06_图论.tex",
+          "contains": "struct LCT {",
+          "marker": "// @@@LCT@@@"
+        }
+      ],
+      "run_timeout_seconds": 25
+    },
+    {
+      "id": "math.complete_implementations",
+      "description": "数论、组合、矩阵、生成函数、莫比乌斯、二次剩余和实数高消的直接提取性质测试",
+      "harness": "tests/contracts/harnesses/math_complete.cpp",
+      "snippets": [
+        {"source": "remake/large/03_数学.tex", "contains": "long long exgcd(long long a, long long b, long long &x", "marker": "// @@@EXGCD@@@"},
+        {"source": "remake/large/03_数学.tex", "contains": "vector<pair<long long, int>> factor", "marker": "// @@@FACTOR@@@"},
+        {"source": "remake/large/03_数学.tex", "contains": "long long Csmall(long long n", "marker": "// @@@LUCAS@@@"},
+        {"source": "remake/large/03_数学.tex", "contains": "bool merge_congruence", "marker": "// @@@CRT_MERGE@@@"},
+        {"source": "remake/large/03_数学.tex", "contains": "vector<vector<long long>> a;", "marker": "// @@@MATRIX@@@"},
+        {"source": "remake/large/03_数学.tex", "contains": "pair<long long, long long> fib", "marker": "// @@@SEQUENCES@@@"},
+        {"source": "remake/large/03_数学.tex", "contains": "using Poly = vector<long long>;", "marker": "// @@@POLY@@@"},
+        {"source": "remake/large/03_数学.tex", "contains": "long long tree_count", "marker": "// @@@TREE_COUNT@@@"},
+        {"source": "remake/large/03_数学.tex", "contains": "long long tonelli_shanks", "marker": "// @@@TONELLI@@@"},
+        {"source": "remake/large/03_数学_详解.tex", "contains": "bool merge(long long& a", "marker": "// @@@EXCRT_DETAIL@@@"},
+        {"source": "remake/large/03_数学_详解.tex", "contains": "void linear_sieve_mu", "marker": "// @@@MU_SIEVE@@@"},
+        {"source": "remake/large/03_数学_详解.tex", "contains": "long long fibonacci(long long n)", "marker": "// @@@MATRIX_DETAIL@@@"},
+        {"source": "remake/large/03_数学_详解.tex", "contains": "int gauss_real", "marker": "// @@@GAUSS_REAL@@@"},
+        {"source": "remake/large/03_数学_详解.tex", "contains": "vector<long long> multiply(const vector<long long>& a", "marker": "// @@@POLY_DETAIL@@@"}
+      ],
+      "run_timeout_seconds": 25
+    },
+    {
+      "id": "data_structures.complete_implementations",
+      "description": "Treap、三维偏序 CDQ、李超树和可持久化并查集的直接提取随机性质测试",
+      "harness": "tests/contracts/harnesses/data_structures_complete.cpp",
+      "snippets": [
+        {"source": "remake/large/04_数据结构.tex", "contains": "struct Node { int l, r, key, pri, sz; }", "marker": "// @@@TREAP@@@"},
+        {"source": "remake/large/04_数据结构_详解.tex", "contains": "struct Point {\n    int x, y, z;", "marker": "// @@@CDQ@@@"},
+        {"source": "remake/large/04_数据结构_详解.tex", "contains": "long long b = -(1LL << 60)", "marker": "// @@@LICHAO@@@"},
+        {"source": "remake/large/04_数据结构_详解.tex", "contains": "struct PNode { int l, r, val; }", "marker": "// @@@PERSISTENT_DSU@@@"},
+        {"source": "remake/large/04_数据结构.tex", "contains": "int B = max(1, (int)sqrt(n));", "marker": "// @@@BLOCK_ADD@@@"}
+      ],
+      "run_timeout_seconds": 30
+    },
+    {
+      "id": "strings.complete_automata",
+      "description": "Booth、回文自动机、后缀自动机和 AC 自动机的直接提取随机性质测试",
+      "harness": "tests/contracts/harnesses/strings_complete.cpp",
+      "snippets": [
+        {"source": "remake/large/05_字符串_详解.tex", "contains": "int booth(const string& s)", "marker": "// @@@BOOTH@@@"},
+        {"source": "remake/large/05_字符串_详解.tex", "contains": "struct PAM {", "marker": "// @@@PAM@@@"},
+        {"source": "remake/large/05_字符串_详解.tex", "contains": "struct SAM {", "marker": "// @@@SAM@@@"},
+        {"source": "remake/large/05_字符串_详解.tex", "contains": "struct AC {", "marker": "// @@@AC@@@"}
+      ],
+      "run_timeout_seconds": 30
+    },
+    {
+      "id": "graph.complete_implementations",
+      "description": "Kruskal、SCC、桥、费用流、LCA 和树上最远点的直接提取随机性质测试",
+      "harness": "tests/contracts/harnesses/graph_complete.cpp",
+      "snippets": [
+        {"source": "remake/large/06_图论.tex", "contains": "struct MstEdge {", "marker": "// @@@KRUSKAL@@@"},
+        {"source": "remake/large/06_图论.tex", "contains": "void tarjan(int u)", "marker": "// @@@SCC@@@"},
+        {"source": "remake/large/06_图论.tex", "contains": "void dfs(int u, int parent_edge)", "marker": "// @@@BRIDGES@@@"},
+        {"source": "remake/large/06_图论.tex", "contains": "struct MCEdge {", "marker": "// @@@MCMF@@@"},
+        {"source": "remake/large/06_图论.tex", "contains": "void init_lca(int u, int p)", "marker": "// @@@LCA@@@"},
+        {"source": "remake/large/06_图论.tex", "contains": "pair<int, long long> farthest", "marker": "// @@@FARTHEST@@@"}
+      ],
+      "run_timeout_seconds": 35
+    },
+    {
+      "id": "geometry.complete_implementations",
+      "description": "圆交、凸包、裁剪、半平面交、最小圆覆盖和矩形并面积的直接提取性质测试",
+      "harness": "tests/contracts/harnesses/geometry_complete.cpp",
+      "snippets": [
+        {"source": "remake/large/10_几何.tex", "contains": "using Real = long double;", "marker": "// @@@GEOMETRY_CORE@@@"},
+        {"source": "remake/large/10_几何.tex", "contains": "bool left_of(Point a", "marker": "// @@@GEOMETRY_VECTORS@@@"},
+        {"source": "remake/large/10_几何.tex", "contains": "bool intersect(Point a", "marker": "// @@@SEGMENT_INTERSECTION@@@"},
+        {"source": "remake/large/10_几何.tex", "contains": "Real area2(const vector<Point>& p)", "marker": "// @@@POLYGON_AREA@@@"},
+        {"source": "remake/large/10_几何_详解.tex", "contains": "bool polar_cmp(Point a", "marker": "// @@@POLAR_SORT@@@"},
+        {"source": "remake/large/10_几何.tex", "contains": "struct Circle { Point o; Real r; }", "marker": "// @@@CIRCLES@@@"},
+        {"source": "remake/large/10_几何.tex", "contains": "vector<Point> convex_hull", "marker": "// @@@CONVEX_HULL@@@"},
+        {"source": "remake/large/10_几何.tex", "contains": "vector<Point> clip", "marker": "// @@@CLIP@@@"},
+        {"source": "remake/large/10_几何.tex", "contains": "struct HalfPlane { Point p, v; Real ang; }", "marker": "// @@@HPI@@@"},
+        {"source": "remake/large/10_几何_详解.tex", "contains": "Circle min_circle", "marker": "// @@@MIN_CIRCLE@@@"},
+        {"source": "remake/large/10_几何_详解.tex", "contains": "struct CoverNode {", "marker": "// @@@UNION_AREA@@@"}
+      ],
+      "run_timeout_seconds": 40
+    },
+    {
+      "id": "core.complete_implementations",
+      "description": "排列、康托展开、异或、线性基、数位 DP 与组合博弈函数的直接提取性质测试",
+      "harness": "tests/contracts/harnesses/core_complete.cpp",
+      "snippets": [
+        {"source": "banzi/板子_大版本.tex", "contains": "int mul_mod(int a, int b, int mod)", "marker": "// @@@INT128@@@"},
+        {"source": "banzi/板子_大版本.tex", "contains": "vector<int> path2;", "marker": "// @@@PERMUTATIONS@@@"},
+        {"source": "banzi/板子_大版本.tex", "contains": "int cantor(vector<int>& p)", "marker": "// @@@CANTOR@@@"},
+        {"source": "banzi/板子_大版本.tex", "contains": "int xor_range(int l, int r)", "marker": "// @@@XOR_RANGE@@@"},
+        {"source": "remake/large/01_位运算.tex", "contains": "struct LinearBasis {", "marker": "// @@@LINEAR_BASIS@@@"},
+        {"source": "remake/large/08_动态规划.tex", "contains": "long long solve_digit", "marker": "// @@@DIGIT_DP@@@"},
+        {"source": "remake/large/09_博弈.tex", "contains": "bool nim_first_win", "marker": "// @@@NIM_BASH@@@"},
+        {"source": "remake/large/09_博弈.tex", "contains": "int grundy(int u)", "marker": "// @@@SG_DAG@@@"},
+        {"source": "remake/large/09_博弈.tex", "contains": "int solve_subtraction", "marker": "// @@@SUBTRACTION@@@"},
+        {"source": "remake/large/09_博弈_详解.tex", "contains": "nim_move(const vector", "marker": "// @@@NIM_MOVE@@@"},
+        {"source": "remake/large/09_博弈_详解.tex", "contains": "bool misere_nim_win", "marker": "// @@@MISERE@@@"},
+        {"source": "remake/large/09_博弈_详解.tex", "contains": "vector<int> subtraction_sg", "marker": "// @@@SUBTRACTION_TABLE@@@"},
+        {"source": "remake/large/08_动态规划_详解.tex", "contains": "Mat merge_segment", "marker": "// @@@MATRIX_SEGMENT@@@"},
+        {"source": "remake/large/09_博弈_详解.tex", "contains": "int solve_win(int u)", "marker": "// @@@WINLOSE@@@"},
+        {"source": "remake/large/09_博弈_详解.tex", "contains": "int mex_by_stamp", "marker": "// @@@SG_DETAIL@@@"},
+        {"source": "remake/large/04_数据结构.tex", "contains": "void add_number(int x)", "marker": "// @@@RUNNING_MEDIAN@@@"},
+        {"source": "remake/large/09_博弈.tex", "contains": "int dag_game(int u)", "marker": "// @@@DAG_GAME@@@"},
+        {"source": "remake/large/09_博弈_详解.tex", "contains": "bool bash_win(long long n", "marker": "// @@@BASH_DETAIL@@@"},
+        {"source": "remake/large/09_博弈_详解.tex", "contains": "bool staircase_nim_win", "marker": "// @@@STAIRCASE@@@"},
+        {"source": "banzi/板子_大版本.tex", "contains": "vector<pair<int,int>> rand_tree", "marker": "// @@@GENERATOR@@@"},
+        {"source": "banzi/板子_大版本.tex", "contains": "interactor.cpp", "marker": "// @@@INTERACTOR@@@"}
+      ],
+      "run_timeout_seconds": 45
+    },
+    {
+      "id": "tree_dp.complete_implementations",
+      "description": "线段树二分、DFS 序、树差分、树 DP、HLD、长链、换根、DAG 记忆化和 SG 的直接提取性质测试",
+      "harness": "tests/contracts/harnesses/tree_dp_complete.cpp",
+      "snippets": [
+        {"source": "remake/large/04_数据结构.tex", "contains": "if (tree[p] < x) return -1;", "marker": "// @@@FIRST_AT_LEAST@@@"},
+        {"source": "remake/large/04_数据结构_详解.tex", "contains": "if (tr[p].mx < x) return -1;", "marker": "// @@@FIRST_DETAIL@@@"},
+        {"source": "remake/large/06_图论.tex", "contains": "vector<int> tin(n), tout(n)", "marker": "// @@@EULER@@@"},
+        {"source": "remake/large/06_图论.tex", "contains": "void add_path(int u, int v)", "marker": "// @@@TREE_DIFF@@@"},
+        {"source": "remake/large/06_图论.tex", "contains": "void tree_dp(int u, int p)", "marker": "// @@@TREE_DP@@@"},
+        {"source": "remake/large/06_图论.tex", "contains": "long long path_sum(int u, int v)", "marker": "// @@@HLD@@@"},
+        {"source": "remake/large/06_图论.tex", "contains": "void long_chain_dfs1", "marker": "// @@@LONG_CHAIN@@@"},
+        {"source": "remake/large/08_动态规划.tex", "contains": "void reroot1(int u, int p)", "marker": "// @@@REROOT@@@"},
+        {"source": "remake/large/08_动态规划.tex", "contains": "int memo[MAXN];", "marker": "// @@@MEMO_DAG@@@"},
+        {"source": "remake/large/08_动态规划.tex", "contains": "bool seen[MAXG]", "marker": "// @@@GRUNDY@@@"},
+        {"source": "remake/large/07_树上进阶.tex", "contains": "void dfs_len(int u, int fa)", "marker": "// @@@LONG_CHAIN_DETAIL@@@"}
+      ],
+      "run_timeout_seconds": 45
+    },
+    {
+      "id": "bit.linear_basis_program",
+      "description": "线性基例题 main 与其正式依赖实现的直接提取编译和 I/O 契约",
+      "harness": "tests/contracts/harnesses/linear_basis_program.cpp",
+      "snippets": [
+        {"source": "remake/large/01_线性基_详解.tex", "contains": "template<int LOG = 61>", "marker": "// @@@LINEAR_BASIS_SUPPORT@@@", "support": true},
+        {"source": "remake/large/01_线性基_详解.tex", "contains": "int main()", "marker": "// @@@LINEAR_BASIS_PROGRAM@@@"}
+      ],
+      "stdin": "5\n1 2 3 8 10\n",
+      "expected_stdout": "11\n"
+    }
+  ]
+}

@@ -921,40 +921,40 @@ void dfs(int n) {
 // 有重复元素的 DFS 全排列（去重版）
 // nums 必须先排序！
 vector<int> nums; // 已排序
-// 变量：path=当前 DFS 路径/输出路径 path。
-vector<int> path;
-// 变量：used=是否已使用/选择的标记集合 used。
-vector<bool> used;
+// 变量：path2=含重复元素时的当前 DFS 排列 path2。
+vector<int> path2;
+// 变量：used2=含重复元素时每个下标是否已被当前排列使用。
+vector<bool> used2;
 
-// 接口：dfs2(n)：沿重链优先编号并填写链顶 top；无返回值；结果写入引用参数或当前结构状态。
+// 接口：dfs2(n)：枚举 nums 的不重复全排列并输出；结果写入 path2，输出后回溯复原。
 // 参数：规模/上界 n。
 void dfs2(int n) {
-    if ((int)path.size() == n) {
+    if ((int)path2.size() == n) {
         // 变量：x=当前输入值/查询值/坐标 x。
-        for (int x : path) cout << x << " ";
+        for (int x : path2) cout << x << " ";
         cout << endl;
         return;
     }
     // 变量：i=当前循环下标 i。
     for (int i = 0; i < n; i++) {
-        if (used[i]) continue;
+        if (used2[i]) continue;
         // 去重：同一层中，相同值只选第一个未用的
-        if (i > 0 && nums[i] == nums[i-1] && !used[i-1]) continue;
-        path.push_back(nums[i]);
-        used[i] = true;
+        if (i > 0 && nums[i] == nums[i-1] && !used2[i-1]) continue;
+        path2.push_back(nums[i]);
+        used2[i] = true;
         dfs2(n);
-        path.pop_back();
-        used[i] = false;
+        path2.pop_back();
+        used2[i] = false;
     }
 }
-// 调用：sort(nums.begin(), nums.end()); used.assign(n, false); dfs2(n);
+// 调用：sort(nums.begin(), nums.end()); used2.assign(n, false); dfs2(n);
 \end{lstlisting}
 
 \begin{tip}
 \begin{itemize}
   \item DFS 版本可以方便地在递归中\textbf{剪枝}，例如 N 皇后问题在放置每个皇后时检查冲突，大幅减少搜索量。
   \item DFS 生成\textbf{部分排列}（选 $k$ 个）：只需把终止条件改为 \lstinline|path.size() == k|。
-  \item 去重的关键条件 \lstinline|!used[i-1]| 表示：如果前一个相同元素没有被选（说明是同层回溯回来的），则跳过当前元素，避免重复。
+  \item 去重的关键条件 \lstinline|!used2[i-1]| 表示：如果前一个相同元素没有被选（说明是同层回溯回来的），则跳过当前元素，避免重复。
 \end{itemize}
 \end{tip}
 

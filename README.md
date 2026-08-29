@@ -11,8 +11,8 @@
 | [`banzi/板子_大版本.tex`](banzi/板子_大版本.tex) | 唯一编译入口 |
 | [`remake/large/`](remake/large/) | 唯一章节源目录 |
 | [`banzi/板子_大版本.pdf`](banzi/板子_大版本.pdf) | 唯一正式 PDF |
-| [`tests/`](tests/) | 六组 C++17 回归测试、差分测试与代码块分类数据 |
-| [`tools/`](tools/) | 接口、变量、代码块覆盖审计与差分测试运行器 |
+| [`tests/`](tests/) | 六组 C++17 回归、直接提取差分/契约测试与逐块分类数据 |
+| [`tools/`](tools/) | 接口、变量、代码块门禁、测试和稳定 PDF 构建工具 |
 | [`docs/代码块检验清单.md`](docs/代码块检验清单.md) | 正式渲染树中全部代码块的覆盖状态 |
 | [`docs/版本与归档.md`](docs/版本与归档.md) | 版本、归档和发布规则 |
 | [`archive/`](archive/) | 明确标注日期、提交和页数的历史快照 |
@@ -29,19 +29,16 @@ python tools/audit_large_interfaces.py
 python tools/audit_large_variables.py
 python tools/audit_listing_coverage.py
 python tools/run_framework_checks.py
+python -m unittest tests.test_listing_coverage tests.test_framework_checks
+python tools/run_contract_tests.py
 python tools/run_differential_tests.py
-g++ -std=c++17 -O2 -Wall tests/refactored_strings.cpp
-g++ -std=c++17 -O2 -Wall tests/refactored_mst.cpp
-g++ -std=c++17 -O2 -Wall tests/refactored_core.cpp
-g++ -std=c++17 -O2 -Wall tests/refactored_graph.cpp
-g++ -std=c++17 -O2 -Wall tests/refactored_dp_geometry.cpp
-g++ -std=c++17 -O2 -Wall tests/refactored_advanced.cpp
-xelatex -interaction=nonstopmode -output-directory banzi banzi/板子_大版本.tex
-xelatex -interaction=nonstopmode -output-directory banzi banzi/板子_大版本.tex
+python tools/run_refactored_tests.py
+python tools/build_formal_pdf.py
 ```
 
-修改模板后必须运行接口、变量和代码块覆盖审计、框架静态检查、正式代码块差分测试
-及六组回归测试，连续编译两遍 XeLaTeX，并目视检查受影响页面。差分测试只登记能够
-定义可执行语义的完整模板；框架使用独立检查且不在正式板子中标记验证状态。需要
+修改模板后必须运行接口、变量和代码块覆盖审计、框架结构契约、门禁反例单测、正式
+代码块的契约/差分测试及六组回归测试。PDF 构建必须持续到交叉引用状态稳定且没有
+rerun warning，并目视检查受影响页面。只有直接提取、真实编译/运行的测试才算执行
+证据；框架结构检查不冒充算法验证，也不在正式板子中标记验证状态。需要
 保留历史节点时只在 `archive/YYYY-MM-DD/` 新增快照，不在 `banzi/` 或仓库根目录
 创建并列版本。
