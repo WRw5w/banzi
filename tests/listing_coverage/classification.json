@@ -1,4 +1,1825 @@
 {
   "schema_version": 1,
-  "classifications": []
+  "classifications": [
+    {
+      "source": "remake/large/00_总览.tex",
+      "digest": "3569782d37ef",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "099d54d584a5",
+      "category": "framework",
+      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "9cc223c3415c",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "0406bf1693a8",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "57612fd5a13c",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "af3891f7aecb",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "5693a8ea9c81",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "06198b62a17e",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "474e1e7f7ce2",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "bb814ecdd774",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "cd437312df68",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "02bff6b14abd",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "247c77935e54",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "6377e1211d84",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "b6c61d6c1e68",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "836fd043d272",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "180996659f52",
+      "category": "framework",
+      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "5acb66d02ec5",
+      "category": "framework",
+      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "beaed06f0098",
+      "category": "framework",
+      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "2196d6a3c07b",
+      "category": "framework",
+      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "0264fff26d44",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "e57d0679e846",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "8788cd45ac6b",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "b292098ba177",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "05404aff598e",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "a25516c33002",
+      "category": "framework",
+      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "37bb1c3cd706",
+      "category": "framework",
+      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "017ab6f4134e",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "9bcb3272c12b",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "e407388d32e8",
+      "category": "framework",
+      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "b51a77af0cf8",
+      "category": "framework",
+      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "5ec68847c43d",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/01_位运算.tex",
+      "digest": "618aabf88c1c",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/01_线性基_详解.tex",
+      "digest": "11ca619f9714",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/01_线性基_详解.tex",
+      "digest": "81c8ca3b9c5c",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/02_基础.tex",
+      "digest": "e59d3bb81851",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/02_基础.tex",
+      "digest": "b40014727cad",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/02_基础.tex",
+      "digest": "5f4faa28cfc7",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/02_基础.tex",
+      "digest": "b5e9e02a5bf5",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/02_基础.tex",
+      "digest": "f5cb38abede9",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/02_基础.tex",
+      "digest": "a264503c15e7",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/02_基础.tex",
+      "digest": "bdea7fc38249",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/02_基础.tex",
+      "digest": "953b9e1a2035",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/02_基础.tex",
+      "digest": "0570ac786caf",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/02_基础.tex",
+      "digest": "a432c7d3afa9",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/02_基础.tex",
+      "digest": "67213d994d2e",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/02_基础.tex",
+      "digest": "2274eadd4de6",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/02_基础.tex",
+      "digest": "edddd769330b",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/02_基础.tex",
+      "digest": "e23da23c4f06",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/02_基础.tex",
+      "digest": "349144bcd556",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/02_基础.tex",
+      "digest": "075a7a6b48ee",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/02_基础.tex",
+      "digest": "e8d507326fbc",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学.tex",
+      "digest": "2bff715ab9c8",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学.tex",
+      "digest": "491f1a8691e2",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学.tex",
+      "digest": "8c0532bf73d7",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学.tex",
+      "digest": "2fe57ec990ca",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学.tex",
+      "digest": "05882dfe6063",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学.tex",
+      "digest": "8b2953954844",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学.tex",
+      "digest": "1866487712aa",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学.tex",
+      "digest": "ffa6a5ddf333",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学.tex",
+      "digest": "682f3f7dc432",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学.tex",
+      "digest": "54e6181c8e7a",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学.tex",
+      "digest": "71665839a847",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学.tex",
+      "digest": "76a585c8e83a",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学.tex",
+      "digest": "97ece652f60b",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学.tex",
+      "digest": "b3d9bbd3c302",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学.tex",
+      "digest": "d70572d2258d",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学.tex",
+      "digest": "321bcd38fca8",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_高精度.tex",
+      "digest": "2763f5575fd8",
+      "category": "explanatory",
+      "note": "Python 解释器开放超长整数字符串限制的环境设置。"
+    },
+    {
+      "source": "remake/large/03_数学_详解.tex",
+      "digest": "5bbfc3735373",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学_详解.tex",
+      "digest": "d290810dad06",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/03_数学_详解.tex",
+      "digest": "142fa1dd4203",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/03_数学_详解.tex",
+      "digest": "b30deeb0228e",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学_详解.tex",
+      "digest": "c422df2a4ec9",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/03_数学_详解.tex",
+      "digest": "850e2dc3a298",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/03_数学_详解.tex",
+      "digest": "2ffc37b71ed7",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学_详解.tex",
+      "digest": "115c0a124b96",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/03_数学_详解.tex",
+      "digest": "a7b45c7da1a4",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/03_数学_详解.tex",
+      "digest": "a0f0f32d30bb",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学_详解.tex",
+      "digest": "e4f65fd76b70",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/03_数学_详解.tex",
+      "digest": "c021dd0709cc",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/03_数学_详解.tex",
+      "digest": "efc39a3836e6",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/03_数学_详解.tex",
+      "digest": "689ff8984ae7",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学_详解.tex",
+      "digest": "f1e5a37fc6d9",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/03_数学_详解.tex",
+      "digest": "c1684569896c",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/03_数学_详解.tex",
+      "digest": "54032890bf8c",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/04_数据结构.tex",
+      "digest": "5e2430e82f8c",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/04_数据结构.tex",
+      "digest": "b5aed7244413",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/04_数据结构.tex",
+      "digest": "41a3a6678d48",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/04_数据结构.tex",
+      "digest": "4a98bb250f19",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/04_数据结构.tex",
+      "digest": "48ab70a08685",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/04_数据结构.tex",
+      "digest": "dc563bc2e93b",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/04_数据结构_详解.tex",
+      "digest": "bd4d8e10ebae",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/04_数据结构_详解.tex",
+      "digest": "9babe2a6fae6",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/04_数据结构_详解.tex",
+      "digest": "927e9f04406c",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/04_数据结构_详解.tex",
+      "digest": "261c98406590",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/04_数据结构_详解.tex",
+      "digest": "a627822c8f4e",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/04_数据结构_详解.tex",
+      "digest": "411e3a944495",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/04_数据结构_详解.tex",
+      "digest": "8731669a77fe",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/04_数据结构_详解.tex",
+      "digest": "f529b1e1b30d",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/04_数据结构_详解.tex",
+      "digest": "99dba61289ee",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/04_数据结构_详解.tex",
+      "digest": "366caebefefc",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/04_数据结构_详解.tex",
+      "digest": "5241ec31b88e",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/04_数据结构_详解.tex",
+      "digest": "cd2417580e0d",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/04_数据结构_详解.tex",
+      "digest": "85650f55b7f1",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/04_数据结构_详解.tex",
+      "digest": "af1554524234",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/05_字符串.tex",
+      "digest": "79aab1922b5c",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/05_字符串_详解.tex",
+      "digest": "d2e914f9e47d",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/05_字符串_详解.tex",
+      "digest": "9428347f07a8",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/05_字符串_详解.tex",
+      "digest": "3a9ed29fd9bb",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/05_字符串_详解.tex",
+      "digest": "42df72f463d5",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/05_字符串_详解.tex",
+      "digest": "461b5c82ac07",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/05_字符串_详解.tex",
+      "digest": "fa71e88f163d",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/05_字符串_详解.tex",
+      "digest": "6767771816b5",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/05_字符串_详解.tex",
+      "digest": "b11a404d7be4",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/05_字符串_详解.tex",
+      "digest": "2878bc708588",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "bd41e28bc39d",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "2044fb0883cb",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "9ed422eb0668",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "114c19220b8f",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "61e64298542a",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "5a08159f09b9",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "e6a68200e341",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "0f0eb14b4a80",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "a8fbb5e545b3",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "c9555a7338aa",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "af2ac39ac4fa",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "4d24a89359e6",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "5a463a7c9fb3",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "8f1bd2d312ee",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "2e0f00fb0316",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "ad2e743ec101",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "21abdf47c467",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "f6b697baf8a0",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "c25e59092c17",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "d3fb80492ee8",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "d70c51530a92",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "6ed0ca842510",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/06_图论.tex",
+      "digest": "d4e2598e9cfc",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/07_树上进阶.tex",
+      "digest": "2ab9c28ea06a",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/07_树上进阶.tex",
+      "digest": "30506b75f69a",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/07_树上进阶.tex",
+      "digest": "b460fa98283e",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/07_树上进阶.tex",
+      "digest": "436109c0a399",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/07_树上进阶.tex",
+      "digest": "4abaa14522cb",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/07_树上进阶.tex",
+      "digest": "98e2ea939555",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/08_动态规划.tex",
+      "digest": "e72b0855aab8",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划.tex",
+      "digest": "78db33a36ddd",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划.tex",
+      "digest": "f8deed91b77f",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划.tex",
+      "digest": "d1ceca2b4744",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划.tex",
+      "digest": "f21ddc748b68",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划.tex",
+      "digest": "08a9ff9baa04",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划.tex",
+      "digest": "299aeea0a381",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划.tex",
+      "digest": "e88d28f536bb",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划.tex",
+      "digest": "c2ad2e3ff514",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划.tex",
+      "digest": "06b52122bf94",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划.tex",
+      "digest": "5c5f0f87f05e",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划.tex",
+      "digest": "c1478be353f1",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划.tex",
+      "digest": "5498d1982df3",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划_详解.tex",
+      "digest": "2b48aaf2decf",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划_详解.tex",
+      "digest": "f20f3c6b2318",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/08_动态规划_详解.tex",
+      "digest": "f9ac320e8492",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划_详解.tex",
+      "digest": "c8e45baa7f63",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/08_动态规划_详解.tex",
+      "digest": "b35f489af1f6",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划_详解.tex",
+      "digest": "b1479754d17a",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划_详解.tex",
+      "digest": "cd106b44292b",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/08_动态规划_详解.tex",
+      "digest": "3aa12b8cfd9d",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/08_动态规划_详解.tex",
+      "digest": "fa5491fe5de9",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/08_动态规划_详解.tex",
+      "digest": "ce9a2d3611eb",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/08_动态规划_详解.tex",
+      "digest": "e5e2181c5376",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/08_动态规划_详解.tex",
+      "digest": "ed8eea9b30a4",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/09_博弈.tex",
+      "digest": "aad292652b77",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/09_博弈.tex",
+      "digest": "1688166a31fe",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/09_博弈.tex",
+      "digest": "ecd18e3ed40c",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/09_博弈.tex",
+      "digest": "05d53e2e7600",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/09_博弈.tex",
+      "digest": "ec7395148286",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/09_博弈_详解.tex",
+      "digest": "ed5bba72b1d5",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/09_博弈_详解.tex",
+      "digest": "02a6451e3474",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/09_博弈_详解.tex",
+      "digest": "e052c7afd339",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/09_博弈_详解.tex",
+      "digest": "9d03455c4920",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/09_博弈_详解.tex",
+      "digest": "0b1f325f2364",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/09_博弈_详解.tex",
+      "digest": "f7b71f9cd7b1",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/09_博弈_详解.tex",
+      "digest": "f1b5dd6d01cf",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/09_博弈_详解.tex",
+      "digest": "a5dfc0f8eb07",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/09_博弈_详解.tex",
+      "digest": "37440b807c67",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/09_博弈_详解.tex",
+      "digest": "cf5ef6218d14",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/09_博弈_详解.tex",
+      "digest": "5a5c935184b4",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/09_博弈_详解.tex",
+      "digest": "542ea975735f",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/09_博弈_详解.tex",
+      "digest": "3145ee39e441",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/09_博弈_详解.tex",
+      "digest": "5ee890ad8948",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/09_博弈_详解.tex",
+      "digest": "08b5651f317f",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/09_博弈_详解.tex",
+      "digest": "089a4cae260b",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/10_几何.tex",
+      "digest": "e63e62b4ba38",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/10_几何.tex",
+      "digest": "b102190a6b1c",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/10_几何.tex",
+      "digest": "6018ebe0383c",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/10_几何.tex",
+      "digest": "946db0893e63",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/10_几何.tex",
+      "digest": "19a7808ec1c7",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/10_几何.tex",
+      "digest": "7ac766ed9229",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/10_几何.tex",
+      "digest": "77a0c0098729",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/10_几何.tex",
+      "digest": "edaba29a061c",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/10_几何.tex",
+      "digest": "1550139b3988",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/10_几何.tex",
+      "digest": "075a7a6b48ee",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/10_几何.tex",
+      "digest": "e8d507326fbc",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/10_几何.tex",
+      "digest": "65d6156364fd",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/10_几何_详解.tex",
+      "digest": "b16d68fd0f79",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/10_几何_详解.tex",
+      "digest": "69294a4607a7",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/10_几何_详解.tex",
+      "digest": "4737c2781421",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/10_几何_详解.tex",
+      "digest": "1391082d7d81",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/10_几何_详解.tex",
+      "digest": "98753bc78de4",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/10_几何_详解.tex",
+      "digest": "eb3b8f290dc3",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/10_几何_详解.tex",
+      "digest": "1a10e960ee72",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/10_几何_详解.tex",
+      "digest": "91a8afba8ee0",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/10_几何_详解.tex",
+      "digest": "686dac4e240f",
+      "category": "framework",
+      "note": "可复制实现依赖题意、外部状态或调用约定；执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "remake/large/10_几何_详解.tex",
+      "digest": "ebd675728843",
+      "category": "explanatory",
+      "note": "对应模板的输入输出或调用测试数据，验证由测试运行器承担。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "aeaf8a811003",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "97a83bae0bea",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "369865072ee0",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "871fdb369e47",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "492e9974cc19",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "a2c64a156103",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "9513437b81c8",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "3efceea85231",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "5d670860142f",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "31dff9e7bce2",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "ff0e6336d5c6",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "e48b93d25206",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "879708b65218",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "ad4d0d1b0731",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "55504bfcb316",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "1cf110c944c1",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "73414a583988",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "0f976303312f",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "d152695926c1",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "0848b91808e0",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "54205c24a0be",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "ac0638894f5d",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "622805acc7d2",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "972b9b9b6a58",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "115cb8fc46d7",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "02d777b29ae2",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "fcd71a294662",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "f98a7971bb22",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "eb67c4fef5c6",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "7682356050a3",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "51153e846b2b",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "c510feec56cf",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "87e7c5f3d055",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "39afae3b7c80",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "3f04370b9a5f",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "72551f19f6a0",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "3270a1d85c7a",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "02048ca641e7",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "5b8107779b3a",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/11_针对性测试.tex",
+      "digest": "a311c7838f42",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/13_例题与测试.tex",
+      "digest": "3625b0792778",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/13_例题与测试.tex",
+      "digest": "004db2d3bb32",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/13_例题与测试.tex",
+      "digest": "71a127e2fd81",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/13_例题与测试.tex",
+      "digest": "a073831610d0",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/13_例题与测试.tex",
+      "digest": "fcb53eca2238",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/13_例题与测试.tex",
+      "digest": "9452943d6f8f",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/13_例题与测试.tex",
+      "digest": "6d26ed730528",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "remake/large/13_例题与测试.tex",
+      "digest": "a342b2ed0d2c",
+      "category": "explanatory",
+      "note": "决策说明、测试矩阵、例题索引或验收命令，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "ffaf71c6bf78",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "9534e1b3db6c",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "52765c62c8bb",
+      "category": "framework",
+      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "8a8365a4fbd1",
+      "category": "framework",
+      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "58d7ad255788",
+      "category": "framework",
+      "note": "入口中的可复制代码骨架；依赖调用处数据或题意，执行摘要绑定的静态结构检查。",
+      "check": "static"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "b485bf8c59fd",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "7ef9d3c3dd47",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "4251208685cc",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "13ab4caddd70",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "aec31ae50b75",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "11a5ea26c03c",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "b9875cabfa69",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "59f69b6ddc07",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "e5e9f2234f6d",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "200d558b5752",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "7f46599af7d5",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "17b876e72435",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    },
+    {
+      "source": "banzi/板子_大版本.tex",
+      "digest": "9cd12aefee06",
+      "category": "explanatory",
+      "note": "STL/API、命令、配置或快捷键速查片段，不作为独立算法模板。"
+    }
+  ]
 }

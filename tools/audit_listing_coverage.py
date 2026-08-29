@@ -31,6 +31,7 @@ HEADING_START_RE = re.compile(
     r"\\(chapter|section|subsection|subsubsection)\s*\{"
 )
 ALLOWED_EXPLICIT_CATEGORIES = {"framework", "pseudocode", "explanatory"}
+ALLOWED_FRAMEWORK_CHECKS = {"static"}
 STATUS_LABELS = {
     "differential": "DIFFERENTIAL",
     "framework": "FRAMEWORK",
@@ -50,6 +51,7 @@ class Listing:
     differential_cases: list[str] = field(default_factory=list)
     category: str = "pending"
     note: str = ""
+    check: str = ""
 
     @property
     def block_id(self) -> str:
@@ -231,6 +233,22 @@ def select_listing(
     return matches[0]
 
 
+def select_listing_by_digest(
+    listings: list[Listing], source: str, digest: str, owner: str
+) -> Listing:
+    matches = [
+        listing
+        for listing in listings
+        if listing.source == Path(source).as_posix() and listing.digest == digest
+    ]
+    if len(matches) != 1:
+        raise ValueError(
+            f"{owner}: digest {digest!r} matched {len(matches)} listings in {source}; "
+            "expected exactly one"
+        )
+    return matches[0]
+
+
 def apply_differential_cases(listings: list[Listing]) -> int:
     data = load_json(DIFFERENTIAL_MANIFEST)
     if data.get("schema_version") != 1 or not isinstance(data.get("cases"), list):
@@ -252,25 +270,55 @@ def apply_explicit_classifications(listings: list[Listing]) -> None:
             "tests/listing_coverage/classification.json has an unsupported schema"
         )
     seen: set[tuple[str, str]] = set()
+    classified_blocks: set[tuple[str, int]] = set()
     for index, item in enumerate(data["classifications"], start=1):
         owner = f"classification #{index}"
-        required = {"source", "contains", "category", "note"}
+        required = {"source", "category", "note"}
         if not isinstance(item, dict) or not required <= item.keys():
             raise ValueError(f"{owner} must define {sorted(required)}")
+        selectors = {name for name in ("contains", "digest") if item.get(name)}
+        if len(selectors) != 1:
+            raise ValueError(f"{owner} must define exactly one of contains or digest")
         category = item["category"]
         if category not in ALLOWED_EXPLICIT_CATEGORIES:
             raise ValueError(f"{owner}: unsupported category {category!r}")
-        key = (Path(item["source"]).as_posix(), item["contains"])
+        selector_name = selectors.pop()
+        selector_value = item[selector_name]
+        if not isinstance(selector_value, str):
+            raise ValueError(f"{owner}: selector must be a string")
+        if selector_name == "digest" and not re.fullmatch(
+            r"[0-9a-f]{12}", selector_value
+        ):
+            raise ValueError(f"{owner}: digest must be 12 lowercase hexadecimal digits")
+        if not isinstance(item["note"], str) or not item["note"].strip():
+            raise ValueError(f"{owner}: note must be a non-empty string")
+        key = (Path(item["source"]).as_posix(), f"{selector_name}:{selector_value}")
         if key in seen:
             raise ValueError(f"{owner}: duplicate selector")
         seen.add(key)
-        listing = select_listing(listings, key[0], key[1], owner)
+        if selector_name == "digest":
+            listing = select_listing_by_digest(listings, key[0], selector_value, owner)
+        else:
+            listing = select_listing(listings, key[0], selector_value, owner)
+        block_key = (listing.source, listing.ordinal)
+        if block_key in classified_blocks:
+            raise ValueError(f"{owner}: {listing.block_id} is classified more than once")
+        classified_blocks.add(block_key)
         if listing.differential_cases:
             raise ValueError(
                 f"{owner}: {listing.block_id} already has differential evidence"
             )
+        check = item.get("check", "")
+        if category == "framework" and check not in ALLOWED_FRAMEWORK_CHECKS:
+            raise ValueError(
+                f"{owner}: framework check must be one of "
+                f"{sorted(ALLOWED_FRAMEWORK_CHECKS)}"
+            )
+        if category != "framework" and check:
+            raise ValueError(f"{owner}: only framework entries may define check")
         listing.category = category
         listing.note = item["note"]
+        listing.check = check
 
 
 def escape_cell(value: str) -> str:
@@ -288,7 +336,8 @@ def build_report(
         "`banzi/板子_大版本.tex` 的实际渲染树生成。`PENDING` 只表示尚未归类，",
         "不表示代码已确认错误；`DIFFERENTIAL` 表示该正式代码块至少登记了一个直接",
         "提取源码的差分测试，是否通过以测试运行器的当次结果为准。测试用例数与",
-        "代码块数不能混为一谈。",
+        "代码块数不能混为一谈。验证状态只保存在测试与本报告中，不写回正式",
+        "TeX/PDF。",
         "",
         "## 汇总",
         "",
@@ -296,12 +345,13 @@ def build_report(
         f"- `lstlisting`：{len(listings)} 段",
         f"- 差分测试用例：{differential_case_count} 个",
         f"- 有差分证据的唯一代码块：{category_counts['differential']} 段",
+        f"- 已登记静态检查的框架代码块：{category_counts['framework']} 段",
         f"- 待归类代码块：{category_counts['pending']} 段",
         "",
         "| 分类 | 代码块数 | 含义 |",
         "| --- | ---: | --- |",
         f"| DIFFERENTIAL | {category_counts['differential']} | 已登记直接提取正式源的差分/性质测试 |",
-        f"| FRAMEWORK | {category_counts['framework']} | 框架条目，后续进行编译、契约或场景检查 |",
+        f"| FRAMEWORK | {category_counts['framework']} | 已登记摘要绑定的静态结构检查；结果以当次运行器为准 |",
         f"| PSEUDOCODE | {category_counts['pseudocode']} | 伪代码，不宣称可直接编译 |",
         f"| EXPLANATORY | {category_counts['explanatory']} | 命令、配置或说明性代码片段 |",
         f"| PENDING | {category_counts['pending']} | 尚未人工归类 |",
@@ -345,7 +395,8 @@ def build_report(
         for listing in source_listings:
             evidence = ", ".join(f"`{case}`" for case in listing.differential_cases)
             if not evidence:
-                evidence = escape_cell(listing.note) or "—"
+                prefix = f"`{listing.check.upper()}`；" if listing.check else ""
+                evidence = prefix + (escape_cell(listing.note) or "—")
             lines.append(
                 f"| `{listing.block_id}` | {listing.line} | "
                 f"{escape_cell(listing.heading)} | {STATUS_LABELS[listing.category]} | "
@@ -364,9 +415,9 @@ def parse_args() -> argparse.Namespace:
         help="rewrite docs/代码块检验清单.md instead of checking it",
     )
     parser.add_argument(
-        "--require-classified",
+        "--allow-pending",
         action="store_true",
-        help="fail while any formal listing remains PENDING",
+        help="temporarily allow PENDING listings (strict coverage is the default)",
     )
     return parser.parse_args()
 
@@ -410,7 +461,7 @@ def main() -> int:
         f"differential_listings={counts['differential']}, "
         f"pending={counts['pending']}"
     )
-    if args.require_classified and counts["pending"]:
+    if counts["pending"] and not args.allow_pending:
         print(f"listing coverage error: {counts['pending']} listings remain PENDING")
         return 1
     return 0

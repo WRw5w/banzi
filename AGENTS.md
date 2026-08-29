@@ -8,9 +8,9 @@
   `archive/YYYY-MM-DD/`。
 - 注释应解释接口、参数、字段和变量的真实用途，不为补注释增加包装函数或额外 API。
 - 修改模板后运行 `tools/audit_large_interfaces.py`、`tools/audit_large_variables.py`、
-  `tools/audit_listing_coverage.py`、`tools/run_differential_tests.py` 和六个
-  `tests/refactored_*.cpp` 回归测试；差分测试只登记有完整可执行语义的模板，不登记
-  纯框架。
+  `tools/audit_listing_coverage.py`、`tools/run_framework_checks.py`、
+  `tools/run_differential_tests.py` 和六个 `tests/refactored_*.cpp` 回归测试；差分测试
+  只登记有完整可执行语义的模板，框架使用独立静态检查，验证状态不写入正式板子。
 - 连续编译两遍 XeLaTeX，目视检查受影响页面，再同步源文件、测试、正式 PDF
   和文档。
 - 完成后提交并推送 `origin/main`；版本与归档细节见 `docs/版本与归档.md`。

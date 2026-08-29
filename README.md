@@ -28,6 +28,7 @@
 python tools/audit_large_interfaces.py
 python tools/audit_large_variables.py
 python tools/audit_listing_coverage.py
+python tools/run_framework_checks.py
 python tools/run_differential_tests.py
 g++ -std=c++17 -O2 -Wall tests/refactored_strings.cpp
 g++ -std=c++17 -O2 -Wall tests/refactored_mst.cpp
@@ -39,7 +40,8 @@ xelatex -interaction=nonstopmode -output-directory banzi banzi/板子_大版本.
 xelatex -interaction=nonstopmode -output-directory banzi banzi/板子_大版本.tex
 ```
 
-修改模板后必须运行接口、变量和代码块覆盖审计、正式代码块差分测试及六组回归
-测试，连续编译两遍 XeLaTeX，并目视检查受影响页面。差分测试只登记能够定义可执行
-语义的完整模板，不登记纯框架。需要保留历史节点时只在 `archive/YYYY-MM-DD/`
-新增快照，不在 `banzi/` 或仓库根目录创建并列版本。
+修改模板后必须运行接口、变量和代码块覆盖审计、框架静态检查、正式代码块差分测试
+及六组回归测试，连续编译两遍 XeLaTeX，并目视检查受影响页面。差分测试只登记能够
+定义可执行语义的完整模板；框架使用独立检查且不在正式板子中标记验证状态。需要
+保留历史节点时只在 `archive/YYYY-MM-DD/` 新增快照，不在 `banzi/` 或仓库根目录
+创建并列版本。
