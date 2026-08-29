@@ -7,19 +7,22 @@
 DFS 可求连通块、染色、子树大小、DFS 序、树高；BFS 求无权最短路和层数。递归 DFS 在 \passthrough{\lstinline!n≈2e5!} 时可能爆栈，改手写栈或提高栈空间。
 
 \begin{lstlisting}[language={C++}]
-// 变量：g=图/树的邻接表 g。
-vector<vector<int>> g(n);
-// 变量：dist=最短路/几何距离数组或当前距离 dist。
-vector<int> dist(n, -1);
-// 变量：q=当前 BFS/单调算法使用的队列 q。
-queue<int> q;
-dist[s] = 0; q.push(s);
-while (!q.empty()) {
-    // 变量：u=当前顶点/状态编号 u。
-    int u = q.front(); q.pop();
-    // 变量：v=当前边的终点 v。
-    for (int v : g[u]) if (dist[v] == -1)
-        dist[v] = dist[u] + 1, q.push(v);
+// 接口：bfs_dist(g, s)：返回源点 s 到每个顶点的最少边数；不可达为 -1。
+// 参数：0-based 无权图邻接表 g；合法源点 s。
+vector<int> bfs_dist(const vector<vector<int>>& g, int s) {
+    // 变量：dist=源点到各顶点的最少边数，-1 表示不可达。
+    vector<int> dist(g.size(), -1);
+    // 变量：q=已确定最短距离、等待扩展的顶点队列。
+    queue<int> q;
+    dist[s] = 0; q.push(s);
+    while (!q.empty()) {
+        // 变量：u=本轮从队首取出的顶点。
+        int u = q.front(); q.pop();
+        // 变量：v=u 的相邻顶点。
+        for (int v : g[u]) if (dist[v] == -1)
+            dist[v] = dist[u] + 1, q.push(v);
+    }
+    return dist;
 }
 \end{lstlisting}
 
@@ -28,32 +31,30 @@ while (!q.empty()) {
 多源 BFS 用来求每个点到“最近源点”的无权最短距离。与单源 BFS 的区别只有初始化：把所有源点的距离设为 0，并在搜索开始前全部入队；后面的扩展过程完全相同。每个点第一次被访问时得到的就是它到源点集合的最短距离，复杂度为 \passthrough{\lstinline!O(V+E)!}。
 
 \begin{lstlisting}[language={C++}]
-// 变量：g[u] 存储从顶点 u 出发能够到达的所有相邻顶点。
-vector<vector<int>> g(n);
-// 变量：sources 存储全部源点编号；允许有重复源点。
-vector<int> sources;
-// 变量：dist[u]=顶点 u 到最近源点的最短边数，-1 表示尚未到达。
-vector<int> dist(n, -1);
-// 变量：q 存储已经确定最短距离、等待向外扩展的顶点。
-queue<int> q;
-
-// 所有源点处在第 0 层，必须在正式 BFS 前一起入队。
-// 变量：s=当前正在初始化的源点编号。
-for (int s : sources) {
-    if (dist[s] != -1) continue;  // 跳过重复源点
-    dist[s] = 0;
-    q.push(s);
-}
-
-while (!q.empty()) {
-    // 变量：u 是当前取出并向相邻顶点扩展的顶点。
-    int u = q.front(); q.pop();
-    // 变量：v 是 u 的一个相邻顶点。
-    for (int v : g[u]) {
-        if (dist[v] != -1) continue;
-        dist[v] = dist[u] + 1;
-        q.push(v);
+// 接口：multi_source_bfs(g, sources)：返回每个顶点到最近源点的最少边数；不可达为 -1。
+// 参数：0-based 无权图邻接表 g；允许重复的合法源点列表 sources。
+vector<int> multi_source_bfs(const vector<vector<int>>& g,
+                             const vector<int>& sources) {
+    // 变量：dist=各顶点到最近源点的最少边数，-1 表示不可达。
+    vector<int> dist(g.size(), -1);
+    // 变量：q=已确定最近源距离、等待扩展的顶点队列。
+    queue<int> q;
+    // 变量：s=当前初始化的源点编号。
+    for (int s : sources) {
+        if (dist[s] != -1) continue;
+        dist[s] = 0; q.push(s);
     }
+    while (!q.empty()) {
+        // 变量：u=本轮从队首取出的顶点。
+        int u = q.front(); q.pop();
+        // 变量：v=u 的相邻顶点。
+        for (int v : g[u]) {
+            if (dist[v] != -1) continue;
+            dist[v] = dist[u] + 1;
+            q.push(v);
+        }
+    }
+    return dist;
 }
 \end{lstlisting}
 
@@ -441,23 +442,30 @@ for (int s = 0; s < n; ++s) if (color[s] < 0) {
 \end{itemize}
 
 \begin{lstlisting}[language={C++}]
-// 变量：matchR=右部点当前匹配到的左部点 matchR；vis=访问或记忆化完成标记 vis。
-vector<int> matchR(n, -1), vis(n);
-// 接口：aug(u)：从左部点 u 尝试寻找一条二分图增广路；返回 true 表示本节条件成立/操作成功。
-// 参数：顶点/状态编号 u。
-bool aug(int u) {
-    // 变量：v=当前边的终点 v。
-    for (int v : g[u]) if (vis[v] != stamp) {
-        vis[v] = stamp;
-        if (matchR[v] == -1 || aug(matchR[v]))
-            return matchR[v] = u, true;
-    }
-    return false;
+// 接口：max_bipartite_matching(g, right_n)：返回二分图最大匹配边数。
+// 参数：g[u] 给出左部点 u 的右部邻点；右部点数 right_n，编号为 [0,right_n)。
+int max_bipartite_matching(const vector<vector<int>>& g, int right_n) {
+    // 变量：matchR=右部点匹配到的左部点；vis=本轮增广访问时间戳。
+    vector<int> matchR(right_n, -1), vis(right_n);
+    // 变量：stamp=当前左部点增广搜索使用的访问时间戳。
+    int stamp = 0;
+    // 接口：匿名 lambda(u)：从左部点 u 尝试寻找一条增广路；返回是否增广成功。
+    function<bool(int)> aug = [&](int u) {
+        // 变量：v=当前尝试匹配的右部点。
+        for (int v : g[u]) if (vis[v] != stamp) {
+            vis[v] = stamp;
+            if (matchR[v] == -1 || aug(matchR[v]))
+                return matchR[v] = u, true;
+        }
+        return false;
+    };
+    // 变量：matching=已经找到的匹配边数。
+    int matching = 0;
+    // 变量：u=当前发起增广搜索的左部点。
+    for (int u = 0; u < (int)g.size(); ++u)
+        ++stamp, matching += aug(u);
+    return matching;
 }
-// 变量：matching=当前二分图匹配边数 matching。
-int matching = 0;
-// 变量：u=当前顶点/状态编号 u。
-for (int u = 0; u < left_n; ++u) ++stamp, matching += aug(u);
 \end{lstlisting}
 
 \subsection{带权匹配}\label{ux5e26ux6743ux5339ux914d}

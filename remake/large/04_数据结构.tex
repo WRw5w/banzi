@@ -241,24 +241,42 @@ int median() { return low.top(); }
 
 \section{单调结构与差分约束}\label{ux5355ux8c03ux7ed3ux6784ux4e0eux5deeux5206ux7ea6ux675f}
 
-单调栈/队列见 \href{01-基础与实现规范.md}{01-基础与实现规范}。双端队列还能实现 0-1 BFS：边权 0 从队首加入，边权 1 从队尾加入。
+单调栈/队列见 \href{01-基础与实现规范.md}{01-基础与实现规范}。差分约束
+\passthrough{\lstinline!x[v] <= x[u] + w!} 建边 \passthrough{\lstinline!u->v!}；
+把全部点作为源点可检查任意连通分量中的负环。
 
 \begin{lstlisting}[language={C++}]
-// 变量：dist=最短路/几何距离数组或当前距离 dist。
-vector<int> dist(n, INF);
-// 变量：q=当前 BFS/单调算法使用的队列 q。
-deque<int> q;
-dist[s] = 0; q.push_front(s);
-while (!q.empty()) {
-    // 变量：u=当前顶点/状态编号 u。
-    int u = q.front(); q.pop_front();
-    // 变量：v=当前边的终点 v；w=当前边权 w。
-    for (auto [v, w] : g[u]) {
-        if (dist[v] <= dist[u] + w) continue;
-        dist[v] = dist[u] + w;
-        if (w == 0) q.push_front(v);
-        else q.push_back(v);
+// 接口：difference_constraints(n, edges)：求一组满足 x[v]<=x[u]+w 的势函数；存在负环时返回 nullopt。
+// 参数：变量数 n；约束边 (u,v,w)，顶点使用 0-based 编号。
+optional<vector<long long>> difference_constraints(
+        int n, const vector<tuple<int, int, long long>>& edges) {
+    // 变量：g=由差分约束构成的有向带权邻接表。
+    vector<vector<pair<int, long long>>> g(n);
+    // 变量：u=约束边起点；v=约束边终点；w=x[v]-x[u] 的上界。
+    for (auto [u, v, w] : edges) g[u].push_back({v, w});
+    // 变量：dist=当前找到的各变量可行上界势函数。
+    vector<long long> dist(n, 0);
+    // 变量：path_edges=产生当前 dist 值的松弛路径边数，用于识别负环。
+    vector<int> path_edges(n, 0);
+    // 变量：in_queue=顶点当前是否已经在待松弛队列中。
+    vector<char> in_queue(n, true);
+    // 变量：q=等待扫描出边的顶点队列。
+    queue<int> q;
+    // 变量：u=初始化入队的顶点编号。
+    for (int u = 0; u < n; ++u) q.push(u);
+    while (!q.empty()) {
+        // 变量：u=本轮从队首取出的约束边起点。
+        int u = q.front(); q.pop(); in_queue[u] = false;
+        // 变量：v=约束边终点；w=x[v]-x[u] 的上界。
+        for (auto [v, w] : g[u]) {
+            if (dist[v] <= dist[u] + w) continue;
+            dist[v] = dist[u] + w;
+            path_edges[v] = path_edges[u] + 1;
+            if (path_edges[v] >= n) return nullopt;
+            if (!in_queue[v]) in_queue[v] = true, q.push(v);
+        }
     }
+    return dist;
 }
 \end{lstlisting}
 

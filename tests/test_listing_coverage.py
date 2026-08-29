@@ -56,7 +56,19 @@ class ListingCoverageGateTests(unittest.TestCase):
         self.assertEqual(len({item.note for item in frameworks}), len(frameworks))
         for item in frameworks:
             self.assertTrue(item.required_patterns, item.block_id)
+            self.assertGreaterEqual(len(item.missing_dependencies), 2, item.block_id)
+            self.assertTrue(item.validated_surface, item.block_id)
             self.assertNotIn("验证由测试运行器承担", item.note)
+
+    def test_block_id_cannot_disguise_a_duplicated_framework_reason(self) -> None:
+        first = "结构框架（06_图论:004：最短路）：缺少图、源点、边权限制和不可达输出。"
+        second = "结构框架（06_图论:005：最短路）：缺少图、源点、边权限制和不可达输出。"
+        self.assertTrue(coverage.framework_notes_too_similar(first, second))
+
+    def test_heading_swap_cannot_disguise_template_boilerplate(self) -> None:
+        first = "结构框架（三分）：缺少窗口宽度、最大方向和过期下标规则；当前只核对正文。"
+        second = "结构框架（斜率优化）：缺少窗口宽度、最大方向和过期下标规则；当前只核对正文。"
+        self.assertTrue(coverage.framework_notes_too_similar(first, second))
 
 
 if __name__ == "__main__":

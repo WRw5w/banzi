@@ -115,6 +115,7 @@
         {"source": "remake/large/10_几何.tex", "contains": "vector<Point> convex_hull", "marker": "// @@@CONVEX_HULL@@@"},
         {"source": "remake/large/10_几何.tex", "contains": "vector<Point> clip", "marker": "// @@@CLIP@@@"},
         {"source": "remake/large/10_几何.tex", "contains": "struct HalfPlane { Point p, v; Real ang; }", "marker": "// @@@HPI@@@"},
+        {"source": "remake/large/10_几何_详解.tex", "contains": "struct HalfPlane { Point a, v; }", "marker": "// @@@HPI_HELPERS@@@"},
         {"source": "remake/large/10_几何_详解.tex", "contains": "Circle min_circle", "marker": "// @@@MIN_CIRCLE@@@"},
         {"source": "remake/large/10_几何_详解.tex", "contains": "struct CoverNode {", "marker": "// @@@UNION_AREA@@@"}
       ],
@@ -178,6 +179,110 @@
       ],
       "stdin": "5\n1 2 3 8 10\n",
       "expected_stdout": "11\n"
+    },
+    {
+      "id": "foundations.complete_algorithms",
+      "description": "bitset、SOS、枚举、折半、差分、扫描线、二分、滑窗、三分、贪心、单调结构、离散化与随机选择的直接提取随机性质测试",
+      "harness": "tests/contracts/harnesses/foundations_complete.cpp",
+      "snippets": [
+        {"source": "banzi/板子_大版本.tex", "contains": "bitset<MAXV> bs;", "marker": "// @@@BITSET_KNAPSACK@@@"},
+        {"source": "banzi/板子_大版本.tex", "contains": "void transitive_closure", "marker": "// @@@BITSET_CLOSURE@@@"},
+        {"source": "banzi/板子_大版本.tex", "contains": "vector<int> matches;", "marker": "// @@@SHIFT_AND@@@"},
+        {"source": "banzi/板子_大版本.tex", "contains": "f[mask] += f[mask ^ (1 << i)]", "marker": "// @@@SOS@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "enumerate_submasks", "marker": "// @@@SUBSET_ENUMERATION@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "void dfs(int pos, long long sum)", "marker": "// @@@BACKTRACKING@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "mitm_max_subset_sum", "marker": "// @@@MITM@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "vector<long long> pre(n + 1), diff(n + 2)", "marker": "// @@@DIFFERENCE_ARRAY@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "vector<pair<int, int>> event", "marker": "// @@@SCANLINE_PEAK@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "l 是第一个 a[l] >= x", "marker": "// @@@BINARY_SEARCH@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "minimize_max_segment_sum", "marker": "// @@@BINARY_ANSWER@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "vector<int> cnt(alphabet)", "marker": "// @@@SLIDING_WINDOW@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "while (r - l > 3)", "marker": "// @@@TERNARY_SEARCH@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "numeric_limits<int>::min(), chosen", "marker": "// @@@INTERVAL_GREEDY@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "chosen.push(job.cost)", "marker": "// @@@REGRET_GREEDY@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "vector<int> nextGreater", "marker": "// @@@MONOTONIC_STACK@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "answer.push_back(a[q.front()])", "marker": "// @@@MONOTONIC_QUEUE@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "vector<long long> xs = coordinates", "marker": "// @@@DISCRETIZATION@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "把 1..n 按奇偶分组输出", "marker": "// @@@ODD_EVEN_CONSTRUCTION@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "uint64_t random_hash = rng()", "marker": "// @@@RANDOMIZED_SELECTION@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "void bitset_closure", "marker": "// @@@REACHABILITY@@@"}
+      ],
+      "run_timeout_seconds": 45
+    },
+    {
+      "id": "math.foundation_algorithms",
+      "description": "线性筛、整除分块、phi/mu、组合数、容斥、DAG 期望和置换循环的直接提取性质测试",
+      "harness": "tests/contracts/harnesses/math_foundations.cpp",
+      "snippets": [
+        {"source": "remake/large/03_数学.tex", "contains": "if (p > lp[i]", "marker": "// @@@LINEAR_SIEVE@@@"},
+        {"source": "remake/large/03_数学.tex", "contains": "long long quotient = n / l", "marker": "// @@@DIVISOR_BLOCKS@@@"},
+        {"source": "remake/large/03_数学.tex", "contains": "vector<int> mu(N)", "marker": "// @@@PHI_MU@@@"},
+        {"source": "remake/large/03_数学.tex", "contains": "vector<long long> fac(N), ifac(N)", "marker": "// @@@COMBINATIONS@@@"},
+        {"source": "remake/large/03_数学.tex", "contains": "count_satisfying(mask)", "marker": "// @@@GENERIC_INCLUSION@@@"},
+        {"source": "remake/large/03_数学.tex", "contains": "double expected_dag", "marker": "// @@@EXPECTED_DAG@@@"},
+        {"source": "remake/large/03_数学.tex", "contains": "result[cyc[j]]", "marker": "// @@@PERMUTATION_CYCLES@@@"},
+        {"source": "remake/large/03_数学_详解.tex", "contains": "long long bad = 0", "marker": "// @@@MULTIPLES_INCLUSION@@@"}
+      ],
+      "run_timeout_seconds": 30
+    },
+    {
+      "id": "graph.foundation_algorithms",
+      "description": "BFS、多源 BFS、拓扑、Dijkstra、0-1 BFS、二分图染色与最大匹配的直接提取随机性质测试",
+      "harness": "tests/contracts/harnesses/graph_foundations.cpp",
+      "snippets": [
+        {"source": "remake/large/06_图论.tex", "contains": "vector<int> bfs_dist", "marker": "// @@@BFS@@@"},
+        {"source": "remake/large/06_图论.tex", "contains": "vector<int> multi_source_bfs", "marker": "// @@@MULTI_BFS@@@"},
+        {"source": "remake/large/06_图论.tex", "contains": "runtime_error(\"cycle\")", "marker": "// @@@TOPO@@@"},
+        {"source": "remake/large/06_图论.tex", "contains": "priority_queue<P, vector<P>, greater<P>>", "marker": "// @@@DIJKSTRA@@@"},
+        {"source": "remake/large/06_图论.tex", "contains": "zero_one_graph[u]", "marker": "// @@@ZERO_ONE_BFS@@@"},
+        {"source": "remake/large/04_数据结构.tex", "contains": "difference_constraints", "marker": "// @@@DIFFERENCE_CONSTRAINTS@@@"},
+        {"source": "remake/large/06_图论.tex", "contains": "vector<int> color(n, -1)", "marker": "// @@@BIPARTITE_COLOR@@@"},
+        {"source": "remake/large/06_图论.tex", "contains": "int max_bipartite_matching", "marker": "// @@@BIPARTITE_MATCHING@@@"}
+      ],
+      "run_timeout_seconds": 35
+    },
+    {
+      "id": "dp.foundation_algorithms",
+      "description": "LIS、最大子段和、LCS、两类背包、状态压缩、滚动数组、单调队列优化、SOS 与 CHT 的直接提取性质测试",
+      "harness": "tests/contracts/harnesses/dp_foundations.cpp",
+      "snippets": [
+        {"source": "remake/large/08_动态规划.tex", "contains": "vector<int> tail", "marker": "// @@@LIS_MAX_SUBARRAY@@@"},
+        {"source": "remake/large/08_动态规划.tex", "contains": "vector<vector<int>> lcs", "marker": "// @@@LCS@@@"},
+        {"source": "remake/large/08_动态规划.tex", "contains": "zero_one_knapsack", "marker": "// @@@KNAPSACK@@@"},
+        {"source": "remake/large/08_动态规划.tex", "contains": "dp[1][0] = 0", "marker": "// @@@TSP_DP@@@"},
+        {"source": "remake/large/08_动态规划.tex", "contains": "transition(prev[j]", "marker": "// @@@ROLLING_ARRAY@@@"},
+        {"source": "remake/large/08_动态规划.tex", "contains": "window_min_dp", "marker": "// @@@WINDOW_DP@@@"},
+        {"source": "remake/large/08_动态规划.tex", "contains": "bool bad(Line a", "marker": "// @@@CHT@@@"},
+        {"source": "remake/large/08_动态规划_详解.tex", "contains": "for (int bit = 0; bit < K", "marker": "// @@@SOS_DETAIL@@@"},
+        {"source": "remake/large/08_动态规划_详解.tex", "contains": "bool useless(const Line&", "marker": "// @@@CHT_DETAIL@@@"}
+      ],
+      "run_timeout_seconds": 35
+    },
+    {
+      "id": "structures_strings_geometry.foundation_algorithms",
+      "description": "STL、仿射懒标记、Segment Tree Beats、字符串哈希、随机选择、bitset 闭包和整数方向归一化的直接提取性质测试",
+      "harness": "tests/contracts/harnesses/structures_strings_geometry.cpp",
+      "snippets": [
+        {"source": "remake/large/04_数据结构.tex", "contains": "vector<int> a = input", "marker": "// @@@STL_COMPONENTS@@@"},
+        {"source": "remake/large/04_数据结构_详解.tex", "contains": "struct Tag {", "marker": "// @@@AFFINE_TAGS@@@"},
+        {"source": "remake/large/04_数据结构_详解.tex", "contains": "struct BeatNode {", "marker": "// @@@SEGMENT_BEATS@@@"},
+        {"source": "remake/large/05_字符串.tex", "contains": "const unsigned long long BASE", "marker": "// @@@STRING_HASH@@@"},
+        {"source": "remake/large/10_几何.tex", "contains": "uint64_t random_hash = rng()", "marker": "// @@@GEOMETRY_RANDOM@@@"},
+        {"source": "remake/large/10_几何.tex", "contains": "geometry_bitset_closure", "marker": "// @@@GEOMETRY_CLOSURE@@@"},
+        {"source": "remake/large/10_几何.tex", "contains": "normalize_direction", "marker": "// @@@DIRECTION_NORMALIZATION@@@"},
+        {"source": "remake/large/10_几何.tex", "contains": "long long sweep_area", "marker": "// @@@GEOMETRY_SCANLINE@@@"}
+      ],
+      "run_timeout_seconds": 40
+    },
+    {
+      "id": "tree.framework_algorithms",
+      "description": "点分治重心性质与 DSU on Tree 子树不同色统计的直接提取随机性质测试",
+      "harness": "tests/contracts/harnesses/tree_frameworks.cpp",
+      "snippets": [
+        {"source": "remake/large/06_图论.tex", "contains": "int get_size(int u, int p)", "marker": "// @@@CENTROID_DECOMPOSITION@@@"},
+        {"source": "remake/large/06_图论.tex", "contains": "void dsu_on_tree", "marker": "// @@@DSU_ON_TREE@@@"}
+      ],
+      "run_timeout_seconds": 35
     }
   ]
 }

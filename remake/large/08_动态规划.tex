@@ -47,7 +47,7 @@ int lis = tail.size();
 long long bestEnding = a[0], maxSubarray = a[0];
 // 变量：i=当前循环下标 i。
 for (int i = 1; i < n; ++i) {
-    bestEnding = max(a[i], bestEnding + a[i]);
+    bestEnding = max<long long>(a[i], bestEnding + a[i]);
     maxSubarray = max(maxSubarray, bestEnding);
 }
 \end{lstlisting}
@@ -84,18 +84,28 @@ for (int i = 1; i <= n; ++i)
 容量 \passthrough{\lstinline!W≤1e5!} 时常用 \passthrough{\lstinline!O(nW)!}；物品价值小则把``最小重量''作为状态；\passthrough{\lstinline!n≤40!} 可折半搜索。
 
 \begin{lstlisting}[language={C++}]
-// 变量：dp=动态规划状态数组 dp；下标含义见本节状态定义。
-vector<long long> dp(W + 1, 0);
-// 变量：w=当前边权/转移代价 w；v=当前相邻顶点/下一状态 v。
-for (auto [w, v] : items)
-    // 变量：j=内层循环下标 j。
-    for (int j = W; j >= w; --j)
-        dp[j] = max(dp[j], dp[j - w] + v); // 0/1 背包
-// 变量：w=当前边权/转移代价 w；v=当前相邻顶点/下一状态 v。
-for (auto [w, v] : items)
-    // 变量：j=内层循环下标 j。
-    for (int j = w; j <= W; ++j)
-        dp[j] = max(dp[j], dp[j - w] + v); // 完全背包
+// 接口：zero_one_knapsack(items, W)：返回每个容量上限下的 0/1 背包最大价值。
+vector<long long> zero_one_knapsack(const vector<pair<int, int>>& items, int W) {
+    // 变量：dp=容量不超过下标时的 0/1 背包最大价值。
+    vector<long long> dp(W + 1, 0);
+    // 变量：w=当前物品重量；v=当前物品价值。
+    for (auto [w, v] : items)
+        // 变量：j=倒序枚举的背包容量。
+        for (int j = W; j >= w; --j)
+            dp[j] = max(dp[j], dp[j - w] + v);
+    return dp;
+}
+// 接口：complete_knapsack(items, W)：返回每个容量上限下的完全背包最大价值；要求物品重量为正。
+vector<long long> complete_knapsack(const vector<pair<int, int>>& items, int W) {
+    // 变量：dp=容量不超过下标时的完全背包最大价值。
+    vector<long long> dp(W + 1, 0);
+    // 变量：w=当前物品重量；v=当前物品价值。
+    for (auto [w, v] : items)
+        // 变量：j=正序枚举的背包容量。
+        for (int j = w; j <= W; ++j)
+            dp[j] = max(dp[j], dp[j - w] + v);
+    return dp;
+}
 \end{lstlisting}
 
 \section{区间 DP}\label{ux533aux95f4-dp}
@@ -262,14 +272,25 @@ for (int i = 1; i <= n; ++i) {
 形如 \passthrough{\lstinline!dp[i]=base(i)+min/max(dp[j]+g(j))!} 且 \passthrough{\lstinline!j!} 的合法范围滑动时，维护候选队列。若 \passthrough{\lstinline!g!} 可分离且窗口固定，复杂度从 \passthrough{\lstinline!O(nk)!} 降到 \passthrough{\lstinline!O(n)!}。
 
 \begin{lstlisting}[language={C++}]
-// 变量：q=当前 BFS/单调算法使用的队列 q。
-deque<int> q;
-// 变量：i=当前循环下标 i。
-for (int i = 0; i <= n; ++i) {
-    while (!q.empty() && q.front() < i - k) q.pop_front();
-    dp[i] = base[i] + (q.empty() ? INF : value(q.front()));
-    while (!q.empty() && value(q.back()) >= value(i)) q.pop_back();
-    q.push_back(i);
+// 接口：window_min_dp(base, k)：计算 dp[i]=base[i]+min(dp[j])，其中 i-k<=j<i；dp[0]=base[0]。
+// 参数：每个位置的附加代价 base；正窗口宽度 k。
+vector<long long> window_min_dp(const vector<long long>& base, int k) {
+    // 变量：n=DP 状态总数。
+    int n = (int)base.size();
+    if (n == 0) return {};
+    // 变量：dp=窗口最小值优化后的状态数组。
+    vector<long long> dp(n);
+    // 变量：q=按 dp 值递增维护的候选下标队列。
+    deque<int> q;
+    dp[0] = base[0]; q.push_back(0);
+    // 变量：i=当前计算的 DP 状态下标。
+    for (int i = 1; i < n; ++i) {
+        while (!q.empty() && q.front() < i - k) q.pop_front();
+        dp[i] = base[i] + dp[q.front()];
+        while (!q.empty() && dp[q.back()] >= dp[i]) q.pop_back();
+        q.push_back(i);
+    }
+    return dp;
 }
 \end{lstlisting}
 
@@ -354,5 +375,3 @@ int grundy(int x) {
 \item
   取模减法忘记加模；概率 DP 把浮点误差当精确相等。
 \end{itemize}
-
-

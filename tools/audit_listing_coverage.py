@@ -9,6 +9,7 @@ them an explicit framework, pseudocode, or explanatory classification.
 from __future__ import annotations
 
 import argparse
+import difflib
 import hashlib
 import json
 import re
@@ -58,6 +59,8 @@ class Listing:
     required_patterns: list[str] = field(default_factory=list)
     forbidden_patterns: list[str] = field(default_factory=list)
     allowed_empty_hooks: list[str] = field(default_factory=list)
+    missing_dependencies: list[str] = field(default_factory=list)
+    validated_surface: str = ""
 
     @property
     def block_id(self) -> str:
@@ -250,6 +253,29 @@ def load_json(path: Path) -> dict:
     return data
 
 
+def framework_note_fingerprint(note: str) -> str:
+    """Remove cosmetic block labels and shared report boilerplate from a basis note."""
+    text = re.sub(
+        r"(?:formal-entry|\d{2}_[^\s：:，；]+)\s*[:：]\s*\d{3}", "", note,
+        flags=re.IGNORECASE,
+    )
+    text = re.sub(r"^结构框架（[^）]*）[：:]", "", text.strip())
+    text = re.split(r"[；;]当前只核对", text, maxsplit=1)[0]
+    text = re.sub(r"[`'\"“”‘’（）()，,。；;：:\s]", "", text).lower()
+    return text
+
+
+def framework_notes_too_similar(left: str, right: str) -> bool:
+    a, b = framework_note_fingerprint(left), framework_note_fingerprint(right)
+    if not a or not b:
+        return a == b
+    if a == b or difflib.SequenceMatcher(None, a, b).ratio() >= 0.94:
+        return True
+    grams_a = {a[index:index + 3] for index in range(max(1, len(a) - 2))}
+    grams_b = {b[index:index + 3] for index in range(max(1, len(b) - 2))}
+    return len(grams_a & grams_b) / len(grams_a | grams_b) >= 0.90
+
+
 def select_listing(
     listings: list[Listing], source: str, needle: str, owner: str
 ) -> Listing:
@@ -363,7 +389,7 @@ def apply_explicit_classifications(listings: list[Listing]) -> None:
         )
     seen: set[tuple[str, str]] = set()
     classified_blocks: set[tuple[str, int]] = set()
-    framework_notes: set[str] = set()
+    framework_notes: list[tuple[str, str]] = []
     for index, item in enumerate(data["classifications"], start=1):
         owner = f"classification #{index}"
         required = {"source", "category", "note"}
@@ -415,13 +441,34 @@ def apply_explicit_classifications(listings: list[Listing]) -> None:
                 raise ValueError(f"{owner}: framework must define required_patterns")
             if not all(isinstance(pattern, str) and pattern for pattern in required_patterns):
                 raise ValueError(f"{owner}: required_patterns must contain non-empty strings")
-            normalized_note = re.sub(r"\s+", " ", item["note"].strip())
-            if normalized_note in framework_notes:
+            missing_dependencies = item.get("missing_dependencies")
+            if not isinstance(missing_dependencies, list) or len(missing_dependencies) < 2:
                 raise ValueError(
-                    f"{owner}: framework note is duplicated; every framework needs a "
-                    "block-specific classification basis"
+                    f"{owner}: framework must list at least two concrete missing_dependencies"
                 )
-            framework_notes.add(normalized_note)
+            if not all(isinstance(value, str) and value.strip() for value in missing_dependencies):
+                raise ValueError(f"{owner}: missing_dependencies must be non-empty strings")
+            validated_surface = item.get("validated_surface")
+            if not isinstance(validated_surface, str) or not validated_surface.strip():
+                raise ValueError(f"{owner}: framework must define validated_surface")
+            if re.search(
+                r"(?:formal-entry|\d{2}_[^\s：:，；]+)\s*[:：]\s*\d{3}", item["note"]
+            ):
+                raise ValueError(f"{owner}: framework note must not use a block id as uniqueness filler")
+            for dependency in missing_dependencies:
+                if dependency not in item["note"]:
+                    raise ValueError(
+                        f"{owner}: framework note must name missing dependency {dependency!r}"
+                    )
+            for previous_owner, previous_note in framework_notes:
+                if framework_notes_too_similar(previous_note, item["note"]):
+                    raise ValueError(
+                        f"{owner}: framework note is materially the same as {previous_owner}; "
+                        "every framework needs a block-specific classification basis"
+                    )
+            framework_notes.append((owner, item["note"]))
+            listing.missing_dependencies = missing_dependencies
+            listing.validated_surface = validated_surface
             forbidden_patterns = item.get("forbidden_patterns", [])
             if not isinstance(forbidden_patterns, list) or not all(
                 isinstance(pattern, str) and pattern for pattern in forbidden_patterns
@@ -441,7 +488,8 @@ def apply_explicit_classifications(listings: list[Listing]) -> None:
                 )
             listing.allowed_empty_hooks = allowed_empty_hooks
         elif any(name in item for name in (
-            "required_patterns", "forbidden_patterns", "allowed_empty_hooks"
+            "required_patterns", "forbidden_patterns", "allowed_empty_hooks",
+            "missing_dependencies", "validated_surface",
         )):
             raise ValueError(
                 f"{owner}: only framework entries may define structural patterns"

@@ -535,14 +535,17 @@ for (int i = 0; i < n; i++)
 \end{note}
 
 \begin{lstlisting}
-bitset<MAXN> reach[MAXN];  // reach[i][j]=1 表示 i 能到达 j
-// 初始化：reach[i][i]=1，有边 i->j 则 reach[i][j]=1
-// 变量：k=当前排名、选取数量或循环层数 k。
-for (int k = 0; k < n; k++)
-    // 变量：i=当前循环下标 i。
-    for (int i = 0; i < n; i++)
-        if (reach[i][k])
-            reach[i] |= reach[k];  // i 能到 k，则 k 能到的 i 都能到
+// 接口：transitive_closure(reach, n)：原地计算前 n 个顶点的传递闭包。
+// 参数：reach 初始含自环和原图边；n 为实际顶点数且 n<=MAXN。
+template<size_t MAXN>
+void transitive_closure(array<bitset<MAXN>, MAXN>& reach, int n) {
+    // 变量：k=当前允许作为中转点的顶点 k。
+    for (int k = 0; k < n; k++)
+        // 变量：i=当前起点 i。
+        for (int i = 0; i < n; i++)
+            if (reach[i][k])
+                reach[i] |= reach[k];
+}
 \end{lstlisting}
 
 \subsection{bitset 优化字符串匹配（Shift-And）}
@@ -554,13 +557,15 @@ for (int k = 0; k < n; k++)
 \begin{lstlisting}
 // B[c] 第 j 位为 1 表示 p[j]==c
 bitset<MAXM> B[256], D;
+// 变量：matches=模式串在文本中的全部 0-based 起始位置。
+vector<int> matches;
 // 变量：j=内层循环下标 j。
 for (int j = 0; j < m; j++) B[(unsigned char)p[j]][j] = 1;
 // 变量：i=当前循环下标 i。
 for (int i = 0; i < (int)t.size(); i++) {
     D = ((D << 1) | bitset<MAXM>(1)) & B[(unsigned char)t[i]];
     if (D[m - 1]) {
-        // 在文本位置 i - m + 1 处匹配成功
+        matches.push_back(i - m + 1);
     }
 }
 \end{lstlisting}

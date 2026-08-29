@@ -99,39 +99,6 @@
     },
     {
       "source": "banzi/板子_大版本.tex",
-      "digest": "180996659f52",
-      "category": "framework",
-      "note": "结构框架（子集和可行性；循环/状态更新语句）：块内缺少容量上界 `MAXV`、物品序列、目标容量以及多测清空方式；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "bitset<MAXV>\\ bs;",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "banzi/板子_大版本.tex",
-      "digest": "5acb66d02ec5",
-      "category": "framework",
-      "note": "结构框架（bitset 优化传递闭包（Floyd）；循环/状态更新语句）：块内缺少顶点数/编号、`MAXN`、边集初始化和最终可达性查询；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "bitset<MAXN>\\s+reach\\[MAXN\\]",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "banzi/板子_大版本.tex",
-      "digest": "beaed06f0098",
-      "category": "framework",
-      "note": "结构框架（bitset 优化字符串匹配（Shift-And）；循环/状态更新语句）：块内缺少模式长度 `MAXM`、字符集、模式位集初始化及文本扫描后的匹配输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "bitset<MAXM>\\ B\\[256\\],\\ D;",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "banzi/板子_大版本.tex",
       "digest": "0264fff26d44",
       "category": "explanatory",
       "note": "说明片段（__builtin 系列）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
@@ -174,17 +141,6 @@
     },
     {
       "source": "banzi/板子_大版本.tex",
-      "digest": "b51a77af0cf8",
-      "category": "framework",
-      "note": "结构框架（超集和）；循环/状态更新语句）：块内缺少调用处的数据结构声明、初始化、合法输入范围、题意转移/判定和最终输出约定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "for\\ \\(int\\ i\\ =\\ 0;\\ i\\ <\\ n;\\ i\\+\\+\\)",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "banzi/板子_大版本.tex",
       "digest": "5ec68847c43d",
       "category": "explanatory",
       "note": "说明片段（常用技巧）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
@@ -196,284 +152,10 @@
       "note": "未执行样例/验收说明（测试样例：线性基必须按 void solve() 包装）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
-      "source": "remake/large/02_基础.tex",
-      "digest": "e59d3bb81851",
-      "category": "framework",
-      "note": "结构框架（子集枚举；循环/状态更新语句）：块内缺少位数 `n`、枚举结果的消费逻辑和移位溢出上界；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "for\\ \\(int\\ mask\\ =\\ 0;\\ mask\\ <\\ \\(1\\ <<\\ n\\);\\ \\+\\+mask\\)\\ \\{",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/02_基础.tex",
-      "digest": "b40014727cad",
-      "category": "framework",
-      "note": "结构框架（回溯剪枝；`dfs` 接口）：块内缺少候选集合、合法性判定、撤销状态和答案收集方式；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "\\bdfs\\s*\\(",
-        "\\bif\\b"
-      ]
-    },
-    {
-      "source": "remake/large/02_基础.tex",
-      "digest": "5f4faa28cfc7",
-      "category": "framework",
-      "note": "结构框架（折半搜索（Meet-in-the-middle）；`gen` 接口）：块内缺少数组 `a`、`n`、上界 `limit` 和无可行子集时的答案约定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "\\bgen\\s*\\(",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/02_基础.tex",
-      "digest": "b5e9e02a5bf5",
-      "category": "framework",
-      "note": "结构框架（一维差分；循环/状态更新语句）：块内缺少数组长度、原数组、区间更新输入、0/1-based 边界和输出内容；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<long\\ long>\\ pre\\(n\\ \\+\\ 1\\),\\ diff\\(n\\ \\+\\ 2\\);",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/02_基础.tex",
-      "digest": "f5cb38abede9",
-      "category": "framework",
-      "note": "结构框架（扫描线思想；循环/状态更新语句）：块内缺少区间端点开闭约定、同坐标事件顺序和需要累计的长度/计数；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<pair<int,\\ int>>\\ event;\\ //\\ \\{坐标,\\ \\+1\\ 开始\\ /\\ \\-1\\ 结束\\}",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/02_基础.tex",
-      "digest": "a264503c15e7",
-      "category": "framework",
-      "note": "结构框架（二分查找；循环/状态更新语句）：块内缺少有序数组、查找目标和不存在时的返回约定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "int\\ l\\ =\\ 0,\\ r\\ =\\ n;",
-        "\\bwhile\\b"
-      ]
-    },
-    {
-      "source": "remake/large/02_基础.tex",
-      "digest": "bdea7fc38249",
-      "category": "framework",
-      "note": "结构框架（二分答案；`check` 接口）：块内缺少`check(limit)` 的题意可行性、单调方向以及搜索上下界；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "\\bcheck\\s*\\(",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/02_基础.tex",
-      "digest": "953b9e1a2035",
-      "category": "framework",
-      "note": "结构框架（双指针/滑动窗口；循环/状态更新语句）：块内缺少窗口合法条件、计数维护、左端收缩规则和答案定义；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<int>\\ cnt\\(alphabet\\);",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/02_基础.tex",
-      "digest": "0570ac786caf",
-      "category": "framework",
-      "note": "结构框架（三分与凸性；循环/状态更新语句）：块内缺少窗口合法条件、计数维护、左端收缩规则和答案定义；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "while\\ \\(r\\ \\-\\ l\\ >\\ 3\\)\\ \\{",
-        "\\bwhile\\b"
-      ]
-    },
-    {
-      "source": "remake/large/02_基础.tex",
-      "digest": "a432c7d3afa9",
-      "category": "framework",
-      "note": "结构框架（典型证明模式；循环/状态更新语句）：块内缺少区间输入、端点开闭、选择目标以及排序后冲突判定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "sort\\(intervals\\.begin\\(\\),\\ intervals\\.end\\(\\),",
-        "\\bsort\\b"
-      ]
-    },
-    {
-      "source": "remake/large/02_基础.tex",
-      "digest": "67213d994d2e",
-      "category": "framework",
-      "note": "结构框架（反悔贪心；循环/状态更新语句）：块内缺少任务的截止期/收益字段、可撤销候选和最终目标函数；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "sort\\(jobs\\.begin\\(\\),\\ jobs\\.end\\(\\),",
-        "\\bsort\\b"
-      ]
-    },
-    {
-      "source": "remake/large/02_基础.tex",
-      "digest": "2274eadd4de6",
-      "category": "framework",
-      "note": "结构框架（单调栈；循环/状态更新语句）：块内缺少输入数组、严格/非严格比较选择和相等元素的处理；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<int>\\ nextGreater\\(n,\\ \\-1\\),\\ st;",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/02_基础.tex",
-      "digest": "edddd769330b",
-      "category": "framework",
-      "note": "结构框架（单调队列；循环/状态更新语句）：块内缺少输入数组、严格/非严格比较选择和相等元素的处理；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "deque<int>\\ q;",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/02_基础.tex",
-      "digest": "e23da23c4f06",
-      "category": "framework",
-      "note": "结构框架（离散化与坐标压缩；声明与调用片段）：块内缺少原坐标集合、查询采用 lower/upper_bound 的边界语义和输出索引基准；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<long\\ long>\\ xs\\ =\\ coordinates;",
-        "\\bsort\\b"
-      ]
-    },
-    {
-      "source": "remake/large/02_基础.tex",
-      "digest": "349144bcd556",
-      "category": "framework",
-      "note": "结构框架（常见构造套路；循环/状态更新语句）：块内缺少题目要求的排列性质、不可构造条件和输出格式；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<int>\\ ans;",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/02_基础.tex",
-      "digest": "075a7a6b48ee",
-      "category": "framework",
-      "note": "结构框架（随机化与哈希技巧；声明与调用片段）：块内缺少随机种子、允许失败概率、`k` 的合法范围和需要被随机化的输入；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "mt19937_64\\ rng\\(chrono::steady_clock::now\\(\\)\\.time_since_epoch\\(\\)\\.count\\(\\)\\);"
-      ]
-    },
-    {
-      "source": "remake/large/02_基础.tex",
-      "digest": "e8d507326fbc",
-      "category": "framework",
-      "note": "结构框架（位集优化；循环/状态更新语句）：块内缺少顶点数/容量、位集含义、初始化和查询输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "const\\ int\\ N\\ =\\ 2000;",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/03_数学.tex",
-      "digest": "8c0532bf73d7",
-      "category": "framework",
-      "note": "结构框架（埃氏筛与线性筛；循环/状态更新语句）：块内缺少常量 `N`、查询上界、筛后需要的质数/最小质因子输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<int>\\ primes;\\ //\\ primes：目前找到的全部质数，严格递增。",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/03_数学.tex",
-      "digest": "2fe57ec990ca",
-      "category": "framework",
-      "note": "结构框架（约数枚举与整除分块；循环/状态更新语句）：块内缺少整数 `n`、分块内需累计的题目函数和大数乘法范围；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "for\\ \\(long\\ long\\ l\\ =\\ 1,\\ r;\\ l\\ <=\\ n;\\ l\\ =\\ r\\ \\+\\ 1\\)\\ \\{",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/03_数学.tex",
-      "digest": "05882dfe6063",
-      "category": "framework",
-      "note": "结构框架（欧拉函数、莫比乌斯与积性函数；循环/状态更新语句）：块内缺少常量 `N`、多测清空、需要输出的 `phi/mu` 范围及积性函数定义；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<int>\\ primes;\\ //\\ primes：已经找到的全部质数，严格递增。",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/03_数学.tex",
-      "digest": "8b2953954844",
-      "category": "framework",
-      "note": "结构框架（质数模且 n 不大；循环/状态更新语句）：块内缺少预处理上界、质数模 `MOD`、查询 `(n,k)` 范围和越界返回约定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "const\\ long\\ long\\ MOD\\ =\\ 998244353;",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/03_数学.tex",
-      "digest": "54e6181c8e7a",
-      "category": "framework",
-      "note": "结构框架（容斥与组合计数；循环/状态更新语句）：块内缺少待排除集合、交集计数函数、符号规则和溢出处理；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "long\\ long\\ ans\\ =\\ 0;",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/03_数学.tex",
-      "digest": "71665839a847",
-      "category": "framework",
-      "note": "结构框架（概率与期望；`expected_dag` 接口）：块内缺少DAG 状态图、转移概率/代价、终止状态和不可达/环的处理；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "\\bexpected_dag\\s*\\(",
-        "\\bif\\b"
-      ]
-    },
-    {
-      "source": "remake/large/03_数学.tex",
-      "digest": "321bcd38fca8",
-      "category": "framework",
-      "note": "结构框架（置换与循环；循环/状态更新语句）：块内缺少输入置换的编号基准、合法性、每个循环的聚合规则和输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<int>\\ vis\\(n\\),\\ result\\(n\\);",
-        "\\bfor\\b"
-      ]
-    },
-    {
       "source": "remake/large/03_高精度.tex",
       "digest": "2763f5575fd8",
       "category": "explanatory",
       "note": "说明片段（任意精度整数（纯 C++17））：内容属于接口说明、调用示意或手工检查材料，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
-    },
-    {
-      "source": "remake/large/03_数学_详解.tex",
-      "digest": "5bbfc3735373",
-      "category": "framework",
-      "note": "结构框架（高级容斥与倍数容斥；循环/状态更新语句）：块内缺少待排除集合、交集计数函数、符号规则和溢出处理；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "long\\ long\\ bad\\ =\\ 0;",
-        "\\bfor\\b"
-      ]
     },
     {
       "source": "remake/large/03_数学_详解.tex",
@@ -542,40 +224,6 @@
       "note": "未执行样例/验收说明（测试样例：实数高斯消元的唯一解、无解和多解）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
-      "source": "remake/large/04_数据结构.tex",
-      "digest": "5e2430e82f8c",
-      "category": "framework",
-      "note": "结构框架（STL 必会组件；循环/状态更新语句）：块内缺少输入容器、比较器、查询目标和需要输出的统计；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<int>\\ a\\ =\\ input;",
-        "\\bsort\\b"
-      ]
-    },
-    {
-      "source": "remake/large/04_数据结构.tex",
-      "digest": "4a98bb250f19",
-      "category": "framework",
-      "note": "结构框架（单调结构与差分约束；循环/状态更新语句）：块内缺少约束图、源点初始化、负环判定和不可达距离约定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<int>\\ dist\\(n,\\ INF\\);",
-        "\\bwhile\\b"
-      ]
-    },
-    {
-      "source": "remake/large/04_数据结构_详解.tex",
-      "digest": "bd4d8e10ebae",
-      "category": "framework",
-      "note": "结构框架（多懒标记与仿射标记线段树；`apply`、`push` 接口）：块内缺少`tr` 节点数组、正模数 `MOD`、建树/区间更新/查询入口与下标范围；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "\\bapply\\s*\\(",
-        "\\bpush\\s*\\(",
-        "\\bstruct\\s+Tag\\b"
-      ]
-    },
-    {
       "source": "remake/large/04_数据结构_详解.tex",
       "digest": "9babe2a6fae6",
       "category": "explanatory",
@@ -585,7 +233,7 @@
       "source": "remake/large/04_数据结构_详解.tex",
       "digest": "261c98406590",
       "category": "framework",
-      "note": "结构框架（莫队、带修改莫队与回滚莫队；`add_pos`、`process_query` 接口）：块内缺少题目答案维护器 `add_pos`/`del_pos`、数组 `a`、修改表 `changes`、答案数组和莫队排序规则；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "note": "该块只定义带修改莫队的 L/R/T 移动协议；缺少 add_pos/del_pos 的答案更新规则，也缺少 changes 的构造与查询排序，因此不同题目的 current_answer 没有统一结果可对拍。结构契约只检查修改前后先删再加、时间前进/回退和窗口移动调用齐全，不作为数值算法验证。",
       "check": "structural_contract",
       "required_patterns": [
         "\\badd_pos\\s*\\(",
@@ -595,7 +243,12 @@
       "allowed_empty_hooks": [
         "add_pos",
         "del_pos"
-      ]
+      ],
+      "missing_dependencies": [
+        "add_pos/del_pos 的答案更新规则",
+        "changes 的构造与查询排序"
+      ],
+      "validated_surface": "带修改莫队的时间与窗口移动调用协议"
     },
     {
       "source": "remake/large/04_数据结构_详解.tex",
@@ -623,18 +276,6 @@
     },
     {
       "source": "remake/large/04_数据结构_详解.tex",
-      "digest": "5241ec31b88e",
-      "category": "framework",
-      "note": "结构框架（区间最值势能线段树（Segment Tree Beats）；`push_chmin`、`push_up`、`push_down`、`range_chmin` 接口）：块内缺少`tr` 节点数组、建树初始化、区间和/点值查询入口以及数值上界；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "\\bpush_chmin\\s*\\(",
-        "\\bpush_up\\s*\\(",
-        "\\bstruct\\s+BeatNode\\b"
-      ]
-    },
-    {
-      "source": "remake/large/04_数据结构_详解.tex",
       "digest": "cd2417580e0d",
       "category": "explanatory",
       "note": "未执行样例/验收说明（测试样例：区间取最小值的整段标记与递归分支）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
@@ -644,17 +285,6 @@
       "digest": "af1554524234",
       "category": "explanatory",
       "note": "说明片段（调用测试：历史版本不能被后续合并污染）：内容属于接口说明、调用示意或手工检查材料，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
-    },
-    {
-      "source": "remake/large/05_字符串.tex",
-      "digest": "79aab1922b5c",
-      "category": "framework",
-      "note": "结构框架（字符串哈希；循环/状态更新语句）：块内缺少字符串 `s`、长度 `n`、双哈希或碰撞容忍策略和子串下标约定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "const\\ unsigned\\ long\\ long\\ BASE\\ =\\ 911382323ull;",
-        "\\bfor\\b"
-      ]
     },
     {
       "source": "remake/large/05_字符串_详解.tex",
@@ -687,105 +317,6 @@
       "note": "未执行样例/验收说明（测试样例：AC 自动机的后缀模式和重复出现）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
     {
-      "source": "remake/large/06_图论.tex",
-      "digest": "bd41e28bc39d",
-      "category": "framework",
-      "note": "结构框架（图的表示与基础遍历；循环/状态更新语句）：块内缺少顶点/边输入、0/1-based 编号、遍历起点和访问结果消费逻辑；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<vector<int>>\\ g\\(n\\);",
-        "\\bwhile\\b"
-      ]
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "2044fb0883cb",
-      "category": "framework",
-      "note": "结构框架（多源 BFS；循环/状态更新语句）：块内缺少顶点/边输入、0/1-based 编号、遍历起点和访问结果消费逻辑；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<vector<int>>\\ g\\(n\\);",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "9ed422eb0668",
-      "category": "framework",
-      "note": "结构框架（有向无环图（Directed Acyclic Graph，DAG）与拓扑排序；循环/状态更新语句）：块内缺少顶点数、入度与邻接表初始化，以及有环时的失败输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "queue<int>\\ q;",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "114c19220b8f",
-      "category": "framework",
-      "note": "结构框架（最短路；循环/状态更新语句）：块内缺少图、源点、边权限制、无穷值和不可达输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "using\\ P\\ =\\ pair<long\\ long,\\ int>;",
-        "\\bwhile\\b"
-      ]
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "61e64298542a",
-      "category": "framework",
-      "note": "结构框架（06_图论:005：最短路；循环/状态更新语句）：块内缺少图、源点、边权限制、无穷值和不可达输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "deque<int>\\ q;",
-        "\\bwhile\\b"
-      ]
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "c9555a7338aa",
-      "category": "framework",
-      "note": "结构框架（染色判定；循环/状态更新语句）：块内缺少无向图输入、连通分量遍历、颜色初值和冲突时输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<int>\\ color\\(n,\\ \\-1\\);",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "af2ac39ac4fa",
-      "category": "framework",
-      "note": "结构框架（最大匹配；`aug` 接口）：块内缺少左右部编号、邻接表、每轮访问标记和需要返回的匹配方案；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "\\baug\\s*\\(",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "d3fb80492ee8",
-      "category": "framework",
-      "note": "结构框架（点分治（入门）；`get_size`、`get_centroid`、`divide` 接口）：块内缺少重心选取所需的子树大小/删除标记初始化，以及每层围绕重心执行的题目统计或更新钩子；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "\\bget_size\\s*\\(",
-        "\\bget_centroid\\s*\\("
-      ]
-    },
-    {
-      "source": "remake/large/06_图论.tex",
-      "digest": "d70c51530a92",
-      "category": "framework",
-      "note": "结构框架（树上启发式合并（Disjoint Set Union on Tree，DSU on Tree）；`dfs_size`、`add_subtree`、`dsu_on_tree` 接口）：块内缺少颜色/频次容器、`answer` 的统计含义、清空策略以及需要保留还是撤销子树贡献的题意；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "\\bdfs_size\\s*\\(",
-        "\\badd_subtree\\s*\\("
-      ]
-    },
-    {
       "source": "remake/large/07_树上进阶.tex",
       "digest": "2ab9c28ea06a",
       "category": "explanatory",
@@ -801,23 +332,33 @@
       "source": "remake/large/07_树上进阶.tex",
       "digest": "436109c0a399",
       "category": "framework",
-      "note": "结构框架（点分治与点分树；`collect`、`decompose` 接口）：块内缺少点分树查询所需的距离容器、更新接口、答案聚合规则和 `removed/sub/parent` 初始化；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "note": "该块是点分树查询扩展片段；缺少 get_centroid 的实现，也缺少 每个重心分支的距离容器与容斥查询，正文中的 collect 结果没有被存入可查询状态。结构契约只检查未删除节点遍历和分治递归接口，不声称验证点分树答案。",
       "check": "structural_contract",
       "required_patterns": [
         "\\bcollect\\s*\\(",
         "\\bdecompose\\s*\\("
-      ]
+      ],
+      "missing_dependencies": [
+        "get_centroid 的实现",
+        "每个重心分支的距离容器与容斥查询"
+      ],
+      "validated_surface": "距离收集和递归拆分的接口形状"
     },
     {
       "source": "remake/large/07_树上进阶.tex",
       "digest": "4abaa14522cb",
       "category": "framework",
-      "note": "结构框架（伸展树、文艺平衡树与 Link-Cut Tree 动态树；声明与调用片段）：块内缺少完整 LCT 节点结构、splay/access 实现、编号范围与非法 link/cut 的处理约定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "note": "该块仅演示路径查询、连边、断边三种调用展开；缺少 LCT 节点与 splay/access 实现，也缺少 非法 link/cut 的返回约定，不能脱离某个具体 LCT 类型执行。完整 LCT 实现在 06_图论 的 graph.lct 契约中另行验证；这里的结构契约只核对调用序列。",
       "check": "structural_contract",
       "required_patterns": [
         "makeroot\\(x\\);",
         "\\bif\\b"
-      ]
+      ],
+      "missing_dependencies": [
+        "LCT 节点与 splay/access 实现",
+        "非法 link/cut 的返回约定"
+      ],
+      "validated_surface": "LCT 三种操作的调用顺序示意"
     },
     {
       "source": "remake/large/07_树上进阶.tex",
@@ -827,114 +368,51 @@
     },
     {
       "source": "remake/large/08_动态规划.tex",
-      "digest": "e72b0855aab8",
-      "category": "framework",
-      "note": "结构框架（线性 DP；循环/状态更新语句）：块内缺少输入序列、状态定义、初值以及空序列/重复值边界；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<int>\\ tail;",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/08_动态规划.tex",
-      "digest": "78db33a36ddd",
-      "category": "framework",
-      "note": "结构框架（08_动态规划:002：线性 DP；循环/状态更新语句）：块内缺少输入序列、状态定义、初值以及空序列/重复值边界；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<vector<int>>\\ lcs\\(n\\ \\+\\ 1,\\ vector<int>\\(m\\ \\+\\ 1\\)\\);",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/08_动态规划.tex",
-      "digest": "f8deed91b77f",
-      "category": "framework",
-      "note": "结构框架（背包；循环/状态更新语句）：块内缺少容量、物品重量/价值、0-1 或完全背包方向和不可达初值；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<long\\ long>\\ dp\\(W\\ \\+\\ 1,\\ 0\\);",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/08_动态规划.tex",
       "digest": "d1ceca2b4744",
       "category": "framework",
-      "note": "结构框架（区间 DP；循环/状态更新语句）：块内缺少区间状态含义、合并代价函数、长度 1 初值和答案区间；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "note": "该块只有按长度枚举区间和分割点的控制骨架；缺少 cost(l,r) 的题意定义，也缺少 dp[i][i] 的初值与目标区间。矩阵链、石子合并等实例的代价与边界不同，结构契约仅检查 len/l/r/k 的依赖顺序。",
       "check": "structural_contract",
       "required_patterns": [
         "for\\ \\(int\\ len\\ =\\ 2;\\ len\\ <=\\ n;\\ \\+\\+len\\)",
         "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/08_动态规划.tex",
-      "digest": "08a9ff9baa04",
-      "category": "framework",
-      "note": "结构框架（状态压缩动态规划；循环/状态更新语句）：块内缺少状态位含义、转移合法条件、初态和不可达哨兵；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<vector<long\\ long>>\\ dp\\(1\\ <<\\ n,\\ vector<long\\ long>\\(n,\\ INF\\)\\);",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/08_动态规划.tex",
-      "digest": "c2ad2e3ff514",
-      "category": "framework",
-      "note": "结构框架（滚动数组；循环/状态更新语句）：块内缺少完整二维转移、上一层初值、当前层清零和最终层选择；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "vector<long\\ long>\\ prev\\(m\\ \\+\\ 1\\),\\ cur\\(m\\ \\+\\ 1\\);",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/08_动态规划.tex",
-      "digest": "06b52122bf94",
-      "category": "framework",
-      "note": "结构框架（单调队列优化；循环/状态更新语句）：块内缺少窗口宽度、输入数组、最大值或最小值方向和过期下标规则；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "deque<int>\\ q;",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/08_动态规划.tex",
-      "digest": "5c5f0f87f05e",
-      "category": "framework",
-      "note": "结构框架（斜率优化（Convex Hull Trick，CHT）；`bad`、`add_line` 接口）：块内缺少斜率单调性、查询横坐标单调性、同斜率去重和最小/最大值方向；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "\\bbad\\s*\\(",
-        "\\badd_line\\s*\\(",
-        "\\bstruct\\s+Line\\b"
-      ]
+      ],
+      "missing_dependencies": [
+        "cost(l,r) 的题意定义",
+        "dp[i][i] 的初值与目标区间"
+      ],
+      "validated_surface": "区间 DP 的长度与分割点遍历顺序"
     },
     {
       "source": "remake/large/08_动态规划.tex",
       "digest": "c1478be353f1",
       "category": "framework",
-      "note": "结构框架（分治优化；`solve` 接口）：块内缺少代价函数 `cost`、上一层 `prev`、决策单调性的题目证明和边界；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "note": "该块只实现决策区间递归；缺少 cost(k,mid) 的题意定义，也缺少 决策单调性的证明与上一层状态。若题目不满足单调性，代码虽可编译仍会给错解；结构契约只检查递归边界是否用 best 收缩。",
       "check": "structural_contract",
       "required_patterns": [
         "\\bsolve\\s*\\(",
         "\\bif\\b"
-      ]
+      ],
+      "missing_dependencies": [
+        "cost(k,mid) 的题意定义",
+        "决策单调性的证明与上一层状态"
+      ],
+      "validated_surface": "分治优化的决策区间收缩骨架"
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
       "digest": "2b48aaf2decf",
       "category": "framework",
-      "note": "结构框架（复杂数位动态规划与自动机数位动态规划；`dfs` 接口）：块内缺少自动机/题目状态 `STATE`、`next_state`、`accept`、模数和前导零语义；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "note": "该块刻意保留题目自动机钩子；缺少 STATE/go/valid 的自动机定义，也缺少 前导零与计数溢出/取模约定。不同限制对应不同状态空间和终态，结构契约只检查 tight、started 与非 tight 记忆化分支。",
       "check": "structural_contract",
       "required_patterns": [
         "\\bdfs\\s*\\(",
         "\\bif\\b"
-      ]
+      ],
+      "missing_dependencies": [
+        "STATE/go/valid 的自动机定义",
+        "前导零与计数溢出/取模约定"
+      ],
+      "validated_surface": "数位 DP 的 tight/started 记忆化控制流"
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
@@ -944,43 +422,9 @@
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
-      "digest": "f9ac320e8492",
-      "category": "framework",
-      "note": "结构框架（所有子集和动态规划、轮廓线动态规划与状态压缩；循环/状态更新语句）：块内缺少状态位含义、转移合法条件、初态和不可达哨兵；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "for\\ \\(int\\ bit\\ =\\ 0;\\ bit\\ <\\ K;\\ \\+\\+bit\\)",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/08_动态规划_详解.tex",
       "digest": "c8e45baa7f63",
       "category": "explanatory",
       "note": "未执行样例/验收说明（测试样例：SOS 动态规划的子集和方向）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
-    },
-    {
-      "source": "remake/large/08_动态规划_详解.tex",
-      "digest": "b35f489af1f6",
-      "category": "framework",
-      "note": "结构框架（单调队列、斜率优化与李超树优化动态规划；循环/状态更新语句）：块内缺少窗口宽度、输入数组、最大值或最小值方向和过期下标规则；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "deque<int>\\ q;",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/08_动态规划_详解.tex",
-      "digest": "b1479754d17a",
-      "category": "framework",
-      "note": "结构框架（单调队列、斜率优化与李超树优化动态规划；`useless`、`add_line` 接口）：块内缺少窗口宽度、输入数组、最大值或最小值方向和过期下标规则；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "\\buseless\\s*\\(",
-        "\\badd_line\\s*\\(",
-        "\\bstruct\\s+Line\\b"
-      ]
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
@@ -1016,12 +460,17 @@
       "source": "remake/large/09_博弈.tex",
       "digest": "ec7395148286",
       "category": "framework",
-      "note": "结构框架（极大极小搜索（Minimax）与 Alpha-Beta 剪枝；`minimax` 接口）：块内缺少题目定义的 `State`、终局判定、局面估值、合法走法生成以及 apply/undo 钩子；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "note": "该块给出通用 minimax/alpha-beta 控制流；缺少 State/Move 的局面与走法定义，也缺少 terminal/evaluate 的评分视角。apply/undo 是否完整恢复局面属于具体游戏契约，结构检查仅覆盖 max/min 分支和 alpha、beta 截断位置。",
       "check": "structural_contract",
       "required_patterns": [
         "\\bminimax\\s*\\(",
         "\\bif\\b"
-      ]
+      ],
+      "missing_dependencies": [
+        "State/Move 的局面与走法定义",
+        "terminal/evaluate 的评分视角"
+      ],
+      "validated_surface": "minimax 双方分支与剪枝边界"
     },
     {
       "source": "remake/large/09_博弈_详解.tex",
@@ -1057,12 +506,17 @@
       "source": "remake/large/09_博弈_详解.tex",
       "digest": "3145ee39e441",
       "category": "framework",
-      "note": "结构框架（图游戏建模、状压博弈和记忆化；`dfs_mask` 接口）：块内缺少状态位含义、`legal(mask,i)` 走法判定、终止局面和最大状态数；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "note": "该块只规定“存在一步走向必败态则当前必胜”的记忆化递归；缺少 legal(mask,i) 的走法规则，也缺少 终止状态与 mask 位含义。不同图游戏可能还需 last/turn 等状态，结构契约仅检查已用位跳过和 memo 写回。",
       "check": "structural_contract",
       "required_patterns": [
         "\\bdfs_mask\\s*\\(",
         "\\bif\\b"
-      ]
+      ],
+      "missing_dependencies": [
+        "legal(mask,i) 的走法规则",
+        "终止状态与 mask 位含义"
+      ],
+      "validated_surface": "状压胜负递归与记忆化协议"
     },
     {
       "source": "remake/large/09_博弈_详解.tex",
@@ -1074,84 +528,39 @@
       "source": "remake/large/09_博弈_详解.tex",
       "digest": "08b5651f317f",
       "category": "framework",
-      "note": "结构框架（极大极小搜索（Minimax）与 Alpha-Beta 剪枝；`alpha_beta` 接口）：块内缺少题目定义的 `State`、终局判定、估值函数、走法生成与 apply/undo 可逆性；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "note": "该块是带走法排序的 alpha-beta 外壳；缺少 ordered_moves/apply/undo 的可逆局面操作，也缺少 terminal/evaluate 的深度截断评分。它与基础 minimax 块的区别是先物化 moves 并强调排序，结构契约只检查每层更新 alpha 或 beta 后再截断。",
       "check": "structural_contract",
       "required_patterns": [
         "\\balpha_beta\\s*\\(",
         "\\bif\\b"
-      ]
+      ],
+      "missing_dependencies": [
+        "ordered_moves/apply/undo 的可逆局面操作",
+        "terminal/evaluate 的深度截断评分"
+      ],
+      "validated_surface": "走法排序版 alpha-beta 的状态恢复与截断位置"
     },
     {
       "source": "remake/large/09_博弈_详解.tex",
       "digest": "089a4cae260b",
       "category": "framework",
-      "note": "结构框架（状态去重、哈希与有环博弈；循环/状态更新语句）：块内缺少`State` 的相等关系与稳定序列化字段；哈希组合方式必须与相等关系一致；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
+      "note": "该块只给出一个依赖字段的哈希组合器；缺少 State::operator== 的等价字段，也缺少 board/turn 的合法范围与稳定表示。若相等关系包含额外字段，当前哈希与键等价关系便不匹配；结构契约仅检查 board 与 turn 被纳入哈希。",
       "check": "structural_contract",
       "required_patterns": [
         "\\bstruct\\s+StateHash\\b",
         "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/10_几何.tex",
-      "digest": "77a0c0098729",
-      "category": "framework",
-      "note": "结构框架（扫描线；循环/状态更新语句）：块内缺少矩形/线段事件输入、同坐标事件顺序、离散坐标和覆盖长度维护器；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "\\bstruct\\s+Event\\b",
-        "\\bsort\\b"
-      ]
-    },
-    {
-      "source": "remake/large/10_几何.tex",
-      "digest": "075a7a6b48ee",
-      "category": "framework",
-      "note": "结构框架（几何中的随机化与哈希技巧；声明与调用片段）：块内缺少随机种子、允许失败概率、`k` 的合法范围和需要被随机化的输入；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "mt19937_64\\ rng\\(chrono::steady_clock::now\\(\\)\\.time_since_epoch\\(\\)\\.count\\(\\)\\);"
-      ]
-    },
-    {
-      "source": "remake/large/10_几何.tex",
-      "digest": "e8d507326fbc",
-      "category": "framework",
-      "note": "结构框架（几何中的位集优化；循环/状态更新语句）：块内缺少顶点数/容量、位集含义、初始化和查询输出；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "const\\ int\\ N\\ =\\ 2000;",
-        "\\bfor\\b"
-      ]
-    },
-    {
-      "source": "remake/large/10_几何.tex",
-      "digest": "65d6156364fd",
-      "category": "framework",
-      "note": "结构框架（几何快速小技巧；声明与调用片段）：块内缺少整数点/向量输入、零向量约定、归一化符号和溢出范围；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "long\\ long\\ g\\ =\\ std::gcd\\(a,\\ b\\);",
-        "\\bsort\\b"
-      ]
+      ],
+      "missing_dependencies": [
+        "State::operator== 的等价字段",
+        "board/turn 的合法范围与稳定表示"
+      ],
+      "validated_surface": "unordered_map 状态哈希的字段组合形状"
     },
     {
       "source": "remake/large/10_几何_详解.tex",
       "digest": "69294a4607a7",
       "category": "explanatory",
       "note": "未执行样例/验收说明（测试样例：最近点对的单点、重合点和跨分治边界）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
-    },
-    {
-      "source": "remake/large/10_几何_详解.tex",
-      "digest": "4737c2781421",
-      "category": "framework",
-      "note": "结构框架（半平面交（Half-Plane Intersection）；`outside`、`intersection` 接口）：块内缺少半平面排序、同向去重、双端队列循环以及空交/无界交的返回约定；当前只核对该块登记的接口/关键语句且正文摘要未漂移，不提供编译、运行或算法语义证据。",
-      "check": "structural_contract",
-      "required_patterns": [
-        "\\boutside\\s*\\(",
-        "\\bintersection\\s*\\(",
-        "\\bstruct\\s+HalfPlane\\b"
-      ]
     },
     {
       "source": "remake/large/10_几何_详解.tex",
@@ -1566,6 +975,25 @@
       "digest": "9cd12aefee06",
       "category": "explanatory",
       "note": "说明片段（推荐用户设置（settings.json 片段））：内容属于命令、脚本或工具配置，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
+    },
+    {
+      "source": "remake/large/08_动态规划_详解.tex",
+      "digest": "1d461fe79d45",
+      "category": "framework",
+      "note": "该块描述一般单调队列候选淘汰协议；缺少 value(j,i) 的题意转移，也缺少 next_x 的交点/支配顺序保证。正文已显式以 dp[0] 初始化队列避免空队首，但没有题目单调性就不能断言淘汰正确；结构契约只核对过期、取队首和删队尾的次序。",
+      "check": "structural_contract",
+      "required_patterns": [
+        "deque<int> q",
+        "push_back\\(0\\)",
+        "value\\(q\\.front\\(\\), i\\)",
+        "next_x\\(q\\.back\\(\\)\\)"
+      ],
+      "forbidden_patterns": [],
+      "missing_dependencies": [
+        "value(j,i) 的题意转移",
+        "next_x 的交点/支配顺序保证"
+      ],
+      "validated_surface": "一般化单调队列的候选过期与淘汰协议"
     }
   ]
 }

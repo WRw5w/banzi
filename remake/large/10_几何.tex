@@ -209,16 +209,23 @@ long double diameter2(const vector<Point>& p) {
 
 \begin{lstlisting}[language={C++}]
 struct Event { long long x, y1, y2; int delta; }; // x 扫描坐标、y 区间、覆盖增量 ±1。
-// 接口：比较器 lambda(a, b)：供“扫描线”当前语句回调；返回值含义见调用处条件。
-// 参数：输入值/数组 a（见本节定义）；输入值/数组 b（见本节定义）。
-sort(events.begin(), events.end(), [](auto a, auto b) { return a.x < b.x; });
-// 变量：area=当前累计面积 area；last_x=扫描线上一个事件横坐标 last_x。
-long long area = 0, last_x = events[0].x;
-// 变量：e=当前指数、质因子次数或边对象 e。
-for (auto e : events) {
-    area += covered_length() * (e.x - last_x);
-    update(y1_id(e.y1), y2_id(e.y2) - 1, e.delta);
-    last_x = e.x;
+// 接口：sweep_area(events, covered_length, update, y_id)：按 x 扫描事件并返回覆盖面积；空事件返回 0。
+// 参数：covered_length 返回当前 y 覆盖长度；update 接收离散 y 区间与增量；y_id 返回 y 的离散下标。
+template<class CoveredLength, class Update, class YId>
+long long sweep_area(vector<Event> events, CoveredLength covered_length,
+                     Update update, YId y_id) {
+    if (events.empty()) return 0;
+    // 接口：比较器 lambda(a, b)：按事件横坐标从小到大排序；返回 a 是否应排在 b 前。
+    sort(events.begin(), events.end(), [](auto a, auto b) { return a.x < b.x; });
+    // 变量：area=已经扫过的覆盖面积；last_x=上一批事件的横坐标。
+    long long area = 0, last_x = events[0].x;
+    // 变量：e=当前处理的矩形竖边事件。
+    for (auto e : events) {
+        area += covered_length() * (e.x - last_x);
+        update(y_id(e.y1), y_id(e.y2) - 1, e.delta);
+        last_x = e.x;
+    }
+    return area;
 }
 \end{lstlisting}
 
@@ -373,12 +380,14 @@ uint64_t random_hash = rng();
 \begin{lstlisting}[language={C++}]
 // 变量：N=数组容量/预处理上界；实际合法下标以本节注释为准。
 const int N = 2000;
-bitset<N> reach[N];
-// 变量：k=当前排名、选取数量或循环层数 k。
-for (int k = 0; k < n; ++k)
-    // 变量：i=当前循环下标 i。
-    for (int i = 0; i < n; ++i)
-        if (reach[i][k]) reach[i] |= reach[k];
+// 接口：geometry_bitset_closure(reach, n)：原地计算前 n 个顶点的传递闭包。
+void geometry_bitset_closure(array<bitset<N>, N>& reach, int n) {
+    // 变量：k=当前允许作为中转点的顶点。
+    for (int k = 0; k < n; ++k)
+        // 变量：i=当前起点。
+        for (int i = 0; i < n; ++i)
+            if (reach[i][k]) reach[i] |= reach[k];
+}
 \end{lstlisting}
 
 \section{几何快速小技巧}\label{large-geometry-quick-tips}
@@ -396,13 +405,19 @@ for (int k = 0; k < n; ++k)
 \end{itemize}
 
 \begin{lstlisting}[language={C++}]
-// 变量：g=图/树的邻接表 g。
-long long g = std::gcd(a, b);
-// 变量：l=当前区间左端点 l。
-long long l = a / g * b;
-sort(v.begin(), v.end());
-v.erase(unique(v.begin(), v.end()), v.end());
-long long lowbit = x & -x; // x != 0
-// 变量：safe_product=“几何快速小技巧”这段代码中的临时量 safe_product；值由本行初始化式确定。
-long long safe_product = (long long)((__int128)x * y % MOD);
+// 接口：normalize_direction(dx, dy)：把非零整数方向约为互质且符号唯一的 (dx,dy)。
+pair<long long, long long> normalize_direction(long long dx, long long dy) {
+    if (dx == 0 && dy == 0) throw invalid_argument("zero direction");
+    // 变量：g=两个方向分量绝对值的最大公约数。
+    long long g = std::gcd(llabs(dx), llabs(dy));
+    dx /= g; dy /= g;
+    if (dx < 0 || (dx == 0 && dy < 0)) dx = -dx, dy = -dy;
+    return {dx, dy};
+}
+
+// 接口：safe_lcm(a, b)：返回非负最小公倍数；0 与任意数的最小公倍数为 0。
+long long safe_lcm(long long a, long long b) {
+    if (a == 0 || b == 0) return 0;
+    return llabs(a / std::gcd(a, b) * b);
+}
 \end{lstlisting}

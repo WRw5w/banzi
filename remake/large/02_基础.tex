@@ -5,13 +5,20 @@
 \passthrough{\lstinline!for (int s = mask; s; s = (s - 1) \& mask)!} 枚举 \passthrough{\lstinline!mask!} 的所有非空子集，总复杂度是 \passthrough{\lstinline!O(3\^n)!}（对所有 \passthrough{\lstinline!mask!} 求子集时）。
 
 \begin{lstlisting}[language={C++}]
-// 变量：mask=当前子集/博弈状态的二进制掩码 mask。
-for (int mask = 0; mask < (1 << n); ++mask) {
-    // 变量：sub=当前枚举的子掩码 sub。
-    for (int sub = mask;; sub = (sub - 1) & mask) {
-        // 处理 sub；这里包含空集
-        if (sub == 0) break;
+// 接口：enumerate_submasks(n)：按 mask 从小到大枚举每个 mask 的全部子掩码（含空集）；返回 {mask,sub} 序列。
+// 参数：二进制集合使用的位数 n；要求 0<=n<31。
+vector<pair<int, int>> enumerate_submasks(int n) {
+    // 变量：result=按枚举顺序保存的 {mask,sub} 对。
+    vector<pair<int, int>> result;
+    // 变量：mask=当前子集/博弈状态的二进制掩码 mask。
+    for (int mask = 0; mask < (1 << n); ++mask) {
+        // 变量：sub=当前枚举的子掩码 sub。
+        for (int sub = mask;; sub = (sub - 1) & mask) {
+            result.push_back({mask, sub});
+            if (sub == 0) break;
+        }
     }
+    return result;
 }
 \end{lstlisting}
 
@@ -38,8 +45,8 @@ void dfs(int pos, long long sum) {
 \passthrough{\lstinline!n ≤ 40!}、每个元素选/不选且目标为和/异或/最值时，把数组分两半枚举，排序一侧后二分或双指针，复杂度 \passthrough{\lstinline!O(2\^(n/2) log 2\^(n/2))!}。
 
 \begin{lstlisting}[language={C++}]
-// 接口：gen(a, l, r)：枚举 a 的下标闭区间 [l,r] 的所有子集和并返回排序结果；返回类型 vector<long long>。
-// 参数：输入值/数组 a（见本节定义）；闭区间左端点 l；闭区间右端点 r。
+// 接口：gen(a, l, r)：枚举 a 的半开下标区间 [l,r) 的所有子集和；返回类型 vector<long long>。
+// 参数：输入数组 a；半开区间左端点 l；半开区间右端点 r。
 vector<long long> gen(const vector<long long>& a, int l, int r) {
     // 变量：res=准备返回的结果容器/结果值 res。
     vector<long long> res{0};
@@ -53,16 +60,24 @@ vector<long long> gen(const vector<long long>& a, int l, int r) {
     return res;
 }
 
-// 变量：L=当前左边界/左半部分 L；R=当前右边界/右半部分 R。
-auto L = gen(a, 0, n / 2), R = gen(a, n / 2, n);
-sort(R.begin(), R.end());
-// 变量：best=目前找到的最优值 best。
-long long best = 0;
-// 变量：x=当前输入值/查询值/坐标 x。
-for (long long x : L) {
-    // 变量：it=当前容器迭代器/当前弧位置 it。
-    auto it = upper_bound(R.begin(), R.end(), limit - x);
-    if (it != R.begin()) best = max(best, x + *prev(it));
+// 接口：mitm_max_subset_sum(a, limit)：返回不超过 limit 的最大子集和；要求 a 中元素非负且 limit>=0。
+// 参数：非负整数数组 a；子集和上界 limit。
+long long mitm_max_subset_sum(const vector<long long>& a, long long limit) {
+    // 变量：n=输入数组元素个数。
+    int n = (int)a.size();
+    // 变量：L=左半部分的全部子集和；R=右半部分的全部子集和。
+    auto L = gen(a, 0, n / 2), R = gen(a, n / 2, n);
+    sort(R.begin(), R.end());
+    // 变量：best=目前找到的不超过 limit 的最大子集和。
+    long long best = 0;
+    // 变量：x=当前左半部分子集和。
+    for (long long x : L) {
+        if (x > limit) continue;
+        // 变量：it=右半部分中第一个使 x+*it 超过 limit 的位置。
+        auto it = upper_bound(R.begin(), R.end(), limit - x);
+        if (it != R.begin()) best = max(best, x + *prev(it));
+    }
+    return best;
 }
 \end{lstlisting}
 
@@ -147,31 +162,34 @@ while (l < r) {
 当答案具有单调可行性 \passthrough{\lstinline!check(x)!} 时，在答案范围二分。先明确求``最小可行''还是``最大可行''，并把 \passthrough{\lstinline!check!} 写成无副作用函数。典型：最小最大分段和、最小速度、最大最小距离、满足容量的最少天数。
 
 \begin{lstlisting}[language={C++}]
-// 接口：check(limit)：判断二分答案 limit 是否可行；必须满足关于 limit 的单调性；返回 true 表示本节条件成立/操作成功。
-// 参数：判定阈值 limit。
-bool check(long long limit) {
-    // 变量：groups=当前贪心分出的连续组数 groups。
-    int groups = 1;
-    // 变量：sum=当前累计和 sum。
-    long long sum = 0;
-    // 变量：x=当前输入值/查询值/坐标 x。
-    for (long long x : a) {
-        if (x > limit) return false;
-        if (sum + x > limit) sum = x, ++groups;
-        else sum += x;
+// 接口：minimize_max_segment_sum(a, k)：把非负数组分成至多 k 个非空连续段，返回最小的最大段和。
+// 参数：非空非负数组 a；允许的最大分段数 k，要求 k>=1。
+long long minimize_max_segment_sum(const vector<long long>& a, int k) {
+    // 接口：check(limit)：判断能否把 a 分成至多 k 段且每段和不超过 limit。
+    auto check = [&](long long limit) {
+        // 变量：groups=当前贪心划出的连续段数。
+        int groups = 1;
+        // 变量：sum=当前连续段的元素和。
+        long long sum = 0;
+        // 变量：x=当前扫描的非负数组元素。
+        for (long long x : a) {
+            if (x > limit) return false;
+            if (sum + x > limit) sum = x, ++groups;
+            else sum += x;
+        }
+        return groups <= k;
+    };
+    // 变量：l=最大单元素值，亦为二分答案下界。
+    long long l = *max_element(a.begin(), a.end());
+    // 变量：r=全部元素之和，亦为二分答案上界。
+    long long r = accumulate(a.begin(), a.end(), 0LL);
+    while (l < r) {
+        // 变量：mid=当前二分判定的最大允许段和。
+        long long mid = l + (r - l) / 2;
+        if (check(mid)) r = mid;
+        else l = mid + 1;
     }
-    return groups <= k;
-}
-
-// 变量：l=当前区间左端点 l。
-long long l = *max_element(a.begin(), a.end());
-// 变量：r=当前区间右端点 r。
-long long r = accumulate(a.begin(), a.end(), 0LL);
-while (l < r) {
-    // 变量：mid=当前区间中点 mid。
-    long long mid = l + (r - l) / 2;
-    if (check(mid)) r = mid;
-    else l = mid + 1;
+    return l;
 }
 \end{lstlisting}
 
@@ -393,12 +411,15 @@ uint64_t random_hash = rng();
 \begin{lstlisting}[language={C++}]
 // 变量：N=数组容量/预处理上界；实际合法下标以本节注释为准。
 const int N = 2000;
-bitset<N> reach[N];
-// 变量：k=当前排名、选取数量或循环层数 k。
-for (int k = 0; k < n; ++k)
-    // 变量：i=当前循环下标 i。
-    for (int i = 0; i < n; ++i)
-        if (reach[i][k]) reach[i] |= reach[k];
+// 接口：bitset_closure(reach, n)：原地计算 reach 前 n 行表示的传递闭包。
+// 参数：reach 初始含自环和原图边；n 为实际顶点数且 n<=N。
+void bitset_closure(array<bitset<N>, N>& reach, int n) {
+    // 变量：k=当前允许作为中转点的顶点 k。
+    for (int k = 0; k < n; ++k)
+        // 变量：i=当前起点 i。
+        for (int i = 0; i < n; ++i)
+            if (reach[i][k]) reach[i] |= reach[k];
+}
 \end{lstlisting}
 
 \section{快速小技巧}\label{ux5febux901fux5c0fux6280ux5de7}

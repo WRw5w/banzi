@@ -57,6 +57,7 @@ struct Node {
     long long sum = 0; // 当前区间的和，已经包含本节点自己的 tag。
     Tag tag;           // 尚未下传给儿子的变换。
 };
+vector<Node> tr;       // 调用前按线段树所需节点数分配；多测时重新初始化。
 // 接口：apply(p, l, r, mul, add)：把本次懒操作直接作用于节点 p，并同步节点值与标记；会修改当前结构；多测时重新构造或显式清空成员。
 // 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r；仿射标记乘数 mul；仿射标记常数项/本次增加量 add。
 void apply(int p, int l, int r, long long mul, long long add) {
@@ -576,6 +577,7 @@ struct BeatNode {
     __int128 mx2;  // 严格小于 mx1 的次大值；用更宽类型保存无冲突哨兵。
     int cnt;       // 最大值出现次数。
 };
+vector<BeatNode> tr; // 调用前建树并分配足够节点；多测时重新初始化。
 // 变量：NEG=不存在次大值时使用的 __int128 负无穷哨兵 NEG。
 const __int128 NEG = -((__int128)1 << 126);
 
