@@ -74,10 +74,12 @@ for (int mask = 1; mask < (1 << m); ++mask) {
 // 接口：mod_pow(a, e, p)：计算 a^e mod p；返回类型 long long。
 // 参数：输入值/数组 a（见本节定义）；非负指数 e；题目给定的质数/正模数 p。
 long long mod_pow(long long a, long long e, long long p) {
+    a %= p;
+    if (a < 0) a += p;
     long long r = 1 % p; // p=1 时返回 0，避免写死为 1。
-    for (; e; e >>= 1, a = a * a % p) {
+    for (; e; e >>= 1, a = (__int128)a * a % p) {
         // e 的最低位为 1，说明当前 a 是答案乘积的一部分。
-        if (e & 1) r = r * a % p;
+        if (e & 1) r = (__int128)r * a % p;
     }
     return r;
 }
@@ -224,27 +226,32 @@ No
 高斯消元的现场顺序：选主元 → 交换到当前行 → 消去其他行/下面的行 → 判断矛盾或自由元。模意义下每次除以主元要乘逆元；普通实数消元则要用 \passthrough{\lstinline!long double!} 并带 \passthrough{\lstinline!eps!}。
 
 \begin{lstlisting}[language={C++}]
-// 接口：gauss_mod(a, mod)：在模 mod 意义下对增广矩阵消元；返回类型 int。
-// 参数：输入值/数组 a（见本节定义）；正模数 mod。
+// 接口：gauss_mod(a, mod)：在质数模 mod 下对非空系数矩阵消元并返回秩；返回类型 int。
+// 参数：非空系数矩阵 a；题目给定的质数 mod。
 int gauss_mod(vector<vector<long long>> a, long long mod) {
     // a 是系数矩阵；如果是增广矩阵，最后一列还要单独解释为常数项。
     // 这里采用 Gauss-Jordan 消元：每个主元列都会把其他行一起消成 0。
     // 变量：n=当前元素/顶点/状态数量 n；m=当前边数、操作数或第二维规模 m；row=当前高斯消元主元行 row。
     int n = a.size(), m = a[0].size(), row = 0;
+    for (auto& values : a)
+        for (long long& value : values) value = (value % mod + mod) % mod;
     // 变量：col=当前高斯消元列/扫描列 col。
     for (int col = 0; col < m && row < n; ++col) {
-        int p = row; // 在当前列寻找主元行。
+        int p = -1; // 在当前列寻找主元行。
         // 变量：i=当前循环下标 i。
-        for (int i = row; i < n; ++i)
-            if (a[i][col] > a[p][col]) p = i;
+        for (int i = row; i < n; ++i) if (a[i][col] != 0) {
+            p = i;
+            break;
+        }
         // 没有非零主元，说明这一列是自由列，换下一列。
-        if (a[p][col] == 0) continue;
+        if (p == -1) continue;
         swap(a[p], a[row]);
         // 模意义下的除法必须乘逆元；这里默认 mod 是质数。
         // 变量：inv=当前逆元/是否执行逆变换 inv。
         long long inv = mod_pow(a[row][col], mod - 2, mod);
         // 变量：j=内层循环下标 j。
-        for (int j = col; j < m; ++j) a[row][j] = a[row][j] * inv % mod;
+        for (int j = col; j < m; ++j)
+            a[row][j] = (__int128)a[row][j] * inv % mod;
         // 变量：i=当前循环下标 i。
         for (int i = 0; i < n; ++i) if (i != row) {
             // 变量：k=当前排名、选取数量或循环层数 k。
@@ -252,7 +259,7 @@ int gauss_mod(vector<vector<long long>> a, long long mod) {
             // 用当前主元行消掉其它行的这一列。
             // 变量：j=内层循环下标 j。
             for (int j = col; j < m; ++j)
-                a[i][j] = (a[i][j] - k * a[row][j]) % mod;
+                a[i][j] = (a[i][j] - (__int128)k * a[row][j] % mod + mod) % mod;
         }
         ++row;
     }
@@ -478,9 +485,11 @@ Burnside 计算群作用下的不同染色数：
 
 \[A=\frac1{|G|}\sum_{g\in G} k^{\text{cycles}(g)}.\]
 
+模意义下的除法只要求 \passthrough{\lstinline!gcd(|G|,mod)=1!}；下面用扩展欧几里得求逆元，因此合数模也可用。若群大小不可逆，函数返回 \passthrough{\lstinline!-1!}。
+
 \begin{lstlisting}[language={C++}]
 // 接口：burnside(perm, colors, mod)：按 Burnside 引理计算本质不同方案数；返回类型 long long。
-// 参数：一个 0-based 置换 perm；可用颜色数 colors；正模数 mod。
+// 参数：非空群作用置换列表 perm；可用颜色数 colors；正模数 mod，须与 perm.size() 互质。
 long long burnside(const vector<vector<int>>& perm,
                    long long colors, long long mod) {
     // 变量：sum=当前累计和 sum。
@@ -499,10 +508,28 @@ long long burnside(const vector<vector<int>>& perm,
             for (int u = i; !vis[u]; u = p[u]) vis[u] = 1;
         }
         // 一个置换固定的染色要求同一循环内颜色相同，故有 colors^cycles 种。
-        sum = (sum + mod_pow(colors, cycles, mod)) % mod;
+        sum = (sum + (__int128)mod_pow(colors, cycles, mod)) % mod;
     }
-    // Burnside：不动点总数除以群大小；这里默认 mod 与群大小互质。
-    return sum * mod_pow(perm.size(), mod - 2, mod) % mod;
+    // Burnside：不动点总数除以群大小；用扩展欧几里得支持任意互质模数。
+    // 变量：r0=扩展欧几里得当前余数；r1=下一余数。
+    long long r0 = (long long)perm.size(), r1 = mod;
+    // 变量：x0=当前余数对应群大小的系数；x1=下一余数对应群大小的系数。
+    __int128 x0 = 1, x1 = 0;
+    while (r1) {
+        // 变量：q=欧几里得除法的当前商。
+        long long q = r0 / r1;
+        // 变量：next_r=欧几里得除法得到的下一余数。
+        long long next_r = r0 - q * r1;
+        // 变量：next_x=下一余数对应群大小的系数。
+        __int128 next_x = x0 - (__int128)q * x1;
+        r0 = r1; r1 = next_r;
+        x0 = x1; x1 = next_x;
+    }
+    if (r0 != 1) return -1;
+    // 变量：inv_group_size=群大小在模 mod 下的逆元。
+    long long inv_group_size = (long long)(x0 % mod);
+    if (inv_group_size < 0) inv_group_size += mod;
+    return (__int128)sum * inv_group_size % mod;
 }
 \end{lstlisting}
 
@@ -776,5 +803,3 @@ x+y=2
 第二组检查``系数全零但常数非零''的矛盾行，第三组检查秩小于未知数个数。不能只测试唯一解，否则 \passthrough{\lstinline!row<m!} 和无解判断很容易被抄掉。
 
 例题：\href{https://www.luogu.com.cn/problem/P3389}{P3389 高斯消元法}。输入的是 \passthrough{\lstinline!n!} 个方程和 \passthrough{\lstinline!n!} 个未知数，读入 \passthrough{\lstinline!a[i][0..n]!} 后直接调用；输出保留题目要求的小数位。模意义下则把除法换成逆元，且只能在主元与模数互质时做。
-
-

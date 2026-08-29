@@ -19,8 +19,7 @@
       "regressions": [
         "tests/differential/regressions/math_qpow_negative_base.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "expected=3 actual=-2",
+      "expected": "pass",
       "run_timeout_seconds": 10
     },
     {
@@ -32,8 +31,7 @@
       "regressions": [
         "tests/differential/regressions/basic_difference_constraints_dag.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "expected=1 actual=0",
+      "expected": "pass",
       "run_timeout_seconds": 10
     },
     {
@@ -45,8 +43,7 @@
       "regressions": [
         "tests/differential/regressions/basic_lcm_zero.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "lcm(0,0) division failure",
+      "expected": "pass",
       "run_timeout_seconds": 10
     },
     {
@@ -112,21 +109,31 @@
       "regressions": [
         "tests/differential/regressions/cpp_print_i128_min.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "print_i128(INT128_MIN) mismatch",
+      "expected": "pass",
       "run_timeout_seconds": 10
     },
     {
       "id": "math.burnside_composite_mod",
       "description": "Burnside 在合数模且群大小可逆时不能用费马逆元",
       "source": "remake/large/03_数学.tex",
-      "contains": "long long burnside(const vector<vector<int>>& group, int colors, long long MOD)",
+      "contains": "long long burnside(const vector<vector<int>>& group,",
       "harness": "tests/differential/harnesses/math_burnside.cpp",
       "regressions": [
         "tests/differential/regressions/math_burnside_composite_mod.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "expected=1 actual=3",
+      "expected": "pass",
+      "run_timeout_seconds": 10
+    },
+    {
+      "id": "math.burnside_detailed_composite_mod",
+      "description": "详解版 Burnside 在合数模且群大小可逆时使用一般逆元",
+      "source": "remake/large/03_数学_详解.tex",
+      "contains": "long long burnside(const vector<vector<int>>& perm,",
+      "harness": "tests/differential/harnesses/math_burnside_detailed.cpp",
+      "regressions": [
+        "tests/differential/regressions/math_burnside_composite_mod.tsv"
+      ],
+      "expected": "pass",
       "run_timeout_seconds": 10
     },
     {
@@ -138,31 +145,26 @@
       "regressions": [
         "tests/differential/regressions/math_gauss_mod_negative.tsv"
       ],
-      "expected": "xfail",
-      "expected_failure_contains": "expected=1 actual=0",
+      "expected": "pass",
       "run_timeout_seconds": 10
     },
     {
       "id": "math.ntt_compile",
-      "description": "NTT 对本章三参数 qpow 的调用参数数量必须一致",
+      "description": "NTT 代码块应补齐模数、原根并正确调用三参数 qpow",
       "source": "remake/large/03_数学.tex",
       "contains": "void ntt(vector<int>& a, bool inv)",
       "harness": "tests/differential/harnesses/math_ntt_compile.cpp",
-      "expected": "xfail",
-      "expected_failure_stage": "compile",
-      "expected_failure_contains": "too few arguments",
+      "expected": "pass",
       "compile_timeout_seconds": 30
     },
     {
-      "id": "math.ntt_root_compile",
-      "description": "NTT 必须在正式板子中定义所使用的原根 G",
+      "id": "math.ntt_round_trip",
+      "description": "NTT 正变换与逆变换随机往返验证",
       "source": "remake/large/03_数学.tex",
       "contains": "void ntt(vector<int>& a, bool inv)",
-      "harness": "tests/differential/harnesses/math_ntt_root_compile.cpp",
-      "expected": "xfail",
-      "expected_failure_stage": "compile",
-      "expected_failure_contains": "'G' was not declared",
-      "compile_timeout_seconds": 30
+      "harness": "tests/differential/harnesses/math_ntt_round_trip.cpp",
+      "expected": "pass",
+      "run_timeout_seconds": 15
     },
     {
       "id": "math.gauss_compile",
@@ -170,9 +172,7 @@
       "source": "remake/large/03_数学.tex",
       "contains": "int gauss(vector<vector<long long>> a)",
       "harness": "tests/differential/harnesses/math_gauss_compile.cpp",
-      "expected": "xfail",
-      "expected_failure_stage": "compile",
-      "expected_failure_contains": "too few arguments",
+      "expected": "pass",
       "compile_timeout_seconds": 30
     },
     {

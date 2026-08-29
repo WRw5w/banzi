@@ -6,6 +6,7 @@ using namespace std;
 using i64 = long long;
 using u64 = unsigned long long;
 using i128 = __int128_t;
+using u128 = __uint128_t;
 // 变量：INF=不可达/无穷大哨兵值，参与加法前先判断不是 INF。
 constexpr int INF = 0x3f3f3f3f;
 constexpr i64 LINF = (1LL << 62);
@@ -13,10 +14,13 @@ constexpr i64 LINF = (1LL << 62);
 // 接口：print_i128(x)：十进制输出一个 __int128；无返回值；结果写入引用参数或当前结构状态。
 // 参数：待处理值或点/状态 x。
 void print_i128(i128 x) { // 需要输出超出 long long 时使用
-    if (x < 0) { cout << '-'; x = -x; }
+    // 先转成无符号绝对值，避免对 INT128_MIN 直接取反产生有符号溢出。
+    // 变量：value=x 的无符号绝对值，可完整容纳 2^127。
+    u128 value = static_cast<u128>(x);
+    if (x < 0) { cout << '-'; value = 0 - value; }
     // 变量：s=当前输入字符串/源点 s。
     string s;
-    do { s.push_back('0' + x % 10); x /= 10; } while (x);
+    do { s.push_back('0' + value % 10); value /= 10; } while (value);
     reverse(s.begin(), s.end()); cout << s;
 }
 \end{lstlisting}
@@ -34,5 +38,3 @@ void print_i128(i128 x) { // 需要输出超出 long long 时使用
 \item
   计数、乘积、距离默认 \passthrough{\lstinline!long long!}；乘法可能达到 \passthrough{\lstinline!1e18!} 时显式 \passthrough{\lstinline!1LL!} 或 \passthrough{\lstinline!\_\_int128!}。
 \end{itemize}
-
-

@@ -271,8 +271,8 @@ struct Edge { int v, w; }; // v=有向边终点，w=边权/收益（按本题转
 vector<vector<Edge>> g(n);
 // 变量：d=当前距离、差值或覆盖增量 d。
 vector<long long> d(n, 0);
-// 变量：inq=顶点当前是否在队列中的标记 inq；pushed=当前点进入队列的次数 pushed。
-vector<int> inq(n), pushed(n);
+// 变量：inq=顶点当前是否在队列中的标记 inq；path_len=当前最短路所含边数，用于判负环。
+vector<int> inq(n), path_len(n);
 // 变量：q=当前 BFS/单调算法使用的队列 q。
 queue<int> q;
 // 变量：s=当前枚举的起点/源点 s。
@@ -285,7 +285,8 @@ while (!q.empty() && ok) {
     // 变量：v=当前边的终点 v；w=当前边权 w。
     for (auto [v, w] : g[u]) if (d[v] > d[u] + w) {
         d[v] = d[u] + w;
-        if (++pushed[v] > n) { ok = false; break; }
+        path_len[v] = path_len[u] + 1;
+        if (path_len[v] >= n) { ok = false; break; }
         if (!inq[v]) q.push(v), inq[v] = 1;
     }
 }
@@ -417,12 +418,12 @@ for (int k = 0; k < n; ++k)
 \begin{lstlisting}[language={C++}]
 // 变量：g=图/树的邻接表 g。
 long long g = std::gcd(a, b);
-// 变量：l=当前区间左端点 l。
-long long l = a / g * b;
+// 任一操作数为 0 时 lcm 为 0，不能先除以 gcd(0,0)。
+// 变量：l=a 与 b 的最小公倍数。
+long long l = (a == 0 || b == 0) ? 0 : a / g * b;
 sort(v.begin(), v.end());
 v.erase(unique(v.begin(), v.end()), v.end());
 long long lowbit = x & -x; // x != 0
 // 变量：safe_product=“快速小技巧”这段代码中的临时量 safe_product；值由本行初始化式确定。
 long long safe_product = (long long)((__int128)x * y % MOD);
 \end{lstlisting}
-

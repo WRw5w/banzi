@@ -6,8 +6,10 @@
 // 接口：qpow(a, e, mod)：计算 a^e mod mod；返回类型 long long。
 // 参数：输入值/数组 a（见本节定义）；非负指数 e；正模数 mod。
 long long qpow(long long a, long long e, long long mod) {
+    a %= mod;
+    if (a < 0) a += mod;
     // 变量：r=快速幂当前累计答案 r。
-    a %= mod; long long r = 1 % mod;
+    long long r = 1 % mod;
     while (e) {
         if (e & 1) r = (__int128)r * a % mod;
         a = (__int128)a * a % mod; e >>= 1;
@@ -455,20 +457,47 @@ Poly ways(Poly base, int k, long long MOD) {
 
 \section{Burnside 引理与 Pólya 计数定理（Burnside's Lemma and Pólya Enumeration Theorem）}\label{burnside-puxf3lya}
 
-Burnside 引理：轨道数等于所有群作用下不动点数的平均值。对``颜色数为 \passthrough{\lstinline!c!}、置换 \passthrough{\lstinline!p!} 作用于位置''的染色问题，不动点数为 \passthrough{\lstinline!c\^\{cycles(p)\}!}；模数需要能除以群大小。
+Burnside 引理：轨道数等于所有群作用下不动点数的平均值。对``颜色数为 \passthrough{\lstinline!c!}、置换 \passthrough{\lstinline!p!} 作用于位置''的染色问题，不动点数为 \passthrough{\lstinline!c\^\{cycles(p)\}!}；取模时必须保证模数与群大小互质，代码用扩展欧几里得求一般逆元，不要求模数为质数。
 
 \begin{lstlisting}[language={C++}]
 // 接口：mod_pow(a, e, mod)：计算 a^e mod p；返回类型 long long。
 // 参数：输入值/数组 a（见本节定义）；非负指数 e；正模数 mod。
 long long mod_pow(long long a, long long e, long long mod) {
-    // 变量：r=当前区间右端点 r。
-    long long r = 1;
-    for (; e; e >>= 1, a = a * a % mod) if (e & 1) r = r * a % mod;
+    a %= mod;
+    if (a < 0) a += mod;
+    // 变量：r=快速幂当前累计答案 r。
+    long long r = 1 % mod;
+    for (; e; e >>= 1, a = (__int128)a * a % mod)
+        if (e & 1) r = (__int128)r * a % mod;
     return r;
 }
+// 接口：inverse_coprime(value, mod)：求 value 在模 mod 下的逆元；不存在时返回 -1。
+// 参数：待求逆元的整数 value；正模数 mod。
+long long inverse_coprime(long long value, long long mod) {
+    // 变量：r0=扩展欧几里得当前余数；r1=下一余数。
+    long long r0 = value, r1 = mod;
+    // 变量：x0=当前余数对应 value 的系数；x1=下一余数对应 value 的系数。
+    __int128 x0 = 1, x1 = 0;
+    while (r1) {
+        // 变量：q=欧几里得除法的当前商。
+        long long q = r0 / r1;
+        // 变量：next_r=欧几里得除法得到的下一余数。
+        long long next_r = r0 - q * r1;
+        // 变量：next_x=下一余数对应 value 的系数。
+        __int128 next_x = x0 - (__int128)q * x1;
+        r0 = r1; r1 = next_r;
+        x0 = x1; x1 = next_x;
+    }
+    if (r0 != 1) return -1;
+    // 变量：result=value 在模 mod 下的标准非负逆元。
+    long long result = (long long)(x0 % mod);
+    if (result < 0) result += mod;
+    return result;
+}
 // 接口：burnside(group, colors, MOD)：按 Burnside 引理计算本质不同方案数；返回类型 long long。
-// 参数：所有群作用置换的列表 group；可用颜色数 colors；运算使用的正模数 MOD。
-long long burnside(const vector<vector<int>>& group, int colors, long long MOD) {
+// 参数：非空群作用置换列表 group；可用颜色数 colors；正模数 MOD，须与 group.size() 互质。
+long long burnside(const vector<vector<int>>& group,
+                   int colors, long long MOD) {
     // 变量：sum=当前累计和 sum。
     long long sum = 0;
     for (const auto& perm : group) {
@@ -482,9 +511,12 @@ long long burnside(const vector<vector<int>>& group, int colors, long long MOD) 
             // 变量：u=当前顶点/状态编号 u。
             for (int u = i; !vis[u]; u = perm[u]) vis[u] = true;
         }
-        sum = (sum + mod_pow(colors, cycles, MOD)) % MOD;
+        sum = (sum + (__int128)mod_pow(colors, cycles, MOD)) % MOD;
     }
-    return sum * mod_pow(group.size(), MOD - 2, MOD) % MOD;
+    // 变量：inv_group_size=群大小在模 MOD 下的逆元。
+    long long inv_group_size = inverse_coprime((long long)group.size(), MOD);
+    if (inv_group_size == -1) return -1;
+    return (__int128)sum * inv_group_size % MOD;
 }
 \end{lstlisting}
 
@@ -652,6 +684,8 @@ for (int i = 0; i < n; ++i) if (!vis[i]) {
 多项式卷积、计数合并、字符串匹配。NTT 要求模数为 \passthrough{\lstinline!c·2\^k+1!}（常用 \passthrough{\lstinline!998244353!}），每层蝶形乘原根；逆变换乘 \passthrough{\lstinline!n\^\{-1\}!}。只在卷积规模大于 \passthrough{\lstinline!O(n²)!} 时值得使用。
 
 \begin{lstlisting}[language={C++}]
+// 变量：NTT_MOD=NTT 使用的质数模数；NTT_G=该模数下的原根。
+constexpr int NTT_MOD = 998244353, NTT_G = 3;
 // 接口：ntt(a, inv)：对数组 a 做模 998244353 的 NTT；invert=true 时做逆变换；无返回值；结果写入引用参数或当前结构状态。
 // 参数：输入值/数组 a（见本节定义）；是否执行逆变换 inv。
 void ntt(vector<int>& a, bool inv) {
@@ -666,8 +700,8 @@ void ntt(vector<int>& a, bool inv) {
     // 变量：len=当前长度 len。
     for (int len = 2; len <= n; len <<= 1) {
         // 变量：wlen=当前 NTT 蝶形层使用的单位根 wlen。
-        int wlen = qpow(G, (MOD - 1) / len);
-        if (inv) wlen = qpow(wlen, MOD - 2);
+        int wlen = qpow(NTT_G, (NTT_MOD - 1) / len, NTT_MOD);
+        if (inv) wlen = qpow(wlen, NTT_MOD - 2, NTT_MOD);
         // 变量：i=当前循环下标 i。
         for (int i = 0; i < n; i += len) {
             // 变量：w=当前边权/转移代价 w。
@@ -675,14 +709,18 @@ void ntt(vector<int>& a, bool inv) {
             // 变量：j=内层循环下标 j。
             for (int j = 0; j < len / 2; ++j) {
                 // 变量：u=当前顶点/状态编号 u；v=当前相邻顶点/下一状态 v。
-                int u = a[i + j], v = w * a[i + j + len / 2] % MOD;
-                a[i + j] = (u + v) % MOD; a[i + j + len / 2] = (u - v + MOD) % MOD;
-                w = w * wlen % MOD;
+                int u = a[i + j], v = w * a[i + j + len / 2] % NTT_MOD;
+                a[i + j] = (u + v) % NTT_MOD;
+                a[i + j + len / 2] = (u - v + NTT_MOD) % NTT_MOD;
+                w = w * wlen % NTT_MOD;
             }
         }
     }
-    // 变量：ni=变换长度 n 在模 MOD 下的逆元 ni。
-    if (inv) { long long ni = qpow(n, MOD - 2); for (int &x : a) x = x * ni % MOD; }
+    if (inv) {
+        // 变量：ni=变换长度 n 在模 NTT_MOD 下的逆元。
+        long long ni = qpow(n, NTT_MOD - 2, NTT_MOD);
+        for (int &x : a) x = x * ni % NTT_MOD;
+    }
 }
 \end{lstlisting}
 
@@ -691,11 +729,13 @@ void ntt(vector<int>& a, bool inv) {
 解线性方程组、求秩、行列式。整数模数下用模逆；浮点版本选主元避免除以接近 0 的数。方程有自由变量时记录主元列并构造一组解。
 
 \begin{lstlisting}[language={C++}]
-// 接口：gauss(a)：对增广矩阵做高斯消元并返回解的状态；返回类型 int。
-// 参数：输入值/数组 a（见本节定义）。
+// 接口：gauss(a)：在固定质数模 MOD 下对非空系数矩阵消元并返回秩；返回类型 int。
+// 参数：非空系数矩阵 a；若传入增广矩阵，常数列不能参与本函数的秩计算。
 int gauss(vector<vector<long long>> a) {
     // 变量：n=当前元素/顶点/状态数量 n；m=当前边数、操作数或第二维规模 m；rank=后缀/排列的当前排名数组或 Cantor 排名 rank。
     int n = a.size(), m = a[0].size(), rank = 0;
+    for (auto& row : a)
+        for (long long& value : row) value = (value % MOD + MOD) % MOD;
     // 变量：col=当前高斯消元列/扫描列 col。
     for (int col = 0; col < m && rank < n; ++col) {
         // 变量：pivot=当前高斯消元选择的主元行 pivot。
@@ -704,15 +744,17 @@ int gauss(vector<vector<long long>> a) {
         if (pivot == n) continue;
         swap(a[pivot], a[rank]);
         // 变量：inv=当前逆元/是否执行逆变换 inv。
-        long long inv = qpow(a[rank][col], MOD - 2);
+        long long inv = qpow(a[rank][col], MOD - 2, MOD);
         // 变量：j=内层循环下标 j。
-        for (int j = col; j < m; ++j) a[rank][j] = a[rank][j] * inv % MOD;
+        for (int j = col; j < m; ++j)
+            a[rank][j] = (__int128)a[rank][j] * inv % MOD;
         // 变量：i=当前循环下标 i。
         for (int i = 0; i < n; ++i) if (i != rank && a[i][col]) {
             // 变量：t=测试用例数量或当前临时值 t。
             long long t = a[i][col];
             // 变量：j=内层循环下标 j。
-            for (int j = col; j < m; ++j) a[i][j] = (a[i][j] - t * a[rank][j]) % MOD;
+            for (int j = col; j < m; ++j)
+                a[i][j] = (a[i][j] - (__int128)t * a[rank][j] % MOD + MOD) % MOD;
         }
         ++rank;
     }
