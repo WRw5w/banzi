@@ -241,12 +241,14 @@ int main() {
         for (auto [mask, sub] : pairs) if ((sub & ~mask) != 0) return 8;
     }
     for(int round=0;round<1000;++round){int n=rng()%16;vector<long long>a(n);for(auto&x:a)x=1+rng()%8;long long target=rng()%40;set<vector<long long>>solutions;for(int mask=0;mask<(1<<n);++mask){vector<long long>v;long long s=0;for(int i=0;i<n;++i)if(mask>>i&1)v.push_back(a[i]),s+=a[i];sort(v.begin(),v.end());if(s==target)solutions.insert(v);}if(backtracking_case::run(a,target)!=(long long)solutions.size())return 25;}
+    if(backtracking_case::run({LLONG_MAX,LLONG_MAX},LLONG_MAX)!=1)return 26;
     for (int round = 0; round < 300; ++round) {
         int n = rng() % 17; vector<long long> a(n); for (auto& x : a) x = rng() % 40;
         long long limit = rng() % 250, want = 0;
         for (int mask = 0; mask < (1 << n); ++mask) { long long sum = 0; for (int i = 0; i < n; ++i) if (mask >> i & 1) sum += a[i]; if (sum <= limit) want = max(want, sum); }
         if (mitm_case::mitm_max_subset_sum(a, limit) != want) return 9;
     }
+    if(mitm_case::mitm_max_subset_sum({LLONG_MAX,LLONG_MAX,1},LLONG_MAX)!=LLONG_MAX)return 27;
     for (int round = 0; round < 1000; ++round) {
         int n = 1 + rng() % 30; vector<long long> a(n + 1); for (int i = 1; i <= n; ++i) a[i] = (int)(rng() % 31) - 15;
         vector<tuple<int, int, long long>> ops; auto want = a;
@@ -272,6 +274,8 @@ int main() {
     }
     for (int round = 0; round < 3000; ++round) { long long l = (int)(rng()%100)-50, r=l+rng()%100, p=l+rng()%(r-l+1), off=(int)(rng()%1000)-500; if (ternary_case::run(l,r,p,off)!=off) return 15; }
     for(int round=0;round<1000;++round){int n=1+rng()%12,k=1+rng()%n;vector<long long>a(n);for(auto&x:a)x=rng()%30;vector<vector<long long>>dp(k+1,vector<long long>(n+1,1LL<<60));dp[0][0]=0;for(int g=1;g<=k;++g)for(int i=1;i<=n;++i){long long sum=0;for(int j=i-1;j>=0;--j){sum+=a[j];dp[g][i]=min(dp[g][i],max(dp[g-1][j],sum));}}long long want=1LL<<60;for(int g=1;g<=k;++g)want=min(want,dp[g][n]);if(binary_answer_case::minimize_max_segment_sum(a,k)!=want)return 24;}
+    if(binary_answer_case::minimize_max_segment_sum({LLONG_MAX,LLONG_MAX},2)!=optional<long long>(LLONG_MAX))return 28;
+    if(binary_answer_case::minimize_max_segment_sum({LLONG_MAX,LLONG_MAX},1))return 29;
     for (int round = 0; round < 500; ++round) {
         int n = rng() % 12; vector<regret_case::Job> jobs(n); for (auto& j : jobs) j={1+(int)(rng()%max(1,n)),1+(int)(rng()%50)};
         auto got=regret_case::run(jobs); pair<int,long long>want={-1,LLONG_MAX};

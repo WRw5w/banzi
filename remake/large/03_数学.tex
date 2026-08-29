@@ -88,6 +88,7 @@ for (int i = 2; i < N; ++i) { // i：当前正在确定的整数。
 枚举约数成对出现，\passthrough{\lstinline!O(√n)!}。对 \passthrough{\lstinline!floor(n/i)!} 的求和，商相同的 \passthrough{\lstinline!i!} 区间为 \passthrough{\lstinline![i, n/(n/i)]!}，可在 \passthrough{\lstinline!O(√n)!} 个块内完成（数论分块）。
 
 \begin{lstlisting}[language={C++}]
+// 数值域：要求 1<=n<LLONG_MAX，且 sum_{i=1}^n floor(n/i) 可由 answer 的类型表示；超出时把 answer 改为 __int128。
 // 变量：l=当前区间左端点 l。
 for (long long l = 1, r; l <= n; l = r + 1) {
     // 变量：quotient=当前整除分块内恒定的商 quotient=n/l。
@@ -346,13 +347,14 @@ Mat mpow(Mat a, long long e) {
 条件独立/按质因子分解时可用容斥；条件数量大时优先找补集、莫比乌斯反演或 DP。
 
 \begin{lstlisting}[language={C++}]
+// 数值域：要求 0<=m<31；count_satisfying(mask) 返回 long long，累加改用 __int128 以容纳全部 2^m 项。
 // 变量：ans=当前累计答案 ans。
-long long ans = 0;
+__int128 ans = 0;
 // 变量：mask=当前子集/博弈状态的二进制掩码 mask。
 for (int mask = 0; mask < (1 << m); ++mask) {
     // 变量：bits=当前值的有效二进制位数 bits。
     int bits = __builtin_popcount((unsigned)mask);
-    long long ways = count_satisfying(mask); // 同时满足 mask 中条件
+    __int128 ways = count_satisfying(mask); // 同时满足 mask 中条件
     ans += (bits & 1) ? -ways : ways;
 }
 \end{lstlisting}
@@ -674,8 +676,8 @@ for (int i = 0; i < n; ++i) if (!vis[i]) {
     for (int u = i; !vis[u]; u = p[u]) vis[u] = 1, cyc.push_back(u);
     // 变量：m=当前边数、操作数或第二维规模 m。
     int m = cyc.size();
-    // 变量：j=内层循环下标 j。
-    for (int j = 0; j < m; ++j) result[cyc[j]] = cyc[(j + k) % m];
+    // 变量：j=当前环内下标；先对环长取模，避免 j+k 在 k=LLONG_MAX 时溢出；要求 k>=0。
+    for (int j = 0; j < m; ++j) result[cyc[j]] = cyc[(j + k % m) % m];
 }
 \end{lstlisting}
 

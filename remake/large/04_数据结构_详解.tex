@@ -54,21 +54,22 @@ struct Tag {
     long long add = 0; // 仿射变换的常数项；恒等标记为 {mul=1,add=0}。
 };
 struct Node {
-    long long sum = 0; // 当前区间的和，已经包含本节点自己的 tag。
+    long long sum = 0; // 当前区间模 MOD 的和，规范化到 [0,MOD)。
     Tag tag;           // 尚未下传给儿子的变换。
 };
 vector<Node> tr;       // 调用前按线段树所需节点数分配；多测时重新初始化。
 // 接口：apply(p, l, r, mul, add)：把本次懒操作直接作用于节点 p，并同步节点值与标记；会修改当前结构；多测时重新构造或显式清空成员。
-// 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r；仿射标记乘数 mul；仿射标记常数项/本次增加量 add。
+// 参数：当前线段树节点编号 p（根通常为 1）；合法闭区间 [l,r]；0<MOD 且 sum、mul、add 与已有标记均规范化到 [0,MOD)。
 void apply(int p, int l, int r, long long mul, long long add) {
     // 先更新“区间答案”：区间和乘 mul，再额外加 add * 区间长度。
-    tr[p].sum = (tr[p].sum * mul + add * (r - l + 1)) % MOD;
+    tr[p].sum = ((__int128)tr[p].sum * mul
+               + (__int128)add * (r - l + 1)) % MOD;
 
     // 原来的标记是 f(x)=old_mul*x+old_add，
     // 新操作是 g(x)=mul*x+add，实际顺序是 g(f(x))。
     // 合成后：mul'=mul*old_mul，add'=mul*old_add+add。
-    tr[p].tag.mul = tr[p].tag.mul * mul % MOD;
-    tr[p].tag.add = (tr[p].tag.add * mul + add) % MOD;
+    tr[p].tag.mul = (__int128)tr[p].tag.mul * mul % MOD;
+    tr[p].tag.add = ((__int128)tr[p].tag.add * mul + add) % MOD;
 }
 // 接口：push(p, l, r)：把节点 p/x 的待下传标记传给孩子并清除本节点标记；会修改当前结构；多测时重新构造或显式清空成员。
 // 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r。
@@ -572,7 +573,7 @@ long long query(int x, int p, int l, int r) {
 
 \begin{lstlisting}[language={C++}]
 struct BeatNode {
-    long long sum; // 区间和。
+    __int128 sum;  // 精确区间和；宽类型避免 long long 极值与区间长度相乘溢出。
     long long mx1; // 区间最大值。
     __int128 mx2;  // 严格小于 mx1 的次大值；用更宽类型保存无冲突哨兵。
     int cnt;       // 最大值出现次数。
@@ -587,7 +588,7 @@ void push_chmin(int p, long long x) {
     // 只有 x < mx1 时才有变化；调用者还必须保证 x > mx2。
     // 这样区间内只有“最大值这一类”会被修改，才能整段打标记。
     if (x >= tr[p].mx1) return;
-    tr[p].sum -= (tr[p].mx1 - x) * tr[p].cnt;
+    tr[p].sum -= ((__int128)tr[p].mx1 - x) * tr[p].cnt;
     tr[p].mx1 = x;
 }
 // 接口：push_up(p)：由两个孩子重新计算节点 p 的全部统计量；会修改当前结构；多测时重新构造或显式清空成员。

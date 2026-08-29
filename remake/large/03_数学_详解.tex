@@ -13,6 +13,7 @@
 小范围条件最多二十个时可以枚举子集：
 
 \begin{lstlisting}[language={C++}]
+// 数值域：要求 0<=m<31、n>=1、a[i]>0；lcm_limit 必须在乘法前检测超过 n 的最小公倍数，bad 的结果位于 [0,n]。
 // 变量：bad=当前状态是否无解/不合法的标记 bad。
 long long bad = 0;
 // 变量：mask=当前子集/博弈状态的二进制掩码 mask。

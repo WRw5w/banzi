@@ -37,7 +37,8 @@ namespace direction_case {
 }
 namespace scanline_geometry_case {
 // @@@GEOMETRY_SCANLINE@@@
-long long run(const vector<array<int,4>>&rects){vector<Event>events;for(auto r:rects){events.push_back({r[0],r[1],r[3],1});events.push_back({r[2],r[1],r[3],-1});}array<int,32>cover{};auto length=[&](){long long s=0;for(int i=0;i<31;++i)s+=cover[i]>0;return s;};auto update=[&](int l,int r,int d){for(int i=l;i<=r;++i)cover[i]+=d;};auto id=[](long long y){return(int)y;};return sweep_area(events,length,update,id);}
+long long run(const vector<array<int,4>>&rects){vector<Event>events;for(auto r:rects){events.push_back({r[0],r[1],r[3],1});events.push_back({r[2],r[1],r[3],-1});}array<int,32>cover{};auto length=[&](){long long s=0;for(int i=0;i<31;++i)s+=cover[i]>0;return s;};auto update=[&](int l,int r,int d){for(int i=l;i<=r;++i)cover[i]+=d;};auto id=[](long long y){return(int)y;};auto area=sweep_area(events,length,update,id);if(!area)abort();return *area;}
+optional<long long> extreme_area(long long left,long long right){vector<Event>events{{left,0,1,1},{right,0,1,-1}};int cover=0;auto length=[&](){return(long long)cover;};auto update=[&](int,int,int delta){cover+=delta;};auto id=[](long long y){return(int)y;};return sweep_area(events,length,update,id);}
 }
 
 int main(){mt19937 rng(20260829);
@@ -47,8 +48,22 @@ int main(){mt19937 rng(20260829);
     for(int round=0;round<1000;++round){string s;int n=rng()%100;for(int i=0;i<n;++i)s+=char('a'+rng()%5);vector<pair<int,int>>q;for(int i=0;i<100;++i){int l=rng()%(n+1),r=l+rng()%(n-l+1);q.push_back({l,r});}auto h=hash_case::run(s,q);for(int i=0;i<100;++i)for(int j=0;j<100;++j)if(q[i].second-q[i].first==q[j].second-q[j].first&&(h[i]==h[j])!=(s.substr(q[i].first,q[i].second-q[i].first)==s.substr(q[j].first,q[j].second-q[j].first)))return 6;}
     for(int round=0;round<1000;++round){vector<int>a(1+rng()%100);for(int&x:a)x=(int)rng();int k=rng()%a.size();auto sorted=a;sort(sorted.begin(),sorted.end());if(random_geometry_case::run(a,k).first!=sorted[k])return 7;}
     for(int round=0;round<300;++round){int n=1+rng()%30;vector<pair<int,int>>e;vector<vector<int>>want(n,vector<int>(n));for(int i=0;i<n;++i)want[i][i]=1;for(int u=0;u<n;++u)for(int v=0;v<n;++v)if(rng()%8==0)e.push_back({u,v}),want[u][v]=1;for(int k=0;k<n;++k)for(int i=0;i<n;++i)for(int j=0;j<n;++j)want[i][j]|=want[i][k]&&want[k][j];if(geometry_closure_case::run(n,e)!=want)return 8;}
-    for(int round=0;round<10000;++round){long long dx=(int)(rng()%2001)-1000,dy=(int)(rng()%2001)-1000;if(!dx&&!dy)dx=1;auto [x,y]=direction_case::normalize_direction(dx,dy);if(gcd(llabs(x),llabs(y))!=1||x<0||(x==0&&y<0)||(__int128)x*dy!=(__int128)y*dx)return 9;long long a=(int)(rng()%2001)-1000,b=(int)(rng()%2001)-1000;long long want=a==0||b==0?0:llabs(a/gcd(a,b)*b);if(direction_case::safe_lcm(a,b)!=want)return 10;}
+    for(int round=0;round<10000;++round){long long dx=(int)(rng()%2001)-1000,dy=(int)(rng()%2001)-1000;if(!dx&&!dy)dx=1;auto [x,y]=direction_case::normalize_direction(dx,dy);auto ax=x<0?-x:x,ay=y<0?-y:y;if(direction_case::gcd128(ax,ay)!=1||x<0||(x==0&&y<0)||x*dy!=y*dx)return 9;long long a=(int)(rng()%2001)-1000,b=(int)(rng()%2001)-1000;long long want=a==0||b==0?0:llabs(a/gcd(a,b)*b);if(direction_case::safe_lcm(a,b)!=want)return 10;}
     bool threw=0;try{direction_case::normalize_direction(0,0);}catch(const invalid_argument&){threw=1;}if(!threw)return 11;
+    using I=__int128;I two63=(I)1<<63;
+    if(direction_case::normalize_direction(LLONG_MIN,0)!=pair<I,I>{1,0})return 13;
+    if(direction_case::normalize_direction(0,LLONG_MIN)!=pair<I,I>{0,1})return 14;
+    if(direction_case::normalize_direction(LLONG_MIN,1)!=pair<I,I>{two63,-1})return 15;
+    if(direction_case::normalize_direction(LLONG_MAX,-LLONG_MAX)!=pair<I,I>{1,-1})return 16;
+    if(direction_case::normalize_direction(LLONG_MIN,LLONG_MAX)!=pair<I,I>{two63,-(I)LLONG_MAX})return 17;
+    if(direction_case::safe_lcm(0,LLONG_MIN)!=optional<long long>(0))return 18;
+    if(direction_case::safe_lcm(-6,15)!=optional<long long>(30))return 19;
+    if(direction_case::safe_lcm(LLONG_MAX,1)!=optional<long long>(LLONG_MAX))return 20;
+    if(direction_case::safe_lcm(LLONG_MAX-1,2)!=optional<long long>(LLONG_MAX-1))return 21;
+    if(direction_case::safe_lcm(LLONG_MAX,2)||direction_case::safe_lcm(LLONG_MIN,1)||direction_case::safe_lcm(LLONG_MIN,LLONG_MIN))return 22;
+    if(scanline_geometry_case::extreme_area(0,LLONG_MAX)!=optional<long long>(LLONG_MAX))return 23;
+    if(scanline_geometry_case::extreme_area(LLONG_MIN,LLONG_MAX))return 24;
     for(int round=0;round<1000;++round){vector<array<int,4>>rects;bool grid[30][30]{};int n=rng()%30;for(int i=0;i<n;++i){int x1=rng()%29,x2=x1+1+rng()%(30-x1-1),y1=rng()%29,y2=y1+1+rng()%(30-y1-1);rects.push_back({x1,y1,x2,y2});for(int x=x1;x<x2;++x)for(int y=y1;y<y2;++y)grid[x][y]=1;}long long want=0;for(auto&r:grid)for(bool v:r)want+=v;if(scanline_geometry_case::run(rects)!=want)return 12;}
+    {using namespace beats_case;vector<long long>a={0,LLONG_MAX,LLONG_MAX};tr.assign(16,{});build(1,1,2,a);if(tr[1].sum!=(I)LLONG_MAX*2)return 25;range_chmin(1,1,2,1,2,LLONG_MIN);if(tr[1].sum!=(I)LLONG_MIN*2)return 26;}
     cout<<"structure/string/geometry contracts: PASS\n";
 }

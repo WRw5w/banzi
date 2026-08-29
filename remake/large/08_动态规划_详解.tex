@@ -67,6 +67,7 @@ long long dfs(int pos, bool tight, bool started, int st) {
 SOS DP 用来计算所有子集/超集的和：
 
 \begin{lstlisting}[language={C++}]
+// 数值域：0<=K<31，且每个子集总和都必须可由 f 的元素类型表示；否则把 f 改为 __int128。
 // 变量：bit=当前处理的二进制位 bit。
 for (int bit = 0; bit < K; ++bit)
     // 变量：mask=当前子集/博弈状态的二进制掩码 mask。
@@ -127,9 +128,9 @@ for (int i = 1; i < n; ++i) {
 // 把 dp[i] 整理成“查询某条候选直线在 x[i] 处的最值”时使用。
 struct Line {
     long long k, b; // 候选直线 y=k*x+b 的斜率与截距。
-    // 接口：value(x)：返回直线 k*x+b 在横坐标 x 处的值；返回类型 long long。
-    // 参数：待处理值或点/状态 x。
-    long long value(long long x) const { return k * x + b; }
+    // 接口：value(x)：在 __int128 中精确返回直线 k*x+b 在横坐标 x 处的值。
+    // 参数：任意 long long 查询横坐标 x。
+    __int128 value(long long x) const { return (__int128)k * x + b; }
 };
 
 // 只有在斜率按单调顺序加入、查询 x 也按单调顺序时，
@@ -137,12 +138,12 @@ struct Line {
 // 变量：hull=按有效顺序维护的凸包候选队列 hull。
 deque<Line> hull;
 // 接口：useless(a, b, c)：判断中间候选直线 b 是否可从凸包队列删除；返回 true 表示本节条件成立/操作成功。
-// 参数：按斜率顺序相邻的候选直线 a；按斜率顺序相邻的候选直线 b；按斜率顺序相邻的候选直线 c。
+// 参数：按斜率顺序相邻的候选直线 a、b、c；要求两个交叉乘积可由 signed __int128 表示，差值会先提升再相减。
 bool useless(const Line& a, const Line& b, const Line& c) {
     // 交点顺序不再递增时，中间直线永远不会成为最优。
     // 用 __int128 防止交叉相乘时溢出。
-    return (__int128)(b.b - a.b) * (b.k - c.k)
-         >= (__int128)(c.b - b.b) * (a.k - b.k);
+    return ((__int128)b.b - a.b) * ((__int128)b.k - c.k)
+         >= ((__int128)c.b - b.b) * ((__int128)a.k - b.k);
 }
 
 // 接口：add_line(line)：把一条候选直线插入当前李超树/单调凸包并删除失效候选；会修改当前结构；多测时重新构造或显式清空成员。

@@ -190,7 +190,7 @@
         {"source": "banzi/板子_大版本.tex", "contains": "vector<int> matches;", "marker": "// @@@SHIFT_AND@@@"},
         {"source": "banzi/板子_大版本.tex", "contains": "f[mask] += f[mask ^ (1 << i)]", "marker": "// @@@SOS@@@"},
         {"source": "remake/large/02_基础.tex", "contains": "enumerate_submasks", "marker": "// @@@SUBSET_ENUMERATION@@@"},
-        {"source": "remake/large/02_基础.tex", "contains": "void dfs(int pos, long long sum)", "marker": "// @@@BACKTRACKING@@@"},
+        {"source": "remake/large/02_基础.tex", "contains": "void dfs(int pos, __int128 sum)", "marker": "// @@@BACKTRACKING@@@"},
         {"source": "remake/large/02_基础.tex", "contains": "mitm_max_subset_sum", "marker": "// @@@MITM@@@"},
         {"source": "remake/large/02_基础.tex", "contains": "vector<long long> pre(n + 1), diff(n + 2)", "marker": "// @@@DIFFERENCE_ARRAY@@@"},
         {"source": "remake/large/02_基础.tex", "contains": "vector<pair<int, int>> event", "marker": "// @@@SCANLINE_PEAK@@@"},
@@ -260,7 +260,7 @@
     },
     {
       "id": "structures_strings_geometry.foundation_algorithms",
-      "description": "STL、仿射懒标记、Segment Tree Beats、字符串哈希、随机选择、bitset 闭包和整数方向归一化的直接提取性质测试",
+      "description": "STL、仿射懒标记、Segment Tree Beats、字符串哈希、随机选择、bitset 闭包、整数方向归一化、LCM 与扫描面积极值/溢出的直接提取性质测试",
       "harness": "tests/contracts/harnesses/structures_strings_geometry.cpp",
       "snippets": [
         {"source": "remake/large/04_数据结构.tex", "contains": "vector<int> a = input", "marker": "// @@@STL_COMPONENTS@@@"},
@@ -270,7 +270,7 @@
         {"source": "remake/large/10_几何.tex", "contains": "uint64_t random_hash = rng()", "marker": "// @@@GEOMETRY_RANDOM@@@"},
         {"source": "remake/large/10_几何.tex", "contains": "geometry_bitset_closure", "marker": "// @@@GEOMETRY_CLOSURE@@@"},
         {"source": "remake/large/10_几何.tex", "contains": "normalize_direction", "marker": "// @@@DIRECTION_NORMALIZATION@@@"},
-        {"source": "remake/large/10_几何.tex", "contains": "long long sweep_area", "marker": "// @@@GEOMETRY_SCANLINE@@@"}
+        {"source": "remake/large/10_几何.tex", "contains": "optional<long long> sweep_area", "marker": "// @@@GEOMETRY_SCANLINE@@@"}
       ],
       "run_timeout_seconds": 40
     },

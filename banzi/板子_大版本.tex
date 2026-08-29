@@ -508,6 +508,7 @@ for (int i = bs._Find_first(); i < (int)bs.size(); i = bs._Find_next(i)) {
 \end{note}
 
 \begin{lstlisting}
+// 数值域：0<=w[i]<MAXV；左移超出 MAXV 的位按 bitset 规则丢弃。
 // bs[j] = 1 表示重量 j 可以被凑出
 bitset<MAXV> bs;
 bs[0] = 1;                 // 重量 0 总能凑出（什么都不选）
@@ -1365,6 +1366,7 @@ $\text{popcount}(x)$ 表示 $x$ 二进制中 1 的个数。常用性质：
 
 暴力枚举子集是 $O(3^n)$，SOS DP 可以做到 $O(n \cdot 2^n)$：
 \begin{lstlisting}
+// 数值域：0<=n<31，且每个子集和都必须可由 f 的元素类型表示；否则把 f 改为 __int128。
 // 变量：i=当前循环下标 i。
 for (int i = 0; i < n; i++)
     // 变量：mask=当前子集/博弈状态的二进制掩码 mask。

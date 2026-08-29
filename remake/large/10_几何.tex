@@ -209,23 +209,28 @@ long double diameter2(const vector<Point>& p) {
 
 \begin{lstlisting}[language={C++}]
 struct Event { long long x, y1, y2; int delta; }; // x 扫描坐标、y 区间、覆盖增量 ±1。
-// 接口：sweep_area(events, covered_length, update, y_id)：按 x 扫描事件并返回覆盖面积；空事件返回 0。
-// 参数：covered_length 返回当前 y 覆盖长度；update 接收离散 y 区间与增量；y_id 返回 y 的离散下标。
+// 接口：sweep_area(events, covered_length, update, y_id)：按 x 扫描事件；面积可由 long long 表示时返回该值，否则返回 nullopt；空事件返回 0。
+// 参数：covered_length 返回当前非负 y 覆盖长度；update 接收离散 y 区间与增量；y_id 返回 y 的离散下标。
 template<class CoveredLength, class Update, class YId>
-long long sweep_area(vector<Event> events, CoveredLength covered_length,
-                     Update update, YId y_id) {
+optional<long long> sweep_area(vector<Event> events, CoveredLength covered_length,
+                               Update update, YId y_id) {
     if (events.empty()) return 0;
     // 接口：比较器 lambda(a, b)：按事件横坐标从小到大排序；返回 a 是否应排在 b 前。
     sort(events.begin(), events.end(), [](auto a, auto b) { return a.x < b.x; });
-    // 变量：area=已经扫过的覆盖面积；last_x=上一批事件的横坐标。
-    long long area = 0, last_x = events[0].x;
+    // 变量：area=已经扫过的精确覆盖面积；last_x=上一批事件的横坐标。
+    __int128 area = 0, last_x = events[0].x;
     // 变量：e=当前处理的矩形竖边事件。
     for (auto e : events) {
-        area += covered_length() * (e.x - last_x);
+        // 变量：covered=当前非负覆盖长度。
+        long long covered = covered_length();
+        // 变量：delta_area=推进到 e.x 新增的精确面积。
+        __int128 delta_area = (__int128)covered * ((__int128)e.x - last_x);
+        if (delta_area > numeric_limits<long long>::max() - area) return nullopt;
+        area += delta_area;
         update(y_id(e.y1), y_id(e.y2) - 1, e.delta);
         last_x = e.x;
     }
-    return area;
+    return (long long)area;
 }
 \end{lstlisting}
 
@@ -395,7 +400,7 @@ void geometry_bitset_closure(array<bitset<N>, N>& reach, int n) {
 \begin{itemize}
 \tightlist
 \item
-  \passthrough{\lstinline!std::gcd!}、\passthrough{\lstinline!std::lcm!}（C++17）。
+  \passthrough{\lstinline!std::gcd!}（C++17）；\passthrough{\lstinline!std::lcm!} 仅在结果可由返回类型表示时使用，否则改用下方可检测溢出的 \passthrough{\lstinline!safe_lcm!}。
 \item
   \passthrough{\lstinline!\_\_builtin\_ctzll!} 只对非零数调用。
 \item
@@ -405,19 +410,43 @@ void geometry_bitset_closure(array<bitset<N>, N>& reach, int n) {
 \end{itemize}
 
 \begin{lstlisting}[language={C++}]
-// 接口：normalize_direction(dx, dy)：把非零整数方向约为互质且符号唯一的 (dx,dy)。
-pair<long long, long long> normalize_direction(long long dx, long long dy) {
-    if (dx == 0 && dy == 0) throw invalid_argument("zero direction");
-    // 变量：g=两个方向分量绝对值的最大公约数。
-    long long g = std::gcd(llabs(dx), llabs(dy));
-    dx /= g; dy /= g;
-    if (dx < 0 || (dx == 0 && dy < 0)) dx = -dx, dy = -dy;
-    return {dx, dy};
+// 接口：abs128(x)：在 __int128 中计算任意 long long 的绝对值，包括 LLONG_MIN。
+// 参数：任意 long long 整数 x。
+__int128 abs128(long long x) {
+    return x >= 0 ? (__int128)x : -(__int128)x;
 }
 
-// 接口：safe_lcm(a, b)：返回非负最小公倍数；0 与任意数的最小公倍数为 0。
-long long safe_lcm(long long a, long long b) {
+// 接口：gcd128(a, b)：返回两个非负 __int128 整数的最大公约数。
+// 参数：非负整数 a、b。
+__int128 gcd128(__int128 a, __int128 b) {
+    while (b != 0) {
+        // 变量：r=a 除以 b 后的非负余数。
+        __int128 r = a % b;
+        a = b; b = r;
+    }
+    return a;
+}
+
+// 接口：normalize_direction(dx, dy)：把任意非零 long long 方向约为互质且符号唯一的 __int128 二元组。
+// 参数：方向分量 dx、dy；二者不能同时为 0。宽返回类型可表示 LLONG_MIN 取反后的 2^63。
+pair<__int128, __int128> normalize_direction(long long dx, long long dy) {
+    if (dx == 0 && dy == 0) throw invalid_argument("zero direction");
+    // 变量：x、y=在宽整数域中的方向分量；g=两分量绝对值的最大公约数。
+    __int128 x = dx, y = dy, g = gcd128(abs128(dx), abs128(dy));
+    x /= g; y /= g;
+    if (x < 0 || (x == 0 && y < 0)) x = -x, y = -y;
+    return {x, y};
+}
+
+// 接口：safe_lcm(a, b)：非负最小公倍数可由 long long 表示时返回该值，溢出时返回 nullopt；0 与任意数返回 0。
+// 参数：任意 long long 整数 a、b，包括 LLONG_MIN 与 LLONG_MAX。
+optional<long long> safe_lcm(long long a, long long b) {
     if (a == 0 || b == 0) return 0;
-    return llabs(a / std::gcd(a, b) * b);
+    // 变量：x、y=在宽整数域中的绝对值；g=最大公约数；value=精确最小公倍数。
+    __int128 x = abs128(a), y = abs128(b);
+    // 变量：g=x 与 y 的最大公约数；value=宽整数域中的精确最小公倍数。
+    __int128 g = gcd128(x, y), value = x / g * y;
+    if (value > numeric_limits<long long>::max()) return nullopt;
+    return (long long)value;
 }
 \end{lstlisting}

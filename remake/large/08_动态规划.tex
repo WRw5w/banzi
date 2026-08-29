@@ -43,11 +43,11 @@ for (int x : a) {
 // 变量：lis=当前最长递增子序列长度 lis。
 int lis = tail.size();
 
-// 变量：bestEnding=必须以当前位置结尾的最大子段和 bestEnding；maxSubarray=扫描至今的最大子段和 maxSubarray。
-long long bestEnding = a[0], maxSubarray = a[0];
+// 变量：bestEnding=必须以当前位置结尾的精确最大子段和；maxSubarray=扫描至今的精确最大子段和。
+__int128 bestEnding = a[0], maxSubarray = a[0];
 // 变量：i=当前循环下标 i。
 for (int i = 1; i < n; ++i) {
-    bestEnding = max<long long>(a[i], bestEnding + a[i]);
+    bestEnding = max<__int128>(a[i], bestEnding + a[i]);
     maxSubarray = max(maxSubarray, bestEnding);
 }
 \end{lstlisting}
@@ -85,6 +85,7 @@ for (int i = 1; i <= n; ++i)
 
 \begin{lstlisting}[language={C++}]
 // 接口：zero_one_knapsack(items, W)：返回每个容量上限下的 0/1 背包最大价值。
+// 参数：W>=0；每件物品重量为正且价值为 int。正重量保证可选件数不超过 W，long long 足以容纳最优价值。
 vector<long long> zero_one_knapsack(const vector<pair<int, int>>& items, int W) {
     // 变量：dp=容量不超过下标时的 0/1 背包最大价值。
     vector<long long> dp(W + 1, 0);
@@ -95,7 +96,8 @@ vector<long long> zero_one_knapsack(const vector<pair<int, int>>& items, int W) 
             dp[j] = max(dp[j], dp[j - w] + v);
     return dp;
 }
-// 接口：complete_knapsack(items, W)：返回每个容量上限下的完全背包最大价值；要求物品重量为正。
+// 接口：complete_knapsack(items, W)：返回每个容量上限下的完全背包最大价值。
+// 参数：W>=0；每件物品重量为正且价值为 int。最多选择 W 件，long long 足以容纳最优价值。
 vector<long long> complete_knapsack(const vector<pair<int, int>>& items, int W) {
     // 变量：dp=容量不超过下标时的完全背包最大价值。
     vector<long long> dp(W + 1, 0);
@@ -178,13 +180,18 @@ for (int u : topo) if (dp[u] != NEG)
 // 变量：dp=动态规划状态数组 dp；下标含义见本节状态定义。
 vector<vector<long long>> dp(1 << n, vector<long long>(n, INF));
 dp[1][0] = 0;
+// 数值域：边权非负；INF 是不参与转移的上界，所有需要区分的有限路径代价必须严格小于 INF。
 // 变量：mask=当前子集/博弈状态的二进制掩码 mask。
 for (int mask = 1; mask < (1 << n); ++mask)
     // 变量：u=当前顶点/状态编号 u。
     for (int u = 0; u < n; ++u) if (mask >> u & 1)
         // 变量：v=当前相邻顶点/下一状态 v。
-        for (int v = 0; v < n; ++v) if (!(mask >> v & 1))
-            dp[mask | (1 << v)][v] = min(dp[mask | (1 << v)][v], dp[mask][u] + w[u][v]);
+        for (int v = 0; v < n; ++v) if (!(mask >> v & 1) && dp[mask][u] < INF) {
+            // 变量：candidate=宽整数计算的候选路径代价；达到 INF 后按本接口的上界处理。
+            __int128 candidate = (__int128)dp[mask][u] + w[u][v];
+            if (candidate < dp[mask | (1 << v)][v])
+                dp[mask | (1 << v)][v] = (long long)candidate;
+        }
 \end{lstlisting}
 
 \section{数位动态规划（Digit Dynamic Programming）}\label{ux6570ux4f4d-dp}
@@ -272,14 +279,14 @@ for (int i = 1; i <= n; ++i) {
 形如 \passthrough{\lstinline!dp[i]=base(i)+min/max(dp[j]+g(j))!} 且 \passthrough{\lstinline!j!} 的合法范围滑动时，维护候选队列。若 \passthrough{\lstinline!g!} 可分离且窗口固定，复杂度从 \passthrough{\lstinline!O(nk)!} 降到 \passthrough{\lstinline!O(n)!}。
 
 \begin{lstlisting}[language={C++}]
-// 接口：window_min_dp(base, k)：计算 dp[i]=base[i]+min(dp[j])，其中 i-k<=j<i；dp[0]=base[0]。
+// 接口：window_min_dp(base, k)：在 __int128 中精确计算 dp[i]=base[i]+min(dp[j])，其中 i-k<=j<i；dp[0]=base[0]。
 // 参数：每个位置的附加代价 base；正窗口宽度 k。
-vector<long long> window_min_dp(const vector<long long>& base, int k) {
+vector<__int128> window_min_dp(const vector<long long>& base, int k) {
     // 变量：n=DP 状态总数。
     int n = (int)base.size();
     if (n == 0) return {};
     // 变量：dp=窗口最小值优化后的状态数组。
-    vector<long long> dp(n);
+    vector<__int128> dp(n);
     // 变量：q=按 dp 值递增维护的候选下标队列。
     deque<int> q;
     dp[0] = base[0]; q.push_back(0);
@@ -301,17 +308,17 @@ vector<long long> window_min_dp(const vector<long long>& base, int k) {
 \begin{lstlisting}[language={C++}]
 struct Line {
     long long k, b; // 候选直线 y=k*x+b 的斜率与截距。
-    // 接口：get(x)：返回该直线在横坐标 x 处的函数值 k*x+b。
-    // 参数：x=查询横坐标；返回 long long，乘法可能溢出时改 __int128。
-    long long get(long long x) const { return k * x + b; }
+    // 接口：get(x)：在 __int128 中精确返回该直线在横坐标 x 处的函数值 k*x+b。
+    // 参数：任意 long long 查询横坐标 x。
+    __int128 get(long long x) const { return (__int128)k * x + b; }
 };
 // 变量：hull=按有效顺序维护的凸包候选队列 hull。
 deque<Line> hull;
 // 接口：bad(a, b, c)：判断中间直线 b 是否因交点顺序而永远不会成为最优；返回 true 表示本节条件成立/操作成功。
-// 参数：按斜率顺序相邻的候选直线 a；按斜率顺序相邻的候选直线 b；按斜率顺序相邻的候选直线 c。
+// 参数：按斜率顺序相邻的候选直线 a、b、c；要求两个交叉乘积可由 signed __int128 表示，差值会先提升再相减。
 bool bad(Line a, Line b, Line c) {
-    return (__int128)(b.b - a.b) * (b.k - c.k)
-         >= (__int128)(c.b - b.b) * (a.k - b.k);
+    return ((__int128)b.b - a.b) * ((__int128)b.k - c.k)
+         >= ((__int128)c.b - b.b) * ((__int128)a.k - b.k);
 }
 // 接口：add_line(x)：把一条候选直线插入当前李超树/单调凸包并删除失效候选；会修改当前结构；多测时重新构造或显式清空成员。
 // 参数：待插入的候选直线 x。

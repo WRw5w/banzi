@@ -75,7 +75,7 @@ vector<int> run(vector<int> permutation, long long shift) {
 namespace multiples_inclusion_case {
 long long lcm_limit(long long a, long long b, long long limit, bool& overflow) {
     long long g = gcd(a, b);
-    if ((__int128)(a / g) * b > limit) { overflow = true; return limit + 1; }
+    if ((__int128)(a / g) * b > limit) { overflow = true; return limit; }
     return a / g * b;
 }
 long long run(long long limit, vector<long long> divisors) {
@@ -100,5 +100,7 @@ int main() {
     for(int round=0;round<1000;++round){int n=1+rng()%500;vector<int>d;for(int p:{2,3,5,7,11})if(rng()%2)d.push_back(p);long long want=0;for(int x=1;x<=n;++x){bool none=1;for(int p:d)none&=x%p!=0;want+=none;}if(generic_inclusion_case::run(n,d)!=want)return 6;long long bad=n-want;vector<long long>dl(d.begin(),d.end());if(multiples_inclusion_case::run(n,dl)!=bad)return 7;}
     for(int round=0;round<500;++round){int n=1+rng()%30;vector<vector<pair<int,double>>>g(n);vector<double>w(n,1.0);for(int u=n-2;u>=0;--u){vector<int>to;for(int v=u+1;v<n;++v)if(rng()%4==0)to.push_back(v);if(to.empty())to.push_back(u+1);double p=1.0/to.size();for(int v:to)g[u].push_back({v,p}),w[u]+=p*w[v];}if(abs(expected_dag_case::run(g,0)-w[0])>1e-9)return 8;}
     for(int round=0;round<1000;++round){int n=1+rng()%50;vector<int>p(n);iota(p.begin(),p.end(),0);shuffle(p.begin(),p.end(),rng);long long k=rng()%1000;auto got=permutation_case::run(p,k);vector<int>want(n);for(int i=0;i<n;++i){int u=i;for(int j=0;j<k;++j)u=p[u];want[i]=u;}if(got!=want)return 9;}
+    {vector<int>p={1,2,0};auto got=permutation_case::run(p,LLONG_MAX);long long shift=LLONG_MAX%3;vector<int>want(3);for(int i=0;i<3;++i){int u=i;for(int j=0;j<shift;++j)u=p[u];want[i]=u;}if(got!=want)return 10;}
+    if(multiples_inclusion_case::run(LLONG_MAX,{2,LLONG_MAX})!=LLONG_MAX/2+1)return 11;
     cout<<"math foundation contracts: PASS\n";
 }

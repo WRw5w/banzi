@@ -105,6 +105,7 @@ Dijkstra 的核心前提是所有边权非负；堆中允许重复状态，弹�
 
 \begin{lstlisting}[language={C++}]
 using P = pair<long long, int>;
+// 数值域：边权必须非负；INF 是“不参与松弛”的距离上界，所有需要区分的有限最短路必须严格小于 INF。
 // 变量：dist=最短路/几何距离数组或当前距离 dist。
 vector<long long> dist(n, INF);
 // 变量：pq=当前优先队列 pq；堆顶含义见比较器。
@@ -114,8 +115,11 @@ while (!pq.empty()) {
     auto [du, u] = pq.top(); pq.pop();
     if (du != dist[u]) continue;
     // 变量：v=当前边的终点 v；w=当前边权 w。
-    for (auto [v, w] : g[u]) if (dist[v] > du + w) {
-        dist[v] = du + w;
+    for (auto [v, w] : g[u]) {
+        // 变量：candidate=宽整数计算的候选距离；大于等于 INF 时按本接口的不可区分上界处理。
+        __int128 candidate = (__int128)du + w;
+        if (candidate >= dist[v]) continue;
+        dist[v] = (long long)candidate;
         pq.push({dist[v], v});
     }
 }

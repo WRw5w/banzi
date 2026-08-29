@@ -246,16 +246,16 @@ int median() { return low.top(); }
 把全部点作为源点可检查任意连通分量中的负环。
 
 \begin{lstlisting}[language={C++}]
-// 接口：difference_constraints(n, edges)：求一组满足 x[v]<=x[u]+w 的势函数；存在负环时返回 nullopt。
+// 接口：difference_constraints(n, edges)：在 __int128 域求一组满足 x[v]<=x[u]+w 的势函数；存在负环时返回 nullopt。
 // 参数：变量数 n；约束边 (u,v,w)，顶点使用 0-based 编号。
-optional<vector<long long>> difference_constraints(
+optional<vector<__int128>> difference_constraints(
         int n, const vector<tuple<int, int, long long>>& edges) {
     // 变量：g=由差分约束构成的有向带权邻接表。
     vector<vector<pair<int, long long>>> g(n);
     // 变量：u=约束边起点；v=约束边终点；w=x[v]-x[u] 的上界。
     for (auto [u, v, w] : edges) g[u].push_back({v, w});
     // 变量：dist=当前找到的各变量可行上界势函数。
-    vector<long long> dist(n, 0);
+    vector<__int128> dist(n, 0);
     // 变量：path_edges=产生当前 dist 值的松弛路径边数，用于识别负环。
     vector<int> path_edges(n, 0);
     // 变量：in_queue=顶点当前是否已经在待松弛队列中。
@@ -269,8 +269,10 @@ optional<vector<long long>> difference_constraints(
         int u = q.front(); q.pop(); in_queue[u] = false;
         // 变量：v=约束边终点；w=x[v]-x[u] 的上界。
         for (auto [v, w] : g[u]) {
-            if (dist[v] <= dist[u] + w) continue;
-            dist[v] = dist[u] + w;
+            // 变量：candidate=经约束边 u->v 得到的宽整数候选势函数值。
+            __int128 candidate = dist[u] + (__int128)w;
+            if (dist[v] <= candidate) continue;
+            dist[v] = candidate;
             path_edges[v] = path_edges[u] + 1;
             if (path_edges[v] >= n) return nullopt;
             if (!in_queue[v]) in_queue[v] = true, q.push(v);

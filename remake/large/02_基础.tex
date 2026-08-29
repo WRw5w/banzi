@@ -27,9 +27,9 @@ vector<pair<int, int>> enumerate_submasks(int n) {
 固定顺序、提前判非法、记录当前最优上界、相同状态记忆化。对排列/组合先排序再跳过相同元素：\passthrough{\lstinline!if (i > start \&\& a[i] == a[i-1]) continue;!}。
 
 \begin{lstlisting}[language={C++}]
-// 接口：dfs(pos, sum)：从当前节点/位置继续深度优先处理，并写入本节状态数组；无返回值；结果写入引用参数或当前结构状态。
-// 参数：当前 0-based/DP 位置 pos；当前累计值 sum。
-void dfs(int pos, long long sum) {
+// 接口：dfs(pos, sum)：枚举非负数组 a 中互不重复的组合并统计和为 target 的方案；累计和使用 __int128 避免加法溢出。
+// 参数：当前 0-based 位置 pos；当前精确累计值 sum；要求 a 已排序且元素非负、answer 的方案计数可由 long long 表示。
+void dfs(int pos, __int128 sum) {
     if (sum == target) { ++answer; return; }
     if (pos == n || sum > target) return;
     // 变量：i=当前循环下标 i。
@@ -45,9 +45,10 @@ void dfs(int pos, long long sum) {
 \passthrough{\lstinline!n ≤ 40!}、每个元素选/不选且目标为和/异或/最值时，把数组分两半枚举，排序一侧后二分或双指针，复杂度 \passthrough{\lstinline!O(2\^(n/2) log 2\^(n/2))!}。
 
 \begin{lstlisting}[language={C++}]
-// 接口：gen(a, l, r)：枚举 a 的半开下标区间 [l,r) 的所有子集和；返回类型 vector<long long>。
-// 参数：输入数组 a；半开区间左端点 l；半开区间右端点 r。
-vector<long long> gen(const vector<long long>& a, int l, int r) {
+// 接口：gen(a, l, r, limit)：枚举 a 的半开区间 [l,r) 中不超过 limit 的子集和。
+// 参数：非负数组 a；合法半开区间 [l,r)；非负上界 limit。超过上界的和在加法前剪枝。
+vector<long long> gen(const vector<long long>& a, int l, int r,
+                      long long limit) {
     // 变量：res=准备返回的结果容器/结果值 res。
     vector<long long> res{0};
     // 变量：i=当前循环下标 i。
@@ -55,7 +56,8 @@ vector<long long> gen(const vector<long long>& a, int l, int r) {
         // 变量：old=修改前版本根/修改前容器大小 old。
         int old = (int)res.size();
         // 变量：j=内层循环下标 j。
-        for (int j = 0; j < old; ++j) res.push_back(res[j] + a[i]);
+        for (int j = 0; j < old; ++j)
+            if (a[i] <= limit - res[j]) res.push_back(res[j] + a[i]);
     }
     return res;
 }
@@ -66,7 +68,7 @@ long long mitm_max_subset_sum(const vector<long long>& a, long long limit) {
     // 变量：n=输入数组元素个数。
     int n = (int)a.size();
     // 变量：L=左半部分的全部子集和；R=右半部分的全部子集和。
-    auto L = gen(a, 0, n / 2), R = gen(a, n / 2, n);
+    auto L = gen(a, 0, n / 2, limit), R = gen(a, n / 2, n, limit);
     sort(R.begin(), R.end());
     // 变量：best=目前找到的不超过 limit 的最大子集和。
     long long best = 0;
@@ -94,6 +96,7 @@ long long mitm_max_subset_sum(const vector<long long>& a, long long limit) {
 对 \passthrough{\lstinline![l,r]!} 加 \passthrough{\lstinline!v!}：\passthrough{\lstinline!d[l]+=v; d[r+1]-=v!}；最后累加 \passthrough{\lstinline!d!} 恢复数组。二维矩形加法在四个角标记，二维前缀恢复。
 
 \begin{lstlisting}[language={C++}]
+// 数值域：要求所有前缀和、区间修改累计量和修改后的 a[i] 均可由 long long 表示。
 // 变量：pre=前缀和/前缀状态数组 pre；diff=当前差值/差分数组 diff。
 vector<long long> pre(n + 1), diff(n + 2);
 // 变量：i=当前循环下标 i。
@@ -162,15 +165,15 @@ while (l < r) {
 当答案具有单调可行性 \passthrough{\lstinline!check(x)!} 时，在答案范围二分。先明确求``最小可行''还是``最大可行''，并把 \passthrough{\lstinline!check!} 写成无副作用函数。典型：最小最大分段和、最小速度、最大最小距离、满足容量的最少天数。
 
 \begin{lstlisting}[language={C++}]
-// 接口：minimize_max_segment_sum(a, k)：把非负数组分成至多 k 个非空连续段，返回最小的最大段和。
+// 接口：minimize_max_segment_sum(a, k)：把非负数组分成至多 k 个非空连续段；答案可由 long long 表示时返回该值，否则返回 nullopt。
 // 参数：非空非负数组 a；允许的最大分段数 k，要求 k>=1。
-long long minimize_max_segment_sum(const vector<long long>& a, int k) {
+optional<long long> minimize_max_segment_sum(const vector<long long>& a, int k) {
     // 接口：check(limit)：判断能否把 a 分成至多 k 段且每段和不超过 limit。
-    auto check = [&](long long limit) {
+    auto check = [&](__int128 limit) {
         // 变量：groups=当前贪心划出的连续段数。
         int groups = 1;
         // 变量：sum=当前连续段的元素和。
-        long long sum = 0;
+        __int128 sum = 0;
         // 变量：x=当前扫描的非负数组元素。
         for (long long x : a) {
             if (x > limit) return false;
@@ -180,16 +183,19 @@ long long minimize_max_segment_sum(const vector<long long>& a, int k) {
         return groups <= k;
     };
     // 变量：l=最大单元素值，亦为二分答案下界。
-    long long l = *max_element(a.begin(), a.end());
+    __int128 l = *max_element(a.begin(), a.end());
     // 变量：r=全部元素之和，亦为二分答案上界。
-    long long r = accumulate(a.begin(), a.end(), 0LL);
+    __int128 r = 0;
+    // 变量：x=当前累加到宽整数总和中的非负数组元素。
+    for (long long x : a) r += x;
     while (l < r) {
         // 变量：mid=当前二分判定的最大允许段和。
-        long long mid = l + (r - l) / 2;
+        __int128 mid = l + (r - l) / 2;
         if (check(mid)) r = mid;
         else l = mid + 1;
     }
-    return l;
+    if (l > numeric_limits<long long>::max()) return nullopt;
+    return (long long)l;
 }
 \end{lstlisting}
 
@@ -217,6 +223,7 @@ for (int right = 0; right < n; ++right) {
 连续/离散单峰函数可三分；整数域更稳妥的做法是三分到很小区间后暴力。很多题可通过凸性改写为二分导数或斜率，不要盲目使用浮点三分。
 
 \begin{lstlisting}[language={C++}]
+// 数值域：要求 l<=r、r-l 可由 long long 表示且 r<LLONG_MAX；f(x) 的返回值也须可由 long long 表示。
 while (r - l > 3) {
     // 变量：m1=第一个模数/第一部分规模 m1。
     long long m1 = l + (r - l) / 3;

@@ -12,6 +12,12 @@ C++ harness，再进行真实编译和运行。它用于验证完整实现或可
 整数方向归一化、点分治和 DSU on Tree。`PASS` 只代表当次编译和已声明契约通过，
 不能外推到未覆盖的题意框架。
 
+整数域审计分两类处理：方向归一化、最大子段和、窗口 DP、差分约束和 Beats 使用
+`__int128` 保存精确中间量；LCM、二分答案和扫描面积在最终结果超出 `long long` 时
+返回 `nullopt`。仍使用定宽返回值的 bitset/SOS、前缀差分、三分、整除分块、
+Dijkstra/TSP、仿射标记和 CHT 块，都在正式接口旁写明输入范围、哨兵上界或乘积
+可表示条件。边界契约覆盖 0、负数、`LLONG_MIN`、`LLONG_MAX`、恰好可表示与溢出。
+
 ```text
 python tools/run_contract_tests.py
 python tools/run_contract_tests.py --case graph.lct
