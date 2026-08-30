@@ -22,7 +22,8 @@
 
 ## 训练时快速复制
 
-需要从板子复制代码时，在仓库根目录运行：
+Windows 下直接双击仓库根目录的 [`打开板子复制器.cmd`](打开板子复制器.cmd)；也可以在
+仓库根目录运行：
 
 ```text
 python tools/serve_snippet_picker.py
