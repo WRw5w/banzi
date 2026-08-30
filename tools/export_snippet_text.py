@@ -14,7 +14,7 @@ from serve_snippet_picker import build_catalog
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OUTPUT = ROOT / "tmp" / "板子代码集合.txt"
+DEFAULT_OUTPUT = ROOT / "板子代码集合.txt"
 SEPARATOR = "=" * 88
 
 
@@ -68,7 +68,7 @@ def parse_args() -> argparse.Namespace:
         "--output",
         type=Path,
         default=DEFAULT_OUTPUT,
-        help="输出位置，默认 tmp/板子代码集合.txt",
+        help="输出位置，默认仓库根目录的板子代码集合.txt",
     )
     parser.add_argument("--no-open", action="store_true", help="生成后不自动打开")
     return parser.parse_args()

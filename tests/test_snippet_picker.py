@@ -55,6 +55,10 @@ class SnippetPickerTests(unittest.TestCase):
         self.assertIn("数学 / 模运算与快速幂", rendered)
         self.assertEqual(rendered.count("long long qpow(long long a"), 1)
         self.assertIn("remake/large/03_数学.tex", rendered)
+        self.assertEqual(
+            text_exporter.DEFAULT_OUTPUT,
+            ROOT / "板子代码集合.txt",
+        )
 
 
 if __name__ == "__main__":

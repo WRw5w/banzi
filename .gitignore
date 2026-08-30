@@ -30,6 +30,7 @@ big-anwser/
 output/
 remake/*.pdf
 /*.pdf
+/板子代码集合.txt
 
 # Legacy preview images
 remake/visual/
