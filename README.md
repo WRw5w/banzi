@@ -20,6 +20,19 @@
 [`muban.cpp`](muban.cpp) 是复制算法卡片前使用的代码地基。
 [`错题本/`](错题本/) 是独立排错资料，不是另一版算法板子。
 
+## 训练时快速复制
+
+需要从板子复制代码时，在仓库根目录运行：
+
+```text
+python tools/serve_snippet_picker.py
+```
+
+浏览器会打开本地“算法板子复制器”，可以按章节或关键词搜索，并用按钮复制完整代码块。
+页面实时读取 `banzi/板子_大版本.tex` 的正式渲染树及 `remake/large/*.tex` 唯一章节源，
+不会生成或维护第二份模板库。服务器默认只监听 `127.0.0.1:8765`；不希望自动打开浏览器
+时使用 `python tools/serve_snippet_picker.py --no-open`，按 `Ctrl+C` 停止。
+
 ## 编译与验证
 
 从仓库根目录运行：
@@ -29,7 +42,7 @@ python tools/audit_large_interfaces.py
 python tools/audit_large_variables.py
 python tools/audit_listing_coverage.py
 python tools/run_framework_checks.py
-python -m unittest tests.test_listing_coverage tests.test_framework_checks
+python -m unittest tests.test_listing_coverage tests.test_framework_checks tests.test_snippet_picker
 python tools/run_contract_tests.py
 python tools/run_differential_tests.py
 python tools/run_refactored_tests.py
