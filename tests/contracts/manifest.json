@@ -64,12 +64,12 @@
     },
     {
       "id": "data_structures.complete_implementations",
-      "description": "Treap、三维偏序 CDQ、李超树和可持久化并查集的直接提取随机性质测试",
+      "description": "Treap、三维偏序 CDQ、李超树（含宽整数极值）和可持久化并查集的直接提取性质测试",
       "harness": "tests/contracts/harnesses/data_structures_complete.cpp",
       "snippets": [
         {"source": "remake/large/04_数据结构.tex", "contains": "struct Node { int l, r, key, pri, sz; }", "marker": "// @@@TREAP@@@"},
         {"source": "remake/large/04_数据结构_详解.tex", "contains": "struct Point {\n    int x, y, z;", "marker": "// @@@CDQ@@@"},
-        {"source": "remake/large/04_数据结构_详解.tex", "contains": "long long b = -(1LL << 60)", "marker": "// @@@LICHAO@@@"},
+        {"source": "remake/large/04_数据结构_详解.tex", "contains": "bool empty = true; // 空节点显式标记", "marker": "// @@@LICHAO@@@"},
         {"source": "remake/large/04_数据结构_详解.tex", "contains": "struct PNode { int l, r, val; }", "marker": "// @@@PERSISTENT_DSU@@@"},
         {"source": "remake/large/04_数据结构.tex", "contains": "int B = max(1, (int)sqrt(n));", "marker": "// @@@BLOCK_ADD@@@"}
       ],
@@ -103,7 +103,7 @@
     },
     {
       "id": "geometry.complete_implementations",
-      "description": "圆交、凸包、裁剪、半平面交、最小圆覆盖和矩形并面积的直接提取性质测试",
+      "description": "圆交、凸包、裁剪、半平面交、最小圆覆盖和矩形并面积（空集、边界与溢出）的直接提取性质测试",
       "harness": "tests/contracts/harnesses/geometry_complete.cpp",
       "snippets": [
         {"source": "remake/large/10_几何.tex", "contains": "using Real = long double;", "marker": "// @@@GEOMETRY_CORE@@@"},
@@ -260,7 +260,7 @@
     },
     {
       "id": "structures_strings_geometry.foundation_algorithms",
-      "description": "STL、仿射懒标记、Segment Tree Beats、字符串哈希、随机选择、bitset 闭包、整数方向归一化、LCM 与扫描面积极值/溢出的直接提取性质测试",
+      "description": "STL、仿射懒标记、详解 Segment Tree Beats、字符串哈希、随机选择、bitset 闭包、整数方向归一化、LCM 与扫描面积极值/溢出的直接提取性质测试",
       "harness": "tests/contracts/harnesses/structures_strings_geometry.cpp",
       "snippets": [
         {"source": "remake/large/04_数据结构.tex", "contains": "vector<int> a = input", "marker": "// @@@STL_COMPONENTS@@@"},

@@ -17,16 +17,17 @@ int main() {
                 tree.add_line(k, b); lines.push_back({k, b});
             } else {
                 int x = rng() % (right + 1);
-                long long expected = (long long)4e18;
-                for (auto [k, b] : lines) expected = min(expected, k * x + b);
-                long long actual = tree.query(x);
+                __int128 expected = (__int128)1<<126;
+                for (auto [k, b] : lines) expected = min(expected, (__int128)k * x + b);
+                __int128 actual = tree.query(x);
                 if (actual != expected) {
                     cerr << "seed=" << seed << " round=" << round << " op=" << op
-                         << " x=" << x << " expected=" << expected << " actual=" << actual << '\n';
+                         << " x=" << x << " value mismatch\n";
                     return 1;
                 }
             }
         }
     }
+    {LiChao tree(0,2);if(tree.query(2)!=((__int128)1<<126))return 2;tree.add_line(LLONG_MAX,LLONG_MAX);if(tree.query(2)!=(__int128)LLONG_MAX*3)return 3;tree.add_line(LLONG_MIN,LLONG_MIN);if(tree.query(2)!=(__int128)LLONG_MIN*3)return 4;}
     cout << "rounds=500 operations=150000 seed=" << seed << '\n';
 }

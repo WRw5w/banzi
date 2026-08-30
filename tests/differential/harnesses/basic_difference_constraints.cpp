@@ -4,7 +4,7 @@ using namespace std;
 struct SeedArc {
     int from;
     int to;
-    int weight;
+    long long weight;
 };
 
 vector<SeedArc> seeded_arcs;
@@ -39,12 +39,12 @@ bool template_reports_feasible(int n) {
 }
 
 bool brute_has_no_negative_cycle(int n, const vector<SeedArc>& arcs) {
-    vector<long long> distance(n, 0);
+    vector<__int128> distance(n, 0);
     for (int iteration = 0; iteration < n; ++iteration) {
         bool changed = false;
         for (const auto& arc : arcs) {
-            if (distance[arc.to] > distance[arc.from] + arc.weight) {
-                distance[arc.to] = distance[arc.from] + arc.weight;
+            if (distance[arc.to] > distance[arc.from] + (__int128)arc.weight) {
+                distance[arc.to] = distance[arc.from] + (__int128)arc.weight;
                 changed = true;
             }
         }

@@ -210,7 +210,7 @@ long double diameter2(const vector<Point>& p) {
 \begin{lstlisting}[language={C++}]
 struct Event { long long x, y1, y2; int delta; }; // x 扫描坐标、y 区间、覆盖增量 ±1。
 // 接口：sweep_area(events, covered_length, update, y_id)：按 x 扫描事件；面积可由 long long 表示时返回该值，否则返回 nullopt；空事件返回 0。
-// 参数：covered_length 返回当前非负 y 覆盖长度；update 接收离散 y 区间与增量；y_id 返回 y 的离散下标。
+// 参数：covered_length 返回可转为 __int128 的当前非负 y 覆盖长度；update 接收离散 y 区间与增量；y_id 返回 y 的离散下标。
 template<class CoveredLength, class Update, class YId>
 optional<long long> sweep_area(vector<Event> events, CoveredLength covered_length,
                                Update update, YId y_id) {
@@ -219,13 +219,20 @@ optional<long long> sweep_area(vector<Event> events, CoveredLength covered_lengt
     sort(events.begin(), events.end(), [](auto a, auto b) { return a.x < b.x; });
     // 变量：area=已经扫过的精确覆盖面积；last_x=上一批事件的横坐标。
     __int128 area = 0, last_x = events[0].x;
+    // 变量：max_area=接口允许返回的最大面积。
+    const __int128 max_area = numeric_limits<long long>::max();
     // 变量：e=当前处理的矩形竖边事件。
     for (auto e : events) {
         // 变量：covered=当前非负覆盖长度。
-        long long covered = covered_length();
-        // 变量：delta_area=推进到 e.x 新增的精确面积。
-        __int128 delta_area = (__int128)covered * ((__int128)e.x - last_x);
-        if (delta_area > numeric_limits<long long>::max() - area) return nullopt;
+        __int128 covered = covered_length();
+        // 变量：width=本次推进的非负宽度；delta_area=推进到 e.x 新增的精确面积。
+        __int128 width = (__int128)e.x - last_x;
+        if (covered < 0) throw std::invalid_argument("negative covered length");
+        if (covered != 0 && width > max_area / covered)
+            return nullopt;
+        // 变量：delta_area=推进到 e.x 新增且已确认不超过 long long 上限的面积。
+        __int128 delta_area = covered * width;
+        if (delta_area > max_area - area) return nullopt;
         area += delta_area;
         update(y_id(e.y1), y_id(e.y2) - 1, e.delta);
         last_x = e.x;

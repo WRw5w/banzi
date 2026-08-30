@@ -484,25 +484,38 @@ struct RollbackDSU {
 
 \section{李超线段树（Li Chao Segment Tree）}\label{ux674eux8d85ux7ebfux6bb5ux6811li-chao-segment-tree}
 
-维护直线集合在离散/整数横坐标上的最值。每个节点保存当前区间中在中点最优的直线，递归把另一条直线送入可能胜出的子区间；插入和查询均为 \passthrough{\lstinline!O(log V)!}。
+维护直线集合在离散/整数横坐标上的最值。每个节点保存当前区间中在中点最优的直线，递归把另一条直线送入可能胜出的子区间；插入和查询均为 \passthrough{\lstinline!O(log V)!}。斜率、截距和查询坐标使用 \passthrough{\lstinline!long long!}，求值与查询结果统一使用 \passthrough{\lstinline!\_\_int128!}，因此不会在乘加处发生窄整数溢出。
 
 \begin{lstlisting}[language={C++}]
 struct LiChao {
     using ll = long long;
     struct Line {
-        // 这份代码维护“最小值”；空直线用极大截距表示。
-        // 若改成最大值，把空值和所有比较方向一起反过来。
+        // 这份代码维护最小值；显式 empty 标记不会与任何合法直线值冲突。
         // 变量：k=当前排名、选取数量或循环层数 k；b=当前几何点/向量/圆 b。
-        ll k = 0, b = (ll)4e18;
-        // 接口：get(x)：返回直线在横坐标 x 处的函数值；返回类型 ll。
+        ll k = 0, b = 0;
+        bool empty = true; // 当前节点是否尚未保存真实直线。
+        // 接口：Line()：构造一条空直线；构造并初始化对象。
+        Line() = default;
+        // 接口：Line(k, b)：构造斜率 k、截距 b 的真实直线；构造并初始化对象。
+        // 参数：直线斜率 k；直线截距 b。
+        Line(ll k, ll b): k(k), b(b), empty(false) {}
+        // 接口：get(x)：在 __int128 中返回直线在横坐标 x 处的精确值；空直线返回宽整数正无穷。
         // 参数：待处理值或点/状态 x。
-        ll get(ll x) const { return k * x + b; }
+        __int128 get(ll x) const {
+            return empty ? ((__int128)1 << 126) : (__int128)k * x + b;
+        }
     };
     int L, R;             // 允许查询的整数横坐标闭区间 [L,R]。
     vector<Line> tr;      // tr[p]：节点区间内当前保留下来的候选直线。
+    // 接口：storage_size(L, R)：返回整数闭区间 [L,R] 的静态李超树数组长度。
+    // 参数：闭区间左端点 L；闭区间右端点 R，要求 L<=R。
+    static size_t storage_size(int L, int R) {
+        if (L > R) throw std::invalid_argument("empty Li Chao domain");
+        return 4ULL * ((long long)R - L + 1);
+    }
   // 接口：LiChao(L, R)：构造整数横坐标闭区间 [L,R] 上的李超树；构造并初始化对象；每组测试建议重新构造。
   // 参数：闭区间左端点 L；闭区间右端点 R。
-    LiChao(int L, int R): L(L), R(R), tr(4 * (R - L + 1)) {}
+    LiChao(int L, int R): L(L), R(R), tr(storage_size(L, R)) {}
 
     // 接口：add_line(nw, p, l, r)：把一条候选直线插入当前李超树/单调凸包并删除失效候选；会修改当前结构；多测时重新构造或显式清空成员。
     // 参数：待插入的新直线 nw；当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r。
@@ -528,12 +541,12 @@ struct LiChao {
     // 参数：排名/选取数量 k；输入点/向量 b。
     void add_line(ll k, ll b) { add_line({k, b}, 1, L, R); }
 
-    // 接口：query(x, p, l, r)：返回本节数据结构在给定位置/区间上的查询结果；返回类型 ll。
+    // 接口：query(x, p, l, r)：返回本节数据结构在给定位置/区间上的精确查询结果；返回类型 __int128。
     // 参数：待处理值或点/状态 x；当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r。
-    ll query(ll x, int p, int l, int r) const {
+    __int128 query(ll x, int p, int l, int r) const {
         // x 所在路径上的每个节点都可能保存一条更优直线，必须全部比较。
         // 变量：ans=当前累计答案 ans。
-        ll ans = tr[p].get(x);
+        __int128 ans = tr[p].get(x);
         if (l == r) return ans;
         // 变量：m=当前边数、操作数或第二维规模 m。
         int m = l + (int)(((long long)r - l) / 2);
@@ -541,9 +554,9 @@ struct LiChao {
         return min(ans, query(x, p * 2 + 1, m + 1, r));
     }
     // x 必须落在构造时给出的 [L,R] 内；大坐标范围应改用动态开点版本。
-    // 接口：query(x)：返回本节数据结构在给定位置/区间上的查询结果；返回类型 ll。
+    // 接口：query(x)：返回本节数据结构在给定位置/区间上的精确查询结果；返回类型 __int128。
     // 参数：待处理值或点/状态 x。
-    ll query(ll x) const { return query(x, 1, L, R); }
+    __int128 query(ll x) const { return query(x, 1, L, R); }
 };
 \end{lstlisting}
 
@@ -559,7 +572,7 @@ struct SegBeats {
     // 变量：NEG=不存在次大值时使用的 __int128 负无穷哨兵 NEG。
     static constexpr __int128 NEG = -((__int128)1 << 126);
     int n; // 原数组及所有公开区间接口均使用 1-based 闭区间 [1,n]。
-    vector<ll> sum;       // 区间和。
+    vector<__int128> sum; // 精确区间和，允许超过 long long 范围。
     vector<ll> mx;        // 区间最大值。
     vector<__int128> second_mx; // 严格小于最大值的次大值；宽类型使哨兵不与 ll 合法值冲突。
     vector<int> cnt_mx;   // 最大值出现次数。
@@ -604,7 +617,7 @@ struct SegBeats {
         // 调用者保证 second_mx[p] < x < mx[p]，
         // 因而只有 cnt_mx 个最大值会下降，sum 可以 O(1) 更新。
         if (x >= mx[p]) return;
-        sum[p] -= (mx[p] - x) * cnt_mx[p];
+        sum[p] -= ((__int128)mx[p] - x) * cnt_mx[p];
         mx[p] = x;
     }
     // 接口：push(p)：把节点 p/x 的待下传标记传给孩子并清除本节点标记；会修改当前结构；多测时重新构造或显式清空成员。
@@ -628,9 +641,9 @@ struct SegBeats {
         chmin(p * 2, l, m, ql, qr, x);
         chmin(p * 2 + 1, m + 1, r, ql, qr, x); pull(p);
     }
-    // 接口：query_sum(p, l, r, ql, qr)：返回闭区间查询的元素和；返回类型 ll。
+    // 接口：query_sum(p, l, r, ql, qr)：返回闭区间查询的精确元素和；返回类型 __int128。
     // 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r；查询/修改闭区间左端 ql；查询/修改闭区间右端 qr。
-    ll query_sum(int p, int l, int r, int ql, int qr) {
+    __int128 query_sum(int p, int l, int r, int ql, int qr) {
         if (qr < l || r < ql) return 0;
         if (ql <= l && r <= qr) return sum[p];
         // 变量：m=当前边数、操作数或第二维规模 m。
@@ -641,8 +654,8 @@ struct SegBeats {
     // 接口：chmin(l, r, x)：把目标闭区间内每个值更新为 min(原值,x)；无返回值；结果写入引用参数或当前结构状态。
     // 参数：闭区间左端点 l；闭区间右端点 r；待处理值或点/状态 x。
     void chmin(int l, int r, ll x) { chmin(1, 1, n, l, r, x); }
-    // 接口：query_sum(l, r)：返回闭区间查询的元素和；返回类型 ll。
+    // 接口：query_sum(l, r)：返回闭区间查询的精确元素和；返回类型 __int128。
     // 参数：闭区间左端点 l；闭区间右端点 r。
-    ll query_sum(int l, int r) { return query_sum(1, 1, n, l, r); }
+    __int128 query_sum(int l, int r) { return query_sum(1, 1, n, l, r); }
 };
 \end{lstlisting}

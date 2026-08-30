@@ -6,6 +6,7 @@ using namespace std;
 int main() {
     const uint64_t seed = 0xBEA75ULL;
     mt19937_64 rng(seed);
+    {vector<long long>a{0,LLONG_MAX,LLONG_MAX};SegBeats tree(a);if(tree.query_sum(1,2)!=(__int128)LLONG_MAX*2)return 2;tree.chmin(1,2,LLONG_MIN);if(tree.query_sum(1,2)!=(__int128)LLONG_MIN*2)return 3;}
     for (int round = 0; round < 300; ++round) {
         int n = 1 + rng() % 70;
         vector<long long> a(n + 1);
@@ -19,11 +20,11 @@ int main() {
                 tree.chmin(l, r, cap);
                 for (int i = l; i <= r; ++i) a[i] = min(a[i], cap);
             } else {
-                long long expected = accumulate(a.begin() + l, a.begin() + r + 1, 0LL);
-                long long actual = tree.query_sum(l, r);
+                __int128 expected = 0; for(int i=l;i<=r;++i) expected += a[i];
+                __int128 actual = tree.query_sum(l, r);
                 if (actual != expected) {
                     cerr << "seed=" << seed << " round=" << round << " op=" << op
-                         << " expected=" << expected << " actual=" << actual << '\n';
+                         << " sum mismatch\n";
                     return 1;
                 }
             }

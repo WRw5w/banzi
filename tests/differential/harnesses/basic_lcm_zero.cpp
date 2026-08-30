@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-long long evaluate_template(long long a, long long b) {
+optional<long long> evaluate_template(long long a, long long b) {
     vector<long long> v;
     long long x = 1, y = 1;
     constexpr long long MOD = 7;
@@ -13,7 +13,9 @@ long long evaluate_template(long long a, long long b) {
 
 int child_main(const char* a_text, const char* b_text) {
     long long a = stoll(a_text), b = stoll(b_text);
-    cout << evaluate_template(a, b) << '\n';
+    auto result = evaluate_template(a, b);
+    if (result) cout << *result << '\n';
+    else cout << "nullopt\n";
     return 0;
 }
 
@@ -27,7 +29,8 @@ int main(int argc, char** argv) {
             cerr << "cannot open regression file: " << argv[file_index] << '\n';
             return 2;
         }
-        long long a, b, expected;
+        long long a, b;
+        string expected;
         while (input >> a >> b >> expected) {
             string command = "\"" + string(argv[0]) + "\" --child "
                            + to_string(a) + " " + to_string(b);
@@ -55,9 +58,9 @@ int main(int argc, char** argv) {
                 return 1;
             }
             istringstream parsed(output);
-            long long actual;
+            string actual;
             if (!(parsed >> actual)) {
-                cerr << "lcm child produced no integer\n";
+                cerr << "lcm child produced no result\n";
                 return 1;
             }
             if (actual != expected) {

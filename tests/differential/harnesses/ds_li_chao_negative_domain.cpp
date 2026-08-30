@@ -27,8 +27,8 @@ int main(int argc, char** argv) {
     while (input >> left >> right >> x) {
         try {
             LiChao tree(left, right);
-            long long actual = tree.query(x);
-            long long expected = (long long)4e18;
+            __int128 actual = tree.query(x);
+            __int128 expected = (__int128)1 << 126;
             if (actual != expected) return 1;
         } catch (const std::out_of_range&) {
             std::cerr << "domain=[" << left << ',' << right << "] x=" << x

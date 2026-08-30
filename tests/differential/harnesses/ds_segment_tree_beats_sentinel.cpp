@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
         try {
             SegBeats tree(a);
             tree.chmin(1, 1, cap);
-            long long actual = tree.query_sum(1, 1);
+            __int128 actual = tree.query_sum(1, 1);
             if (actual != cap) return 1;
         } catch (const std::out_of_range&) {
             std::cerr << "value=" << value << " cap=" << cap

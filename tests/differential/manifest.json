@@ -26,7 +26,7 @@
       "id": "basic.difference_constraints_false_cycle",
       "description": "差分约束不得因重复松弛次数把无环图误判为负环",
       "source": "remake/large/02_基础.tex",
-      "contains": "struct Edge { int v, w; }",
+      "contains": "struct Edge { int v; long long w; }",
       "harness": "tests/differential/harnesses/basic_difference_constraints.cpp",
       "regressions": [
         "tests/differential/regressions/basic_difference_constraints_dag.tsv"
@@ -35,10 +35,10 @@
       "run_timeout_seconds": 10
     },
     {
-      "id": "basic.lcm_zero",
-      "description": "手写 lcm 必须安全处理 gcd(0,0)=0",
+      "id": "basic.checked_lcm",
+      "description": "手写 LCM 对 0、负数、LLONG 极值和可表示边界返回非负值或 nullopt",
       "source": "remake/large/02_基础.tex",
-      "contains": "long long g = std::gcd(a, b);",
+      "contains": "auto checked_lcm = []",
       "harness": "tests/differential/harnesses/basic_lcm_zero.cpp",
       "regressions": [
         "tests/differential/regressions/basic_lcm_zero.tsv"

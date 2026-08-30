@@ -305,7 +305,7 @@ void cdq(vector<Point>& a, int l, int r) {
     // a 的“分治下标”仍然按 x 分组；递归返回时区间内部会按 y 有序。
     if (l == r) return;
     // 变量：m=当前边数、操作数或第二维规模 m。
-    int m = (l + r) >> 1;
+    int m = l + (int)(((long long)r - l) / 2);
 
     // 先完成左半内部和右半内部的贡献。
     cdq(a, l, m);
@@ -475,17 +475,24 @@ unsigned long long max_xor(int left_root, int right_root, int bit,
 
 \subsection{李超线段树：整条直线与线段插入}
 
-维护若干直线 \passthrough{\lstinline!y=kx+b!}，询问某个整数 \passthrough{\lstinline!x!} 的最大/最小值，且插入和询问在线时，用李超树。与凸包不同，直线可以任意交叉；每个节点只保存当前区间中在某些位置更优的直线。
+维护若干直线 \passthrough{\lstinline!y=kx+b!}，询问某个整数 \passthrough{\lstinline!x!} 的最大/最小值，且插入和询问在线时，用李超树。与凸包不同，直线可以任意交叉；每个节点只保存当前区间中在某些位置更优的直线。下面让斜率、截距与查询坐标使用 \passthrough{\lstinline!long long!}，求值和查询结果使用 \passthrough{\lstinline!\_\_int128!}，并显式记录空直线，避免乘加溢出或哨兵与合法答案冲突。
 
 \begin{lstlisting}[language={C++}]
 struct Line {
     long long k = 0; // 直线斜率，表示 y=k*x+b。
-    long long b = -(1LL << 60); // 最大值模板的负无穷空直线。
+    long long b = 0; // 直线截距。
+    bool empty = true; // 空节点显式标记，避免负无穷哨兵与合法值冲突。
+    // 接口：Line()：构造一条空直线；构造并初始化对象。
+    Line() = default;
+    // 接口：Line(k, b)：构造斜率 k、截距 b 的真实直线；构造并初始化对象。
+    // 参数：直线斜率 k；直线截距 b。
+    Line(long long k, long long b): k(k), b(b), empty(false) {}
 
-    // 题目数据若 k*x 可能超过 long long，要改成 __int128 比较。
-    // 接口：get(x)：返回直线在横坐标 x 处的函数值；返回类型 long long。
+    // 接口：get(x)：在 __int128 中返回直线在横坐标 x 处的精确值；空直线返回宽整数负无穷。
     // 参数：待处理值或点/状态 x。
-    long long get(long long x) const { return k * x + b; }
+    __int128 get(long long x) const {
+        return empty ? -((__int128)1 << 126) : (__int128)k * x + b;
+    }
 };
 // 变量：tree=当前线段树/树结构存储 tree。
 Line tree[4 * MAXX];
@@ -495,7 +502,7 @@ Line tree[4 * MAXX];
 void add_line(Line nw, int p, int l, int r) {
     // 节点 p 负责整数横坐标 [l,r]，tree[p] 是当前候选直线。
     // 变量：m=当前边数、操作数或第二维规模 m。
-    int m = (l + r) >> 1;
+    int m = l + (int)(((long long)r - l) / 2);
 
     // 比较新旧直线在左端点、中点的优劣。
     // 变量：lef=新直线在区间左端是否更优 lef。
@@ -511,15 +518,15 @@ void add_line(Line nw, int p, int l, int r) {
     if (lef != mid) add_line(nw, p << 1, l, m);
     else add_line(nw, p << 1 | 1, m + 1, r);
 }
-// 接口：query(x, p, l, r)：返回本节数据结构在给定位置/区间上的查询结果；返回类型 long long。
+// 接口：query(x, p, l, r)：返回本节数据结构在给定位置/区间上的精确查询结果；返回类型 __int128。
 // 参数：待处理值或点/状态 x；当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r。
-long long query(int x, int p, int l, int r) {
+__int128 query(int x, int p, int l, int r) {
     // 答案必须比较沿根到 x 所在叶子的每一个节点保存的直线。
     // 变量：res=准备返回的结果容器/结果值 res。
-    long long res = tree[p].get(x);
+    __int128 res = tree[p].get(x);
     if (l == r) return res;
     // 变量：m=当前边数、操作数或第二维规模 m。
-    int m = (l + r) >> 1;
+    int m = l + (int)(((long long)r - l) / 2);
     if (x <= m) return max(res, query(x, p << 1, l, m));
     return max(res, query(x, p << 1 | 1, m + 1, r));
 }

@@ -291,11 +291,11 @@ for (auto job : jobs) {
 
 \begin{lstlisting}[language={C++}]
 // x[v] <= x[u] + w；无解等价于存在可达负环
-struct Edge { int v, w; }; // v=有向边终点，w=边权/收益（按本题转移定义）。
+struct Edge { int v; long long w; }; // v=有向边终点，w=x[v]-x[u] 的 long long 上界。
 // 变量：g=图/树的邻接表 g。
 vector<vector<Edge>> g(n);
 // 变量：d=当前距离、差值或覆盖增量 d。
-vector<long long> d(n, 0);
+vector<__int128> d(n, 0); // 宽整数势函数避免多条 long long 边连续松弛时溢出。
 // 变量：inq=顶点当前是否在队列中的标记 inq；path_len=当前最短路所含边数，用于判负环。
 vector<int> inq(n), path_len(n);
 // 变量：q=当前 BFS/单调算法使用的队列 q。
@@ -308,8 +308,8 @@ while (!q.empty() && ok) {
     // 变量：u=当前顶点/状态编号 u。
     int u = q.front(); q.pop(); inq[u] = 0;
     // 变量：v=当前边的终点 v；w=当前边权 w。
-    for (auto [v, w] : g[u]) if (d[v] > d[u] + w) {
-        d[v] = d[u] + w;
+    for (auto [v, w] : g[u]) if (d[v] > d[u] + (__int128)w) {
+        d[v] = d[u] + (__int128)w;
         path_len[v] = path_len[u] + 1;
         if (path_len[v] >= n) { ok = false; break; }
         if (!inq[v]) q.push(v), inq[v] = 1;
@@ -434,7 +434,7 @@ void bitset_closure(array<bitset<N>, N>& reach, int n) {
 \begin{itemize}
 \tightlist
 \item
-  \passthrough{\lstinline!std::gcd!}、\passthrough{\lstinline!std::lcm!}（C++17）。
+  \passthrough{\lstinline!std::gcd!}、\passthrough{\lstinline!std::lcm!}（C++17）；后者仅在结果可由返回类型表示时使用。
 \item
   \passthrough{\lstinline!\_\_builtin\_ctzll!} 只对非零数调用。
 \item
@@ -444,11 +444,28 @@ void bitset_closure(array<bitset<N>, N>& reach, int n) {
 \end{itemize}
 
 \begin{lstlisting}[language={C++}]
-// 变量：g=图/树的邻接表 g。
-long long g = std::gcd(a, b);
-// 任一操作数为 0 时 lcm 为 0，不能先除以 gcd(0,0)。
-// 变量：l=a 与 b 的最小公倍数。
-long long l = (a == 0 || b == 0) ? 0 : a / g * b;
+// 接口：checked_lcm(a, b)：非负最小公倍数可由 long long 表示时返回该值，否则返回 nullopt；0 与任意数返回 0。
+// 参数：任意 long long 整数 a、b，包括 LLONG_MIN 与 LLONG_MAX。
+auto checked_lcm = [](long long a, long long b) -> optional<long long> {
+    if (a == 0 || b == 0) return 0;
+    // 先提升再取绝对值，避免对 LLONG_MIN 求负产生未定义行为。
+    // 变量：x、y=提升到宽整数域后的两个操作数。
+    __int128 x = a, y = b;
+    if (x < 0) x = -x;
+    if (y < 0) y = -y;
+    // 变量：u、v=欧几里得算法的当前两项；g=绝对值最大公约数；value=精确最小公倍数。
+    __int128 u = x, v = y;
+    while (v != 0) {
+        // 变量：r=本轮欧几里得算法的余数。
+        __int128 r = u % v; u = v; v = r;
+    }
+    // 变量：g=绝对值最大公约数；value=宽整数域中的精确最小公倍数。
+    __int128 g = u, value = x / g * y;
+    if (value > numeric_limits<long long>::max()) return nullopt;
+    return (long long)value;
+};
+// 变量：l=a 与 b 的非负最小公倍数；溢出时为 nullopt。
+optional<long long> l = checked_lcm(a, b);
 sort(v.begin(), v.end());
 v.erase(unique(v.begin(), v.end()), v.end());
 long long lowbit = x & -x; // x != 0

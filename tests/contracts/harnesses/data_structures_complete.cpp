@@ -54,8 +54,9 @@ int main() {
         using namespace lichao_case;
         fill(begin(tree),end(tree),Line{}); vector<Line> lines;
         for(int i=0;i<100;++i){Line z{(int)(rng()%101)-50,(int)(rng()%1001)-500};lines.push_back(z);add_line(z,1,0,MAXX-1);}
-        for(int x=0;x<MAXX;++x){long long want=LLONG_MIN;for(auto z:lines)want=max(want,z.get(x));if(query(x,1,0,MAXX-1)!=want)return 4;}
+        for(int x=0;x<MAXX;++x){__int128 want=-((__int128)1<<126);for(auto z:lines)want=max(want,z.get(x));if(query(x,1,0,MAXX-1)!=want)return 4;}
     }
+    {using namespace lichao_case;fill(begin(tree),end(tree),Line{});if(query(2,1,0,MAXX-1)!=-((__int128)1<<126))return 7;Line z{LLONG_MAX,LLONG_MAX};add_line(z,1,0,MAXX-1);if(query(2,1,0,MAXX-1)!=(__int128)LLONG_MAX*3)return 8;}
     for(int round=0;round<100;++round){
         using namespace persistent_dsu_case;
         n=30;tot=0;vector<int> roots{build(1,n)};vector<vector<int>> parent(1,vector<int>(n+1));iota(parent[0].begin(),parent[0].end(),0);

@@ -293,7 +293,7 @@ Circle min_circle(vector<Point> p) {
 struct Event { long long y, x1, x2; int delta; }; // y 扫描坐标、x 区间、覆盖增量 ±1。
 struct CoverNode {
     int tag = 0;       // 当前 x 小区间被完整覆盖了多少层。
-    long long len = 0; // 该节点代表范围内至少被覆盖一次的长度。
+    __int128 len = 0;  // 该节点代表范围内至少被覆盖一次的精确长度。
 };
 // 变量：xs=离散化后排序去重的坐标 xs。
 vector<long long> xs;
@@ -303,7 +303,7 @@ CoverNode seg[MAXN * 4];
 // 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r。
 void pull(int p, int l, int r) {
     // xs[l..r] 是坐标点，节点覆盖的是 [xs[l], xs[r])。
-    if (seg[p].tag) seg[p].len = xs[r] - xs[l];
+    if (seg[p].tag) seg[p].len = (__int128)xs[r] - xs[l];
     else if (r - l == 1) seg[p].len = 0;
     else seg[p].len = seg[p<<1].len + seg[p<<1|1].len;
 }
@@ -319,18 +319,29 @@ void modify(int p, int l, int r, int ql, int qr, int d) {
     modify(p<<1|1,m,r,ql,qr,d);
     pull(p,l,r);
 }
-// 接口：union_area(e)：返回矩形集合的并面积；返回类型 long long。
-// 参数：非负指数 e。
-long long union_area(vector<Event> e) {
+// 接口：union_area(e)：矩形并面积可由 long long 表示时返回该值，否则返回 nullopt；空事件返回 0。
+// 参数：矩形横边事件 e；xs 需预先收集所有横坐标、排序并去重。
+optional<long long> union_area(vector<Event> e) {
+    if (e.empty() || xs.size() < 2) return 0;
     // 事件按 y 扫描；在处理当前 y 前，seg[1].len 对应上一段高度。
     // 接口：比较器 lambda(a, b)：供“扫描线求矩形并面积”当前语句回调；返回值含义见调用处条件。
     // 参数：输入值/数组 a（见本节定义）；输入值/数组 b（见本节定义）。
     sort(e.begin(), e.end(), [](auto& a, auto& b) { return a.y < b.y; });
     // 变量：ans=当前累计答案 ans；last_y=扫描线上一个事件纵坐标 last_y。
-    long long ans = 0, last_y = e[0].y;
+    __int128 ans = 0, last_y = e[0].y;
+    // 变量：max_area=接口允许返回的最大面积。
+    const __int128 max_area = numeric_limits<long long>::max();
     // 变量：i=当前循环下标 i。
     for (int i = 0; i < (int)e.size();) {
-        ans += seg[1].len * (e[i].y - last_y);
+        // 先按 long long 返回上限做除法检查，避免极端坐标的宽×高本身溢出 __int128。
+        // 变量：height=当前事件与上一批事件之间的非负扫描高度。
+        __int128 height = (__int128)e[i].y - last_y;
+        if (seg[1].len != 0 && height > max_area / seg[1].len)
+            return nullopt;
+        // 变量：delta_area=本段新增且已确认不超过 long long 上限的面积。
+        __int128 delta_area = seg[1].len * height;
+        if (delta_area > max_area - ans) return nullopt;
+        ans += delta_area;
         // 变量：j=内层循环下标 j。
         int j = i;
         while (j < (int)e.size() && e[j].y == e[i].y) {
@@ -344,7 +355,7 @@ long long union_area(vector<Event> e) {
         }
         last_y = e[i].y; i = j;
     }
-    return ans;
+    return (long long)ans;
 }
 \end{lstlisting}
 
@@ -373,4 +384,3 @@ long long union_area(vector<Event> e) {
 \end{lstlisting}
 
 第二组检查相邻坐标是否被错误重复计算；第三组检查覆盖层数从 \passthrough{\lstinline!2!} 降回 \passthrough{\lstinline!1!} 时是否错误清空长度；第四组检查 \passthrough{\lstinline!cover>0!} 时是否直接取整段长度。每个调用都必须清空 \passthrough{\lstinline!xs!}、事件数组、线段树 \passthrough{\lstinline!tag/len!}，否则把四组放进同一个 \passthrough{\lstinline!t!} 中会暴露多测污染。
-
