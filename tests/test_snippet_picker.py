@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
 import serve_snippet_picker as picker  # noqa: E402
+import export_snippet_text as text_exporter  # noqa: E402
 
 
 class SnippetPickerTests(unittest.TestCase):
@@ -47,6 +48,13 @@ class SnippetPickerTests(unittest.TestCase):
         self.assertIn("navigator.clipboard", picker.INDEX_HTML)
         self.assertIn("刷新源码", picker.INDEX_HTML)
         self.assertNotIn("long long qpow(long long a", picker.INDEX_HTML)
+
+    def test_text_export_is_generated_from_the_same_catalog(self) -> None:
+        rendered = text_exporter.render_text(self.catalog)
+        self.assertIn("本文件为自动生成的复制视图，请勿手工维护", rendered)
+        self.assertIn("数学 / 模运算与快速幂", rendered)
+        self.assertEqual(rendered.count("long long qpow(long long a"), 1)
+        self.assertIn("remake/large/03_数学.tex", rendered)
 
 
 if __name__ == "__main__":
