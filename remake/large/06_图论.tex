@@ -626,7 +626,7 @@ const int LOG = 20;
 int up[MAXN][LOG]; // up[u][k]=u 的 2^k 级祖先；不存在时为 0。
 int dep[MAXN];     // dep[u]=u 的深度；根深度约定为 0。
 // 接口：init_lca(u, p)：从 u 开始填写深度及倍增祖先 up[u][k]；无返回值；结果写入引用参数或当前结构状态。
-// 参数：顶点/状态编号 u；当前节点/模数 p（见本节定义）。
+// 参数：当前节点 u；u 的父节点 p，根节点的父节点传 0。
 void init_lca(int u, int p) {
     up[u][0] = p;
     // 变量：j=当前处理的二进制位/倍增层 j。
