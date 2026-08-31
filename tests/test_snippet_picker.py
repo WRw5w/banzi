@@ -23,10 +23,10 @@ class SnippetPickerTests(unittest.TestCase):
 
     def test_catalog_is_the_complete_formal_tree(self) -> None:
         self.assertEqual(self.catalog["source_count"], 24)
-        self.assertEqual(self.catalog["snippet_count"], 326)
-        self.assertEqual(len(self.catalog["snippets"]), 326)
+        self.assertEqual(self.catalog["snippet_count"], 327)
+        self.assertEqual(len(self.catalog["snippets"]), 327)
         self.assertEqual(
-            len({item["id"] for item in self.catalog["snippets"]}), 326
+            len({item["id"] for item in self.catalog["snippets"]}), 327
         )
 
     def test_qpow_comes_from_the_authoritative_math_source(self) -> None:
@@ -41,7 +41,7 @@ class SnippetPickerTests(unittest.TestCase):
     def test_payload_is_utf8_json_serializable(self) -> None:
         encoded = json.dumps(self.catalog, ensure_ascii=False).encode("utf-8")
         decoded = json.loads(encoded)
-        self.assertEqual(decoded["snippet_count"], 326)
+        self.assertEqual(decoded["snippet_count"], 327)
         self.assertIn("快速幂", encoded.decode("utf-8"))
 
     def test_html_contains_copy_ui_but_no_duplicated_template_body(self) -> None:

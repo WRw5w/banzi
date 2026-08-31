@@ -414,6 +414,14 @@
       "expected": "pass"
     },
     {
+      "id": "strings.trie",
+      "description": "普通字符串 Trie 的完整单词计数和前缀计数与暴力多重集合随机对拍",
+      "source": "remake/large/05_字符串.tex",
+      "contains": "struct StringTrie {",
+      "harness": "tests/differential/harnesses/strings_trie.cpp",
+      "expected": "pass"
+    },
+    {
       "id": "strings.ac",
       "description": "AC 自动机匹配计数与逐模式暴力搜索随机对拍",
       "source": "remake/large/05_字符串.tex",

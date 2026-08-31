@@ -22,9 +22,9 @@ class ListingCoverageGateTests(unittest.TestCase):
         coverage.apply_explicit_classifications(listings)
         return listings
 
-    def test_formal_tree_has_exactly_326_registered_blocks(self) -> None:
+    def test_formal_tree_has_exactly_327_registered_blocks(self) -> None:
         listings = self.classified_inventory()
-        self.assertEqual(len(listings), 326)
+        self.assertEqual(len(listings), 327)
         self.assertFalse([item.block_id for item in listings if item.category == "pending"])
 
     def test_body_drift_invalidates_digest_selector(self) -> None:

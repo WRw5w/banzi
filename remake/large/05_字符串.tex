@@ -10,6 +10,7 @@
 \bottomrule\noalign{}
 \endlastfoot
 单模式匹配 & KMP / Z & \passthrough{\lstinline!O(n+m)!} \\
+单词/前缀计数 & Trie & \passthrough{\lstinline!O(L)!} \\
 多模式匹配 & AC 自动机 & \passthrough{\lstinline!O(text + 总模式长)!} \\
 子串相等、二分答案 & 双哈希 & 期望 \passthrough{\lstinline!O(1)!} 查询 \\
 最长回文子串 & Manacher & \passthrough{\lstinline!O(n)!} \\
@@ -122,7 +123,69 @@ for (int i = 1; i + 1 < (int)t.size(); ++i) {
 
 \section{字典树与 Aho--Corasick 多模式匹配自动机（AC 自动机）}\label{ux5b57ux5178ux6811ux4e0e-ahocorasick-ux591aux6a21ux5f0fux5339ux914dux81eaux52a8ux673aac-ux81eaux52a8ux673a}
 
-Trie 每个节点保存儿子、终止次数。AC 自动机用 BFS 建 fail：节点的 fail 指向最长真后缀状态，匹配时沿 fail 转移；把输出计数沿 fail 累加可统计所有模式出现次数。模式集合固定后一次建树、多次查询。
+\subsection{普通字符串字典树（Trie）}\label{ux666eux901aux5b57ux7b26ux4e32ux5b57ux5178ux6811trie}
+
+字符集固定时用数组保存儿子。下面的模板只接受小写字母；\passthrough{\lstinline!terminal[u]!} 统计完整字符串，\passthrough{\lstinline!pass[u]!} 统计以当前路径为前缀的字符串。重复插入会重复计数，单次插入或查询复杂度均为 \passthrough{\lstinline!O(L)!}。节点上限至少取所有不同前缀数加一，大数组对象应放在全局区；多测时重新构造或显式清空。
+
+\begin{lstlisting}[language={C++}]
+struct StringTrie {
+    int ch[MAXN][26]{}; // ch[u][c]=节点 u 沿字符 c 的儿子；0 表示不存在。
+    int pass[MAXN]{};   // pass[u]=经过节点 u 的已插入字符串数量。
+    int terminal[MAXN]{}; // terminal[u]=恰好在节点 u 结尾的字符串数量。
+    int tot = 0;        // 当前最后一个节点编号；根为 0，节点范围 [0,tot]。
+
+    // 接口：insert(s)：插入一个仅含小写字母的字符串；重复字符串会重复计数。
+    // 参数：待插入的字符串 s。
+    void insert(const string& s) {
+        // 变量：u=当前 Trie 节点编号。
+        int u = 0;
+        ++pass[u];
+        // 变量：c=当前处理的字符。
+        for (char c : s) {
+            // 变量：x=字符 c 对应的 0-based 字母编号。
+            int x = c - 'a';
+            if (!ch[u][x]) ch[u][x] = ++tot;
+            u = ch[u][x];
+            ++pass[u];
+        }
+        ++terminal[u];
+    }
+
+    // 接口：count_word(s)：返回字符串 s 被插入的次数；不存在时返回 0。
+    // 参数：待查询的完整字符串 s。
+    int count_word(const string& s) const {
+        // 变量：u=当前 Trie 节点编号。
+        int u = 0;
+        // 变量：c=当前处理的字符。
+        for (char c : s) {
+            // 变量：x=字符 c 对应的 0-based 字母编号。
+            int x = c - 'a';
+            if (!ch[u][x]) return 0;
+            u = ch[u][x];
+        }
+        return terminal[u];
+    }
+
+    // 接口：count_prefix(s)：返回以字符串 s 为前缀的已插入字符串数量。
+    // 参数：待查询的前缀字符串 s；空串前缀返回已插入字符串总数。
+    int count_prefix(const string& s) const {
+        // 变量：u=当前 Trie 节点编号。
+        int u = 0;
+        // 变量：c=当前处理的字符。
+        for (char c : s) {
+            // 变量：x=字符 c 对应的 0-based 字母编号。
+            int x = c - 'a';
+            if (!ch[u][x]) return 0;
+            u = ch[u][x];
+        }
+        return pass[u];
+    }
+};
+\end{lstlisting}
+
+\subsection{Aho--Corasick 多模式匹配自动机}\label{ahocorasick-ux591aux6a21ux5f0fux5339ux914dux81eaux52a8ux673a}
+
+AC 自动机先把模式串插入 Trie，再用 BFS 建 fail：节点的 fail 指向最长真后缀状态，匹配时沿 fail 转移；把输出计数沿 fail 累加可统计所有模式出现次数。模式集合固定后一次建树、多次查询。
 
 \begin{lstlisting}[language={C++}]
 struct AC {
