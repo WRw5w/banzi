@@ -9,7 +9,7 @@
     },
     {
       "source": "banzi/板子_大版本.tex",
-      "digest": "099d54d584a5",
+      "digest": "eed474ec7956",
       "category": "explanatory",
       "note": "可编辑程序骨架（竞赛主模板）：`solve` 故意没有题目算法主体，仅示范 I/O、常量和多测入口；未执行，不作为正确性证据。"
     },
@@ -27,19 +27,19 @@
     },
     {
       "source": "banzi/板子_大版本.tex",
-      "digest": "57612fd5a13c",
+      "digest": "3c31f7086e55",
       "category": "explanatory",
       "note": "说明片段（string）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
-      "digest": "af3891f7aecb",
+      "digest": "45ac400eabfe",
       "category": "explanatory",
       "note": "说明片段（multiset）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
-      "digest": "5693a8ea9c81",
+      "digest": "eef4351f116e",
       "category": "explanatory",
       "note": "说明片段（map）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
@@ -51,7 +51,7 @@
     },
     {
       "source": "banzi/板子_大版本.tex",
-      "digest": "474e1e7f7ce2",
+      "digest": "bb4201323a0b",
       "category": "explanatory",
       "note": "说明片段（unordered_set）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
@@ -87,13 +87,13 @@
     },
     {
       "source": "banzi/板子_大版本.tex",
-      "digest": "b6c61d6c1e68",
+      "digest": "4757b7612a51",
       "category": "explanatory",
       "note": "说明片段（tuple）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
-      "digest": "836fd043d272",
+      "digest": "ace79f8c5692",
       "category": "explanatory",
       "note": "说明片段（bitset）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
@@ -111,37 +111,37 @@
     },
     {
       "source": "banzi/板子_大版本.tex",
-      "digest": "8788cd45ac6b",
+      "digest": "2b16acd3c013",
       "category": "explanatory",
       "note": "说明片段（区间操作函数）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
-      "digest": "b292098ba177",
+      "digest": "a0c1e9de9890",
       "category": "explanatory",
       "note": "说明片段（排列与组合）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
-      "digest": "05404aff598e",
+      "digest": "0adc4980ee5e",
       "category": "explanatory",
       "note": "说明片段（prev_permutation））：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
-      "digest": "017ab6f4134e",
+      "digest": "67a1eb5134c9",
       "category": "explanatory",
       "note": "说明片段（字符串处理函数）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
-      "digest": "9bcb3272c12b",
+      "digest": "f21bd68b1f9f",
       "category": "explanatory",
       "note": "说明片段（其他实用工具）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "banzi/板子_大版本.tex",
-      "digest": "5ec68847c43d",
+      "digest": "e6c74235d80c",
       "category": "explanatory",
       "note": "说明片段（常用技巧）：内容属于STL/API 用法速查，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
@@ -231,7 +231,7 @@
     },
     {
       "source": "remake/large/04_数据结构_详解.tex",
-      "digest": "261c98406590",
+      "digest": "36d8286fdac6",
       "category": "framework",
       "note": "该块只定义带修改莫队的 L/R/T 移动协议；缺少 add_pos/del_pos 的答案更新规则，也缺少 changes 的构造与查询排序，因此不同题目的 current_answer 没有统一结果可对拍。结构契约只检查修改前后先删再加、时间前进/回退和窗口移动调用齐全，不作为数值算法验证。",
       "check": "structural_contract",
@@ -330,7 +330,7 @@
     },
     {
       "source": "remake/large/07_树上进阶.tex",
-      "digest": "436109c0a399",
+      "digest": "a019161d661d",
       "category": "framework",
       "note": "该块是点分树查询扩展片段；缺少 get_centroid 的实现，也缺少 每个重心分支的距离容器与容斥查询，正文中的 collect 结果没有被存入可查询状态。结构契约只检查未删除节点遍历和分治递归接口，不声称验证点分树答案。",
       "check": "structural_contract",
@@ -368,7 +368,7 @@
     },
     {
       "source": "remake/large/08_动态规划.tex",
-      "digest": "d1ceca2b4744",
+      "digest": "a46bc9edee90",
       "category": "framework",
       "note": "该块只有按长度枚举区间和分割点的控制骨架；缺少 cost(l,r) 的题意定义，也缺少 dp[i][i] 的初值与目标区间。矩阵链、石子合并等实例的代价与边界不同，结构契约仅检查 len/l/r/k 的依赖顺序。",
       "check": "structural_contract",
@@ -384,7 +384,7 @@
     },
     {
       "source": "remake/large/08_动态规划.tex",
-      "digest": "c1478be353f1",
+      "digest": "9a8b5fd4e94f",
       "category": "framework",
       "note": "该块只实现决策区间递归；缺少 cost(k,mid) 的题意定义，也缺少 决策单调性的证明与上一层状态。若题目不满足单调性，代码虽可编译仍会给错解；结构契约只检查递归边界是否用 best 收缩。",
       "check": "structural_contract",
@@ -400,7 +400,7 @@
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
-      "digest": "2b48aaf2decf",
+      "digest": "36795370cc55",
       "category": "framework",
       "note": "该块刻意保留题目自动机钩子；缺少 STATE/go/valid 的自动机定义，也缺少 前导零与计数溢出/取模约定。不同限制对应不同状态空间和终态，结构契约只检查 tight、started 与非 tight 记忆化分支。",
       "check": "structural_contract",
@@ -440,13 +440,13 @@
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
-      "digest": "fa5491fe5de9",
+      "digest": "62695b65b6fe",
       "category": "explanatory",
       "note": "说明片段（调用测试：分治优化的决策范围必须覆盖真实最优点）：内容属于接口说明、调用示意或手工检查材料，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
-      "digest": "ce9a2d3611eb",
+      "digest": "7cc6b96c0b41",
       "category": "explanatory",
       "note": "说明片段（调用测试：分治优化的决策范围必须覆盖真实最优点）：内容属于接口说明、调用示意或手工检查材料，没有独立算法输入—输出契约；未执行，也不计入正确性验证。"
     },
@@ -504,7 +504,7 @@
     },
     {
       "source": "remake/large/09_博弈_详解.tex",
-      "digest": "3145ee39e441",
+      "digest": "dbe0478ab613",
       "category": "framework",
       "note": "该块只规定“存在一步走向必败态则当前必胜”的记忆化递归；缺少 legal(mask,i) 的走法规则，也缺少 终止状态与 mask 位含义。不同图游戏可能还需 last/turn 等状态，结构契约仅检查已用位跳过和 memo 写回。",
       "check": "structural_contract",
@@ -526,7 +526,7 @@
     },
     {
       "source": "remake/large/09_博弈_详解.tex",
-      "digest": "08b5651f317f",
+      "digest": "6c5ad6293c18",
       "category": "framework",
       "note": "该块是带走法排序的 alpha-beta 外壳；缺少 ordered_moves/apply/undo 的可逆局面操作，也缺少 terminal/evaluate 的深度截断评分。它与基础 minimax 块的区别是先物化 moves 并强调排序，结构契约只检查每层更新 alpha 或 beta 后再截断。",
       "check": "structural_contract",
@@ -542,7 +542,7 @@
     },
     {
       "source": "remake/large/09_博弈_详解.tex",
-      "digest": "089a4cae260b",
+      "digest": "1e9f8d62d6b8",
       "category": "framework",
       "note": "该块只给出一个依赖字段的哈希组合器；缺少 State::operator== 的等价字段，也缺少 board/turn 的合法范围与稳定表示。若相等关系包含额外字段，当前哈希与键等价关系便不匹配；结构契约仅检查 board 与 turn 被纳入哈希。",
       "check": "structural_contract",
@@ -594,7 +594,7 @@
     },
     {
       "source": "remake/large/11_针对性测试.tex",
-      "digest": "aeaf8a811003",
+      "digest": "6c8e6a80fe5c",
       "category": "explanatory",
       "note": "未执行样例/验收说明（超过十行模板的针对性自测）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
@@ -834,7 +834,7 @@
     },
     {
       "source": "remake/large/13_例题与测试.tex",
-      "digest": "3625b0792778",
+      "digest": "c708bb288f45",
       "category": "explanatory",
       "note": "未执行样例/验收说明（统一卡片接口注释）：该块只记录人工输入、期望输出或测试步骤，未绑定可执行 test id，不作为算法已验证证据。"
     },
@@ -894,7 +894,7 @@
     },
     {
       "source": "banzi/板子_大版本.tex",
-      "digest": "8a8365a4fbd1",
+      "digest": "24a04c6b4d24",
       "category": "explanatory",
       "note": "可编辑程序骨架（暴力解法）：双重循环体故意留空，必须按具体题目填入枚举和判定；未执行，不作为算法实现或正确性证据。"
     },
@@ -978,7 +978,7 @@
     },
     {
       "source": "remake/large/08_动态规划_详解.tex",
-      "digest": "1d461fe79d45",
+      "digest": "2ff56c62b093",
       "category": "framework",
       "note": "该块描述一般单调队列候选淘汰协议；缺少 value(j,i) 的题意转移，也缺少 next_x 的交点/支配顺序保证。正文已显式以 dp[0] 初始化队列避免空队首，但没有题目单调性就不能断言淘汰正确；结构契约只核对过期、取队首和删队尾的次序。",
       "check": "structural_contract",

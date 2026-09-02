@@ -26,13 +26,13 @@
 
 \begin{lstlisting}[language={C++}]
 // 接口：prefix_function(s)：返回 KMP 前缀函数 pi；pi[i] 是 s[0..i] 的最长真 border 长度；返回类型 vector<int>。
-// 参数：源点编号或输入字符串 s（见本节类型）。
+// 参数：待计算前缀函数的字符串 s。
 vector<int> prefix_function(const string& s) {
     // 变量：pi=KMP 前缀函数 pi。
     vector<int> pi(s.size());
-    // 变量：i=当前循环下标 i。
+    // 变量：i=前缀函数正在计算 pi[i] 的字符串位置 i。
     for (int i = 1; i < (int)s.size(); ++i) {
-        // 变量：j=内层循环下标 j。
+        // 变量：j=前缀函数计算中当前可回退的已匹配前缀长度 j。
         int j = pi[i - 1];
         while (j && s[i] != s[j]) j = pi[j - 1];
         if (s[i] == s[j]) ++j;
@@ -48,7 +48,7 @@ vector<int> kmp(const string& text, const string& pat) {
     if (pat.empty()) return pos; // 本接口约定空模式不返回匹配位置。
     // 变量：j=当前已经匹配的模式串前缀长度 j。
     int j = 0;
-    // 变量：i=当前循环下标 i。
+    // 变量：i=KMP 正在扫描的主串字符位置 i。
     for (int i = 0; i < (int)text.size(); ++i) {
         while (j && text[i] != pat[j]) j = pi[j - 1];
         if (text[i] == pat[j]) ++j;
@@ -67,12 +67,12 @@ vector<int> kmp(const string& text, const string& pat) {
 
 \begin{lstlisting}[language={C++}]
 // 接口：z_function(s)：返回 Z 数组；z[i] 是 s 与 s[i..] 的最长公共前缀长度；返回类型 vector<int>。
-// 参数：源点编号或输入字符串 s（见本节类型）。
+// 参数：待计算 Z 函数的字符串 s。
 vector<int> z_function(const string& s) {
-    // 变量：n=当前元素/顶点/状态数量 n；l=当前区间左端点 l；r=当前区间右端点 r；z=Z 函数数组 z；z[i] 是 s 与 s[i..] 的最长公共前缀。
+    // 变量：n=容器 s 的元素数量 n；l=当前区间左端点 l；r=当前区间右端点 r；z=Z 函数数组 z；z[i] 是 s 与 s[i..] 的最长公共前缀。
     int n = s.size(), l = 0, r = 0; vector<int> z(n);
     if (n) z[0] = n;
-    // 变量：i=当前循环下标 i。
+    // 变量：i=Z 函数正在计算 z[i] 的后缀起点 i。
     for (int i = 1; i < n; ++i) {
         if (i < r) z[i] = min(r - i, z[i - l]);
         while (i + z[i] < n && s[z[i]] == s[i + z[i]]) ++z[i];
@@ -89,13 +89,13 @@ vector<int> z_function(const string& s) {
 \begin{lstlisting}[language={C++}]
 // 变量：BASE=字符串哈希使用的固定底数 BASE。
 const unsigned long long BASE = 911382323ull;
-// 变量：h=“字符串哈希”这段代码中的临时量 h；值由本行初始化式确定；pw=幂次预处理数组 pw。
+// 变量：h=字符串哈希的前缀哈希数组 h；pw=幂次预处理数组 pw。
 vector<unsigned long long> h(n + 1), pw(n + 1, 1);
-// 变量：i=当前循环下标 i。
+// 变量：i=字符串哈希正在扩展前缀哈希的字符位置 i。
 for (int i = 0; i < n; ++i)
     h[i + 1] = h[i] * BASE + (unsigned char)s[i], pw[i + 1] = pw[i] * BASE;
-// 接口：get_hash(l, r)：供“字符串哈希”当前语句回调；返回值含义见调用处条件。
-// 参数：闭区间左端点 l；闭区间右端点 r。
+// 接口：get_hash(l, r)：返回字符串 0-based 半开区间 [l,r) 的哈希值。
+// 参数：子串左端点 l；子串右端点 r（不含）。
 auto get_hash = [&](int l, int r) { return h[r] - h[l] * pw[r - l]; }; // [l,r)
 \end{lstlisting}
 
@@ -111,7 +111,7 @@ for (unsigned char c : s) t.push_back(c), t.push_back(-1);
 t.push_back(-3);
 // 变量：p=Manacher 半径数组 p；center=Manacher 当前最右回文的中心 center；right=滑动窗口右端点 right。
 vector<int> p(t.size()); int center = 0, right = 0;
-// 变量：i=当前循环下标 i。
+// 变量：i=Manacher 扩展串中当前计算回文半径的中心位置 i。
 for (int i = 1; i + 1 < (int)t.size(); ++i) {
     // 变量：mir=Manacher 中与 i 关于中心对称的位置 mir。
     int mir = 2 * center - i;
@@ -193,14 +193,14 @@ struct AC {
     int fail[MAXN]{};   // 最长真后缀节点。
     int out[MAXN]{};    // 模式串结束次数及 fail 链汇总次数。
     int tot = 0;          // 当前最后一个节点编号；根为 0，节点范围 [0,tot]。
-    // 接口：insert(s)：把参数表示的数/字符串/版本插入当前结构；会修改当前结构；多测时重新构造或显式清空成员。
-    // 参数：源点编号或输入字符串 s（见本节类型）。
+    // 接口：insert(s)：把小写模式串 s 插入 Trie，并在终止节点累计出现次数；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：输入字符串 s。
     void insert(const string& s) {
-        // 变量：u=当前顶点/状态编号 u。
+        // 变量：u=字符串自动机从根开始游走的状态编号 u。
         int u = 0;
-        // 变量：c=当前字符、容量或第三个操作数 c。
+        // 变量：c=从容器 s 枚举的元素 c。
         for (char c : s) {
-            // 变量：x=当前输入值/查询值/坐标 x。
+            // 变量：x=当前字符映射到的字母表编号 x。
             int x = c - 'a';
             if (!ch[u][x]) ch[u][x] = ++tot;
             u = ch[u][x];
@@ -208,22 +208,22 @@ struct AC {
         // 重复模式串要累加，而不是只记一个 bool。
         ++out[u];
     }
-    // 接口：build()：由当前输入/成员状态完成数据结构预处理；完成初始化；多测时每组重新调用。
+    // 接口：build()：用 BFS 建立 AC 自动机 fail 指针、补全转移并汇总输出计数；完成初始化；多测时每组重新调用。
     void build() {
-        // 变量：q=当前 BFS/单调算法使用的队列 q。
+        // 变量：q=AC 自动机建立 fail 指针时按层遍历状态的 BFS 队列 q。
         queue<int> q;
         // 根节点的直接儿子的 fail 都是根。
-        // 变量：c=当前字符、容量或第三个操作数 c。
+        // 变量：c=当前枚举的 0-based 字母表编号 c。
         for (int c = 0; c < 26; ++c) if (ch[0][c]) q.push(ch[0][c]);
         while (!q.empty()) {
-            // 变量：u=当前顶点/状态编号 u。
+            // 变量：u=AC 自动机构建过程中当前出队并补全转移的状态编号 u。
             int u = q.front(); q.pop();
             // 如果要统计每个模式串，推荐建 fail 树后再统一 DFS 汇总；
             // 这里直接累加适合只问“当前位置结束的所有模式数”。
             out[u] += out[fail[u]];
-            // 变量：c=当前字符、容量或第三个操作数 c。
+            // 变量：c=当前枚举的 0-based 字母表编号 c。
             for (int c = 0; c < 26; ++c) {
-                // 变量：v=当前相邻顶点/下一状态 v。
+                // 变量：v=自动机状态 u 经字符 c 转移到的状态引用 v。
                 int &v = ch[u][c];
                 if (v) {
                     // v 的 fail 是 fail[u] 沿同字符转移。
@@ -235,12 +235,12 @@ struct AC {
             }
         }
     }
-    // 接口：query(s)：返回本节数据结构在给定位置/区间上的查询结果；返回类型 int。
-    // 参数：源点编号或输入字符串 s（见本节类型）。
+    // 接口：query(s)：扫描主串 s 并返回全部模式串出现次数之和；返回类型 int。
+    // 参数：输入字符串 s。
     int query(const string& s) {
-        // 变量：u=当前顶点/状态编号 u；ans=当前累计答案 ans。
+        // 变量：u=字符串自动机从根开始扫描的状态编号 u；ans=AC 自动机扫描主串时累计的全部模式匹配次数 ans。
         int u = 0, ans = 0;
-        // 变量：c=当前字符、容量或第三个操作数 c。
+        // 变量：c=从容器 s 枚举的元素 c。
         for (char c : s) {
             // u 表示当前文本前缀的最长 Trie 后缀。
             u = ch[u][c - 'a'];
@@ -257,32 +257,32 @@ struct AC {
 
 \begin{lstlisting}[language={C++}]
 // 接口：suffix_array(s)：返回 sa；sa[i] 是字典序第 i 小后缀的 0-based 起点；返回类型 vector<int>。
-// 参数：源点编号或输入字符串 s（见本节类型）。
+// 参数：待构造后缀数组的字符串 s。
 vector<int> suffix_array(string s) {
     // 加入最小哨兵，保证所有真正后缀都排在哨兵之后。
-    // 变量：n=当前元素/顶点/状态数量 n。
+    // 变量：n=容器 s 的元素数量 n。
     s.push_back(0); int n = s.size();
-    // 变量：sa=后缀数组 sa；sa[i] 是第 i 小后缀起点；r=当前区间右端点 r；nr=本轮扩展得到的新右边界 nr。
+    // 变量：sa=后缀数组 sa；sa[i] 是第 i 小后缀起点；r=当前轮每个后缀长度 k 前缀的等价类排名数组 r；nr=按长度 2k 重新排序后得到的新排名数组 nr。
     vector<int> sa(n), r(n), nr(n);
     iota(sa.begin(), sa.end(), 0);
-    // 变量：i=当前循环下标 i。
+    // 变量：i=后缀数组初始化单字符排名的后缀起点 i。
     for (int i = 0; i < n; ++i) r[i] = (unsigned char)s[i];
-    // 变量：k=当前处理的二进制位/倍增层 k。
+    // 变量：k=后缀倍增中当前二元组每一段的长度 k；本轮比较长度 2k 的前缀。
     for (int k = 1;; k <<= 1) {
         // 用长度 k 的前半排名和后半排名比较长度 2k 的前缀。
-        // 接口：比较器 lambda(i, j)：供“后缀数组与最长公共前缀（Suffix Array and Longest Common Prefix，LCP）”当前语句回调；返回值含义见调用处条件。
-        // 参数：当前 0/1-based 位置 i（见接口区间约定）；比较器收到的另一个 0-based 下标 j。
+        // 接口：比较器 lambda(i, j)：按长度 2k 的两段排名二元组比较后缀 i 与 j。
+        // 参数：第一个后缀起点 i；第二个后缀起点 j。
         sort(sa.begin(), sa.end(), [&](int i, int j) {
             if (r[i] != r[j]) return r[i] < r[j];
-            // 变量：ri=后缀 i 的当前第一关键字排名 ri。
+            // 变量：ri=后缀 i 偏移 k 后第二段的等价类排名 ri；越界时为 -1。
             int ri = i + k < n ? r[i + k] : -1;
-            // 变量：rj=后缀 j 的当前第一关键字排名 rj。
+            // 变量：rj=后缀 j 偏移 k 后第二段的等价类排名 rj；越界时为 -1。
             int rj = j + k < n ? r[j + k] : -1;
             return ri < rj;
         });
         // 重新压缩排名；二元组完全相同的后缀共享排名。
         nr[sa[0]] = 0;
-        // 变量：i=当前循环下标 i。
+        // 变量：i=后缀数组排序后用于比较相邻后缀并重编号的排名位置 i。
         for (int i = 1; i < n; ++i)
             nr[sa[i]] = nr[sa[i - 1]] +
                 (r[sa[i - 1]] != r[sa[i]] ||
@@ -310,16 +310,16 @@ struct SAM {
     int last = 0; // 当前整个字符串对应的状态。
     int sz = 1;   // 状态 0 是初始状态。
     // 接口：extend(c)：向当前字符串自动机加入一个字符并更新状态；会修改当前结构；多测时重新构造或显式清空成员。
-    // 参数：字符编号/边容量/候选对象 c（见本节）。
+    // 参数：待加入自动机的字符 c。
     void extend(char c) {
         // cur 表示加入 c 后的新前缀及其所有后缀。
-        // 变量：cur=当前扫描位置的累计状态 cur；p=当前质数、节点编号或指针 p；具体角色见所在公式。
+        // 变量：cur=加入新字符后创建的 SAM 状态编号 cur；p=SAM 扩展前原末状态的游走指针 p。
         int cur = sz++, p = last; st[cur].len = st[last].len + 1; st[cur].occ = 1;
         // 从 last 沿 suffix link 补齐缺失的 c 转移。
         while (p >= 0 && !st[p].next[c - 'a']) st[p].next[c - 'a'] = cur, p = st[p].link;
         if (p < 0) st[cur].link = 0;
         else {
-            // 变量：q=当前查询对象 q。
+            // 变量：q=SAM 状态 p 经当前字符转移到的既有状态 q。
             int q = st[p].next[c - 'a'];
             if (st[p].len + 1 == st[q].len) st[cur].link = q;
             else {
@@ -356,21 +356,21 @@ struct PAM {
         len[0] = 0; len[1] = -1; fail[0] = fail[1] = 1;
     }
     // 接口：get_fail(u)：沿 fail 链找到能被当前字符继续扩展的节点；返回类型 int。
-    // 参数：顶点/状态编号 u。
+    // 参数：顶点编号 u。
     int get_fail(int u) {
         // 沿 fail 跳，直到 u 的两端可以接上新字符 s[n]。
         while (s[n - len[u] - 1] != s[n]) u = fail[u];
         return u;
     }
-    // 接口：add(c)：执行本节定义的单点/区间增加或加入操作；会修改当前结构；多测时重新构造或显式清空成员。
-    // 参数：字符编号/边容量/候选对象 c（见本节）。
+    // 接口：add(c)：向回文自动机追加字符，更新 last 并返回新的最长回文后缀状态编号；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：待加入自动机的字符 c。
     void add(char c) {
         // 先把新字符写入串，再寻找能够扩展的最长回文后缀。
-        // 变量：u=当前顶点/状态编号 u。
+        // 变量：u=沿 fail 链找到的可被当前字符扩展的回文状态 u。
         s[++n] = c - 'a'; int u = get_fail(last);
         if (!next[u][s[n]]) {
             // 这是一个此前未出现过的新回文节点。
-            // 变量：v=当前相邻顶点/下一状态 v。
+            // 变量：v=本次新建的回文自动机状态编号 v。
             int v = ++tot; len[v] = len[u] + 2;
             // 新节点的 fail：从 fail[u] 开始寻找也能被该字符扩展的节点。
             fail[v] = next[get_fail(fail[u])][s[n]];
@@ -379,21 +379,21 @@ struct PAM {
         // last 是当前前缀的最长回文后缀；每个位置只直接计数一次。
         last = next[u][s[n]]; ++occ[last];
     }
-    // 接口：build(str)：由当前输入/成员状态完成数据结构预处理；完成初始化；多测时每组重新调用。
-    // 参数：待完整构建的字符串 str。
+    // 接口：build(str)：清空回文自动机，依次加入 str 的字符并沿 fail 汇总出现次数；完成初始化；多测时每组重新调用。
+    // 参数：待构建自动机的完整字符串 str。
     int build(const string& str) {
         init();
-        // 变量：c=当前字符、容量或第三个操作数 c。
+        // 变量：c=从容器 str 枚举的元素 c。
         for (char c : str) add(c);
         // fail 从长回文指向短回文，必须按长度降序汇总；
         // 许多简化板子用编号倒序，只在编号也随长度单调时才安全。
-        // 变量：ord=按长度/拓扑顺序排列的状态编号 ord。
+        // 变量：ord=按回文长度从大到小排列、用于沿 fail 链汇总出现次数的回文自动机状态编号 ord。
         vector<int> ord(max(0, tot - 1));
         iota(ord.begin(), ord.end(), 2); // 0/1 是两个虚拟根，不参与统计。
-        // 接口：比较器 lambda(a, b)：供“回文自动机（Palindromic Automaton，PAM，了解）”当前语句回调；返回值含义见调用处条件。
-        // 参数：输入值/数组 a（见本节定义）；输入值/数组 b（见本节定义）。
+        // 接口：比较器 lambda(a, b)：按回文长度从大到小排列自动机状态，供出现次数沿 fail 链汇总。
+        // 参数：第一个回文状态 a；第二个回文状态 b。
         sort(ord.begin(), ord.end(), [&](int a, int b) { return len[a] > len[b]; });
-        // 变量：v=当前相邻顶点/下一状态 v。
+        // 变量：v=按指定顺序枚举的自动机状态编号 v。
         for (int v : ord) occ[fail[v]] += occ[v];
         return tot - 1; // 不同非空回文子串数量
     }
@@ -416,12 +416,12 @@ struct PAM {
 
 \begin{lstlisting}[language={C++}]
 // 接口：min_rotation(s)：返回最小循环表示的 0-based 起点；返回类型 int。
-// 参数：源点编号或输入字符串 s（见本节类型）。
+// 参数：输入字符串 s。
 int min_rotation(const string& s) {
-    // 变量：t=测试用例数量或当前临时值 t；i=当前循环下标 i；j=内层循环下标 j；n=当前元素/顶点/状态数量 n。
+    // 变量：t=用于寻找最小循环表示的双倍字符串 t=s+s；i=最小循环表示算法当前第一个候选起点 i；j=最小循环表示算法当前第二个候选起点 j；n=容器 s 的元素数量 n。
     string t = s + s; int i = 0, j = 1, n = s.size();
     while (i < n && j < n) {
-        // 变量：k=当前排名、选取数量或循环层数 k。
+        // 变量：k=比较两个循环表示时已匹配的偏移长度 k。
         int k = 0;
         while (k < n && t[i + k] == t[j + k]) ++k;
         if (k == n) break;

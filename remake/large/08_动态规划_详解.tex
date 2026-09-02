@@ -8,8 +8,8 @@
 
 \begin{lstlisting}[language={C++}]
 long long memo[20][2][2][STATE]; // -1=未计算；末维 st 为题目/自动机状态 [0,STATE)。
-// 接口：dfs(pos, tight, started, st)：从当前节点/位置继续深度优先处理，并写入本节状态数组；返回类型 long long。
-// 参数：当前 0-based/DP 位置 pos；前缀是否仍贴住上界 tight；是否已经放置非前导零数字 started；题目定义或自动机节点状态 st，范围 [0,STATE)。
+// 接口：dfs(pos, tight, started, st)：返回给定数位 DP 状态的合法后缀方案数；返回类型 long long。
+// 参数：当前处理到的十进制数位下标 pos；前缀是否仍贴住上界 tight；是否已经放置非前导零数字 started；处理当前前缀后所在的数字自动机状态 st，范围 [0,STATE)。
 long long dfs(int pos, bool tight, bool started, int st) {
     // pos：正在处理第 pos 位；tight：前缀是否仍等于上界；
     // started：是否已经出现过非前导零；st：额外限制的自动机状态。
@@ -17,17 +17,17 @@ long long dfs(int pos, bool tight, bool started, int st) {
     // 只有 tight=false 的状态可以复用；tight=true 还依赖上界前缀。
     if (!tight && memo[pos][started][0][st] != -1)
         return memo[pos][started][0][st];
-    // 变量：res=准备返回的结果容器/结果值 res。
+    // 变量：res=当前数位 DP 状态累计的合法后缀方案数 res。
     long long res = 0;
-    // 变量：up=父侧贡献/倍增祖先数组 up。
+    // 变量：up=当前数位 pos 可枚举数字的上界 up；贴住原数时为 digit[pos]，否则为 9。
     int up = tight ? digit[pos] : 9;
-    // 变量：d=当前距离、差值或覆盖增量 d。
+    // 变量：d=数位 DP 当前枚举的十进制数字 d。
     for (int d = 0; d <= up; ++d) {
         // 前导零通常不应触发“数字出现/相邻数字”等条件。
         // 变量：ns=转移后的 started 状态 ns。
         bool ns = started || d != 0;
         // 尚未开始时是否把 0 送入自动机，必须按题意决定；这里留在起点 0。
-        // 变量：nst=转移后的自动机/DP 状态 nst。
+        // 变量：nst=在自动机状态 st 后放置数字 d 得到的下一自动机状态 nst；仍处于前导零时保持起点 0。
         int nst = ns ? go[st][d] : 0;
         if (ns && nst == forbidden) continue;
         // 注意必须与真实上界位 digit[pos] 比较，不能写成 d==up。
@@ -70,7 +70,7 @@ SOS DP 用来计算所有子集/超集的和：
 // 数值域：0<=K<31，且每个子集总和都必须可由 f 的元素类型表示；否则把 f 改为 __int128。
 // 变量：bit=当前处理的二进制位 bit。
 for (int bit = 0; bit < K; ++bit)
-    // 变量：mask=当前子集/博弈状态的二进制掩码 mask。
+    // 变量：mask=用二进制位编码的当前状态 mask。
     for (int mask = 0; mask < (1 << K); ++mask)
         if (mask >> bit & 1)
             // 把“去掉 bit 后的子集”贡献给当前 mask。
@@ -105,10 +105,10 @@ for (int bit = 0; bit < K; ++bit)
 若转移有 \passthrough{\lstinline!dp[i] = min(dp[j] + w(j,i))!}，且 \passthrough{\lstinline!j!} 的优劣具有区间单调性，先尝试单调队列；若整理后是直线最值，才上凸包/李超树。
 
 \begin{lstlisting}[language={C++}]
-// 变量：q=当前 BFS/单调算法使用的队列 q。
+// 变量：q=按未来转移优劣维护候选 DP 下标的单调双端队列 q。
 deque<int> q;
 q.push_back(0); // 0 是已计算的初始候选；调用前先设置 dp[0]。
-// 变量：i=当前循环下标 i。
+// 变量：i=滑动窗口右端新加入单调队列的数组位置 i。
 for (int i = 1; i < n; ++i) {
     // 过期候选先删除；窗口条件由题目决定。
     while (!q.empty() && q.front() < i - window) q.pop_front();
@@ -137,7 +137,7 @@ struct Line {
 // 才能用普通 deque；任意插入/任意查询请改用前面的李超线段树。
 // 变量：hull=按有效顺序维护的凸包候选队列 hull。
 deque<Line> hull;
-// 接口：useless(a, b, c)：判断中间候选直线 b 是否可从凸包队列删除；返回 true 表示本节条件成立/操作成功。
+// 接口：useless(a, b, c)：判断中间候选直线 b 是否可从凸包队列删除；b 永远不会最优时返回 true。
 // 参数：按斜率顺序相邻的候选直线 a、b、c；要求两个交叉乘积可由 signed __int128 表示，差值会先提升再相减。
 bool useless(const Line& a, const Line& b, const Line& c) {
     // 交点顺序不再递增时，中间直线永远不会成为最优。
@@ -146,8 +146,8 @@ bool useless(const Line& a, const Line& b, const Line& c) {
          >= ((__int128)c.b - b.b) * ((__int128)a.k - b.k);
 }
 
-// 接口：add_line(line)：把一条候选直线插入当前李超树/单调凸包并删除失效候选；会修改当前结构；多测时重新构造或显式清空成员。
-// 参数：待插入候选直线 line。
+// 接口：add_line(line)：按单调斜率加入候选直线，并从队尾删除永不最优的直线；会修改当前结构；多测时重新构造或显式清空成员。
+// 参数：待插入的候选直线 line。
 void add_line(Line line) {
     // 斜率顺序必须与 useless 的不等式方向一致；换成求最大值时通常要反号。
     while (hull.size() >= 2 &&
@@ -190,7 +190,7 @@ void add_line(Line line) {
 \begin{lstlisting}[language={C++}]
 // 典型形式：dp[layer][i] = min_j(dp[layer-1][j] + cost(j,i))。
 // optL/optR 是当前区间内“最优决策 j”可能出现的范围。
-// 接口：divide_conquer_dp(L, R, optL, optR)：计算 DP 下标闭区间 [L,R]，决策只搜索 [optL,optR]；无返回值；结果写入引用参数或当前结构状态。
+// 接口：divide_conquer_dp(L, R, optL, optR)：计算 DP 下标闭区间 [L,R]，决策只搜索 [optL,optR]，并把结果写入全局 dp；无返回值。
 // 参数：闭区间左端点 L；闭区间右端点 R；真实最优决策允许范围左端 optL；真实最优决策允许范围右端 optR。
 void divide_conquer_dp(int L, int R, int optL, int optR) {
     if (L > R) return;
@@ -203,7 +203,7 @@ void divide_conquer_dp(int L, int R, int optL, int optR) {
 
     // 没有单调性证明时不能把枚举范围缩成 optL..optR；
     // 这份模板的正确性前提就是 opt[mid] 位于该范围内。
-    // 变量：j=内层循环下标 j。
+    // 变量：j=分治 DP 在允许区间 [optL,optR] 内枚举的候选决策点 j。
     for (int j = optL; j <= min(optR, mid); ++j) {
         // 变量：cand=当前枚举得到的候选答案 cand。
         long long cand = old_dp[j] + cost(j, mid);
@@ -221,15 +221,15 @@ void divide_conquer_dp(int L, int R, int optL, int optR) {
 
 \begin{lstlisting}[language={C++}]
 // Steiner 树状态：dp[mask][v] = 连接 mask 中关键点，并以 v 作为当前末端的最小代价。
-// 变量：mask=当前子集/博弈状态的二进制掩码 mask。
+// 变量：mask=用二进制位编码的当前状态 mask。
 for (int mask = 1; mask < (1 << K); ++mask) {
     // 把 mask 拆成两个非空子集，在同一个 v 汇合。
     // 变量：sub=当前枚举的子掩码 sub。
     for (int sub = (mask - 1) & mask; sub; sub = (sub - 1) & mask) {
-        // 变量：other=当前移动后的另一堆/另一状态 other。
+        // 变量：other=mask 中除 sub 之外的互补子集 other。
         int other = mask ^ sub;
         if (sub > other) continue; // 对称拆分只做一次，常数更小。
-        // 变量：v=当前相邻顶点/下一状态 v。
+        // 变量：v=Steiner 树状态压缩 DP 当前汇合的图顶点 v。
         for (int v = 0; v < n; ++v)
             dp[mask][v] = min(dp[mask][v],
                               dp[sub][v] + dp[other][v]);
@@ -253,14 +253,14 @@ struct Mat {
     long long a[2][2]{}; // a[i][j]：第 i 个状态对第 j 个状态的线性系数。
 };
 // 接口：mul(A, B)：返回两个转移矩阵的乘积；返回类型 Mat。
-// 参数：左操作数/矩阵 A；右操作数/矩阵 B。
+// 参数：矩阵乘法的第一个输入矩阵 A；矩阵乘法的第二个输入矩阵 B。
 Mat mul(Mat A, Mat B) {
     Mat C{}; // 必须清零；矩阵乘法是累加，不是覆盖。
-    // 变量：i=当前循环下标 i。
+    // 变量：i=2×2 转移矩阵的行下标 i。
     for (int i = 0; i < 2; ++i)
-        // 变量：k=当前排名、选取数量或循环层数 k。
+        // 变量：k=二阶转移矩阵乘法的公共维下标 k。
         for (int k = 0; k < 2; ++k)
-            // 变量：j=内层循环下标 j。
+            // 变量：j=2×2 转移矩阵的列下标 j。
             for (int j = 0; j < 2; ++j)
                 // C = A * B：先应用 B，再应用 A（按列向量约定）。
                 C.a[i][j] = (C.a[i][j] + A.a[i][k] * B.a[k][j]) % MOD;
@@ -269,7 +269,7 @@ Mat mul(Mat A, Mat B) {
 
 // 接口：identity()：返回当前状态维数的单位转移矩阵；返回类型 Mat。
 Mat identity() {
-    // 变量：I=单位矩阵/恒等转移 I。
+    // 变量：I=当前二维状态空间的单位转移矩阵 I。
     Mat I{};
     I.a[0][0] = I.a[1][1] = 1;
     return I;

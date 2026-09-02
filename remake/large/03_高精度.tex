@@ -253,10 +253,10 @@ struct BigInteger {
         BigInteger result;
         if (a.is_zero() || b.is_zero()) return result;
         result.digit.assign(a.digit.size() + b.digit.size(), 0);
-        // 变量：i=左操作数当前参与乘法的内部块下标。
+        // 变量：i=第一个高精度乘数 a 当前参与乘法的内部块下标 i。
         for (size_t i = 0; i < a.digit.size(); ++i) {
             uint64_t carry = 0;
-            // 变量：j=右操作数当前参与乘法的内部块下标。
+            // 变量：j=第二个高精度乘数 b 当前参与乘法的内部块下标 j。
             for (size_t j = 0; j < b.digit.size() || carry != 0; ++j) {
                 uint64_t current = result.digit[i + j] + carry;
                 if (j < b.digit.size())

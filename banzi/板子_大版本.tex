@@ -141,23 +141,23 @@ using namespace std;
 #define int long long
 #define endl '\n'
 
-// 变量：inf=不可达/无穷大哨兵值，参与加法前先判断不是 inf。
+// 变量：inf=表示不可达状态的正无穷哨兵值 inf；参与加法前先判断当前值不是 inf。
 const int inf = 2e18;
-// 变量：N=数组容量/预处理上界；实际合法下标以本节注释为准。
+// 变量：N=当前代码允许使用的最大下标上界 N。
 const int N = 1e6 + 10;
 
-// 接口：solve()：完成本节给出的单组测试/递归区间；入口函数；每组测试前按注释清空全局状态。
+// 接口：solve()：读取一个测试用例的规模 n，并作为题目核心逻辑的单测入口；无返回值。
 void solve() {
-    // 变量：n=当前元素/顶点/状态数量 n。
+    // 变量：n=当前测试用例读入的元素个数 n。
     int n;
     cin >> n;
 }
 
-// 接口：main()：程序入口，负责 I/O 初始化并调用本节核心逻辑；入口函数；每组测试前按注释清空全局状态。
+// 接口：main()：开启快速 I/O，读入测试数 t，并为每个测试调用一次 solve；入口函数；每组测试前按注释清空全局状态。
 signed main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    // 变量：t=测试用例数量或当前临时值 t。
+    // 变量：t=当前程序要执行的测试用例数量 t。
     int t = 1;
     cin >> t;
     while (t--) {
@@ -222,7 +222,7 @@ a[i];                      // 随机访问 O(1)
 
 \subsection{string}
 \begin{lstlisting}
-// 变量：s=当前输入字符串/源点 s。
+// 变量：s=从标准输入读取、供当前字符串算法处理的字符串 s。
 string s;
 getline(cin, s);           // 读一整行（注意前面 cin>>n 后要 cin.ignore()）
 s.substr(pos, len);        // 从 pos 开始取 len 个字符
@@ -235,7 +235,7 @@ stoll("123456789012");     // string -> long long
 
 \subsection{set / multiset}
 \begin{lstlisting}
-// 变量：s=当前枚举的起点/源点 s。
+// 变量：s=用于演示有序集合接口的 set 容器 s。
 set<int> s;
 s.insert(x);              // 插入
 s.erase(x);               // 删除所有值为 x 的元素
@@ -243,7 +243,7 @@ s.count(x);               // 0 或 1
 s.lower_bound(x);         // >= x 的第一个迭代器
 s.upper_bound(x);         // > x 的第一个迭代器
 // multiset 删除单个元素：
-// 变量：it=当前容器迭代器/当前弧位置 it。
+// 变量：it=容器 ms 中当前查找结果的迭代器 it。
 auto it = ms.find(x);
 if (it != ms.end()) ms.erase(it); // 只删一个！
 // 如果写 ms.erase(x) 会删掉所有等于 x 的元素！
@@ -251,7 +251,7 @@ if (it != ms.end()) ms.erase(it); // 只删一个！
 
 \subsection{map}
 \begin{lstlisting}
-// 变量：mp=当前键值映射 mp。
+// 变量：mp=把 int 键映射到 int 值并保持键有序的 map 容器 mp。
 map<int, int> mp;
 mp[key] = val;             // 插入/修改
 mp.count(key);             // 是否存在
@@ -299,7 +299,7 @@ struct custom_hash {
         return x ^ (x >> 16);
     }
 };
-// 变量：mp=当前键值映射 mp。
+// 变量：mp=使用 custom_hash 把 int 键映射到 int 值的哈希表 mp。
 unordered_map<int, int, custom_hash> mp;
 \end{lstlisting}
 
@@ -404,7 +404,7 @@ accumulate(a.begin(), a.end(), 0LL); // 注意初始值类型！
 
 \begin{lstlisting}
 // pair
-// 变量：p=当前质数、节点编号或指针 p；具体角色见所在公式。
+// 变量：p=用于演示 pair 接口的整数对 p。
 pair<int, int> p = {1, 2};
 auto [x, y] = p;  // C++17 结构化绑定
 p.first; p.second; // 访问元素
@@ -418,7 +418,7 @@ auto p2 = make_pair(3, 4); // 自动推导类型
 tuple<int, int, int> t = {1, 2, 3};
 auto [a, b, c] = t;  // C++17 结构化绑定
 get<0>(t); get<1>(t); get<2>(t); // 访问元素
-// 变量：t2=第二个参数方程解/临时元组 t2。
+// 变量：t2=用于演示 tuple 构造与字典序比较的三元组 t2。
 auto t2 = make_tuple(1, 2, 3);
 // tuple 也支持比较运算符（按字典序）
 // 竞赛中三元排序直接用 tuple 最方便
@@ -477,7 +477,7 @@ bs.to_string();   // 转为 "010101..." 字符串
 bs._Find_first();  // 第一个 1 的位置（没有则返回 N）
 bs._Find_next(i);  // i 之后第一个 1 的位置（没有则返回 N）
 // 枚举所有 1 的位置：
-// 变量：i=当前循环下标 i。
+// 变量：i=动态 bitset 中当前找到的置位下标 i。
 for (int i = bs._Find_first(); i < (int)bs.size(); i = bs._Find_next(i)) {
     // 处理位置 i
 }
@@ -512,7 +512,7 @@ for (int i = bs._Find_first(); i < (int)bs.size(); i = bs._Find_next(i)) {
 // bs[j] = 1 表示重量 j 可以被凑出
 bitset<MAXV> bs;
 bs[0] = 1;                 // 重量 0 总能凑出（什么都不选）
-// 变量：i=当前循环下标 i。
+// 变量：i=bitset 0/1 背包当前加入的物品下标 i。
 for (int i = 0; i < n; i++)
     bs |= bs << w[i];      // 01 背包：每个物品做一次整体左移再或
 // bs[j] 为 1 即容量 j 可达；bs.count() 为可达重量种类数
@@ -560,9 +560,9 @@ void transitive_closure(array<bitset<MAXN>, MAXN>& reach, int n) {
 bitset<MAXM> B[256], D;
 // 变量：matches=模式串在文本中的全部 0-based 起始位置。
 vector<int> matches;
-// 变量：j=内层循环下标 j。
+// 变量：j=Shift-And 模式串 p 当前写入位掩码的字符位置 j。
 for (int j = 0; j < m; j++) B[(unsigned char)p[j]][j] = 1;
-// 变量：i=当前循环下标 i。
+// 变量：i=Shift-And 扫描主串 t 的当前字符位置 i。
 for (int i = 0; i < (int)t.size(); i++) {
     D = ((D << 1) | bitset<MAXM>(1)) & B[(unsigned char)t[i]];
     if (D[m - 1]) {
@@ -582,11 +582,11 @@ GCC 扩展的 128 位整数，范围约 $[-1.7 \times 10^{38}, 1.7 \times 10^{38
 \end{note}
 
 \begin{lstlisting}
-// 变量：a=当前输入数组/操作数 a。
+// 变量：a=演示 __int128 算术与模乘的 128 位整数 a。
 __int128 a = 1;
 // 不能直接 cin/cout，需要手写 IO
-// 接口：print128(x)：十进制输出一个 __int128；无返回值；结果写入引用参数或当前结构状态。
-// 参数：待处理值或点/状态 x。
+// 接口：print128(x)：十进制输出一个 __int128；不返回值。
+// 参数：待十进制输出的 __int128 整数 x。
 void print128(__int128 x) {
     if (x < 0) { putchar('-'); x = -x; }
     if (x > 9) print128(x / 10);
@@ -595,7 +595,7 @@ void print128(__int128 x) {
 
 // 接口：read128()：从标准输入读取并返回一个 __int128；返回类型 __int128。
 __int128 read128() {
-    // 变量：x=当前输入值/查询值/坐标 x；f=读入 __int128 时记录正负号的符号 f；c=当前从输入读取的字符 c。
+    // 变量：x=十进制读入过程中累计绝对值的 __int128 结果 x；f=读入 __int128 时记录正负号的符号 f；c=当前从输入读取的字符 c。
     __int128 x = 0; int f = 1; char c = getchar();
     while (c < '0' || c > '9') { if (c == '-') f = -1; c = getchar(); }
     while (c >= '0' && c <= '9') { x = x * 10 + c - '0'; c = getchar(); }
@@ -604,7 +604,7 @@ __int128 read128() {
 
 // 典型应用：大数乘法取模，避免 long long 乘法溢出
 // 接口：mul_mod(a, b, mod)：计算 a*b mod mod，并避免中间乘法溢出；返回类型 int。
-// 参数：输入值/数组 a（见本节定义）；输入值/数组 b（见本节定义）；正模数 mod。
+// 参数：模乘的第一个整数因子 a；模乘的第二个整数因子 b；正模数 mod。
 int mul_mod(int a, int b, int mod) {
     return (__int128)a * b % mod;
 }
@@ -712,8 +712,8 @@ equal_range(a.begin(), a.end(), x);  // 返回 {lower_bound, upper_bound} 的 pa
 // 查找
 find(a.begin(), a.end(), x);         // 找第一个 x，返回迭代器
 count(a.begin(), a.end(), x);        // 统计 x 的个数
-// 接口：判定 lambda(v)：供“区间操作函数”当前语句回调；返回值含义见调用处条件。
-// 参数：顶点/状态编号 v。
+// 接口：判定 lambda(v)：判断当前数组元素 v 是否大于 0。
+// 参数：当前被 count_if 判断的数组元素 v。
 count_if(a.begin(), a.end(), [](int v){ return v > 0; }); // 条件统计
 any_of(a.begin(), a.end(), pred);    // 是否存在满足条件的
 all_of(a.begin(), a.end(), pred);    // 是否全部满足条件
@@ -733,13 +733,13 @@ reverse(a.begin(), a.end());          // 反转
 rotate(a.begin(), a.begin()+k, a.end()); // 左旋 k 位
 fill(a.begin(), a.end(), val);        // 填充
 fill_n(a.begin(), k, val);           // 填充前 k 个
-// 接口：生成/变换 lambda()：供“区间操作函数”当前语句回调；返回值含义见调用处条件。
+// 接口：生成 lambda()：调用 rng() 生成当前要写入数组的随机值。
 generate(a.begin(), a.end(), [&](){ return rng(); }); // 用函数生成
 
 // 拷贝、变换
 copy(a.begin(), a.end(), b.begin());  // 拷贝到 b
-// 接口：生成/变换 lambda(x)：供“区间操作函数”当前语句回调；返回值含义见调用处条件。
-// 参数：待处理值或点/状态 x。
+// 接口：变换 lambda(x)：返回输入元素 x 的两倍并写入目标数组。
+// 参数：当前被 transform 变换的输入元素 x。
 transform(a.begin(), a.end(), b.begin(), [](int x){ return x*2; }); // 变换
 \end{lstlisting}
 
@@ -757,7 +757,7 @@ transform(a.begin(), a.end(), b.begin(), [](int x){ return x*2; }); // 变换
 // 全排列
 // next_permutation: 生成下一个字典序排列，到最后返回 false
 // prev_permutation: 生成上一个字典序排列，到最前返回 false
-// 变量：a=当前输入数组/操作数 a。
+// 变量：a=用于演示排列算法的整数序列 a。
 vector<int> a = {1, 2, 3};
 do {
     // 处理当前排列 a
@@ -765,10 +765,10 @@ do {
 // 注意：要枚举所有排列，a 必须先排序为最小排列！
 
 // 枚举子集（用 bitmask）
-// 变量：mask=当前子集/博弈状态的二进制掩码 mask。
+// 变量：mask=用二进制位编码的当前状态 mask。
 for (int mask = 0; mask < (1 << n); mask++) {
     // mask 的第 i 位为 1 表示选第 i 个元素
-    // 变量：i=当前循环下标 i。
+    // 变量：i=当前子集掩码中正在检查是否被选中的元素位 i。
     for (int i = 0; i < n; i++)
         if (mask >> i & 1) { /* 选了第 i 个 */ }
 }
@@ -805,12 +805,12 @@ bool prev_permutation(BidirIt first, BidirIt last, Compare comp);
 
 // ===== 用法一：枚举所有排列 =====
 // 必须先排序为最小排列（升序），然后用 do-while 循环
-// 变量：a=当前输入数组/操作数 a。
+// 变量：a=用于演示排列算法的整数序列 a。
 vector<int> a = {1, 2, 3};
 sort(a.begin(), a.end()); // 必须先升序排列！
 do {
     // 处理当前排列，例如输出
-    // 变量：x=当前输入值/查询值/坐标 x。
+    // 变量：x=从 a 枚举的元素值 x。
     for (int x : a) cout << x << " ";
     cout << endl;
 } while (next_permutation(a.begin(), a.end()));
@@ -818,11 +818,11 @@ do {
 
 // ===== 用法二：有重复元素的排列（自动去重） =====
 // next_permutation 天然支持重复元素，不会生成重复排列
-// 变量：a=当前输入数组/操作数 a。
+// 变量：a=用于演示排列算法的整数序列 a。
 vector<int> a = {1, 1, 2};
 sort(a.begin(), a.end());
 do {
-    // 变量：x=当前输入值/查询值/坐标 x。
+    // 变量：x=从 a 枚举的元素值 x。
     for (int x : a) cout << x << " ";
     cout << endl;
 } while (next_permutation(a.begin(), a.end()));
@@ -830,14 +830,14 @@ do {
 
 // ===== 用法三：只排列部分元素（前 k 个的全排列） =====
 // 枚举 n 个元素中选 k 个的全排列（P(n,k)）
-// 变量：n=当前元素/顶点/状态数量 n；k=当前排名、选取数量或循环层数 k。
+// 变量：n=被选元素全集的大小 n；k=需要从 n 个元素中选取的元素个数 k。
 int n = 4, k = 2;
-// 变量：a=当前输入数组/操作数 a。
+// 变量：a=用于演示排列算法的整数序列 a。
 vector<int> a = {1, 2, 3, 4};
 sort(a.begin(), a.end());
 do {
     // 只看前 k 个元素，它们是一种选法的排列
-    // 变量：i=当前处理的二进制位/倍增层 i。
+    // 变量：i=当前输出所选组合中第 i 个元素的下标 i。
     for (int i = 0; i < k; i++) cout << a[i] << " ";
     cout << endl;
     // 将后面的部分反转，使 next_permutation 跳到下一组前 k 个
@@ -845,15 +845,15 @@ do {
 } while (next_permutation(a.begin(), a.end()));
 
 // ===== 用法四：求当前排列之后的第 k 个排列 =====
-// 变量：a=当前输入数组/操作数 a。
+// 变量：a=用于演示排列算法的整数序列 a。
 vector<int> a = {1, 2, 3, 4};
-// 变量：k=当前排名、选取数量或循环层数 k。
+// 变量：k=限制输出的前 k 个排列数量 k。
 int k = 5;
 while (k-- && next_permutation(a.begin(), a.end()));
 // a 变成第 5 个后继排列
 
 // ===== 用法五：对字符串使用 =====
-// 变量：s=当前输入字符串/源点 s。
+// 变量：s=从标准输入读取、供当前字符串算法处理的字符串 s。
 string s = "abc";
 sort(s.begin(), s.end());
 do {
@@ -864,7 +864,7 @@ do {
 // ===== 用法六：自定义比较函数（降序排列枚举） =====
 vector<int> a = {3, 2, 1}; // 按 greater 的最小排列
 do {
-    // 变量：x=当前输入值/查询值/坐标 x。
+    // 变量：x=从 a 枚举的元素值 x。
     for (int x : a) cout << x << " ";
     cout << endl;
 } while (next_permutation(a.begin(), a.end(), greater<int>()));
@@ -897,22 +897,22 @@ do {
 
 \begin{lstlisting}
 // 生成 {1, 2, ..., n} 的全排列（不重复元素）
-// 变量：path=当前 DFS 路径/输出路径 path。
+// 变量：path=排列 DFS 当前已经选定的前缀 path。
 vector<int> path;
-// 变量：used=是否已使用/选择的标记集合 used。
+// 变量：used=记录每个对象是否已被使用的标记 used。
 vector<bool> used;
 
-// 接口：dfs(n)：从当前节点/位置继续深度优先处理，并写入本节状态数组；无返回值；结果写入引用参数或当前结构状态。
-// 参数：规模/上界 n。
+// 接口：dfs(n)：枚举并逐个输出 1..n 的全部排列；不返回值。
+// 参数：待生成排列的长度 n。
 void dfs(int n) {
     if ((int)path.size() == n) {
         // 得到一个排列 path，处理它
-        // 变量：x=当前输入值/查询值/坐标 x。
+        // 变量：x=从 path 枚举的元素值 x。
         for (int x : path) cout << x << " ";
         cout << endl;
         return;
     }
-    // 变量：i=当前循环下标 i。
+    // 变量：i=无重复全排列 DFS 当前尝试放入路径的候选值 i。
     for (int i = 1; i <= n; i++) {
         if (used[i]) continue;
         path.push_back(i);
@@ -932,16 +932,16 @@ vector<int> path2;
 // 变量：used2=含重复元素时每个下标是否已被当前排列使用。
 vector<bool> used2;
 
-// 接口：dfs2(n)：枚举 nums 的不重复全排列并输出；结果写入 path2，输出后回溯复原。
-// 参数：规模/上界 n。
+// 接口：dfs2(n)：枚举已排序 nums 的所有不重复全排列并逐个输出；不返回值。
+// 参数：待生成排列的长度 n。
 void dfs2(int n) {
     if ((int)path2.size() == n) {
-        // 变量：x=当前输入值/查询值/坐标 x。
+        // 变量：x=从 path2 枚举的元素值 x。
         for (int x : path2) cout << x << " ";
         cout << endl;
         return;
     }
-    // 变量：i=当前循环下标 i。
+    // 变量：i=含重复元素全排列 DFS 当前尝试使用的 nums 下标 i。
     for (int i = 0; i < n; i++) {
         if (used2[i]) continue;
         // 去重：同一层中，相同值只选第一个未用的
@@ -974,20 +974,20 @@ void dfs2(int n) {
 // 康托展开：求排列 p 在所有 n! 个排列中的排名（0-indexed）
 // p 是 {0, 1, ..., n-1} 的排列
 // 接口：cantor(p)：返回排列 p 的 0-based Cantor 排名；返回类型 int。
-// 参数：当前节点/模数 p（见本节定义）。
+// 参数：待计算排名的 0-based 排列 p。
 int cantor(vector<int>& p) {
-    // 变量：n=当前元素/顶点/状态数量 n。
+    // 变量：n=容器 p 的元素数量 n。
     int n = p.size();
-    // 变量：rank=后缀/排列的当前排名数组或 Cantor 排名 rank。
+    // 变量：rank=当前排列的 0-based Cantor 排名 rank。
     int rank = 0;
     // 变量：fact=阶乘表 fact；fact[i]=i!。
     vector<int> fact(n, 1);
-    // 变量：i=当前循环下标 i。
+    // 变量：i=Cantor 排名使用的阶乘表下标 i。
     for (int i = 1; i < n; i++) fact[i] = fact[i-1] * i;
-    // 变量：i=当前循环下标 i。
+    // 变量：i=Cantor 排名中当前计算较小后继数量的排列位置 i。
     for (int i = 0; i < n; i++) {
         int cnt = 0; // 统计 p[i] 后面比 p[i] 小的个数
-        // 变量：j=内层循环下标 j。
+        // 变量：j=Cantor 排名中位于 i 之后、用于统计较小元素的位置 j。
         for (int j = i + 1; j < n; j++)
             if (p[j] < p[i]) cnt++;
         rank += cnt * fact[n - 1 - i];
@@ -998,20 +998,20 @@ int cantor(vector<int>& p) {
 // 逆康托展开：由排名 rank 恢复排列（0-indexed）
 // 返回 {0, 1, ..., n-1} 的第 rank 个排列
 // 接口：inv_cantor(rank, n)：由 0-based 排名还原 1..n 的排列；返回类型 vector<int>。
-// 参数：0-based Cantor 排名 rank；规模/上界 n。
+// 参数：待还原的 0-based Cantor 排名 rank；待还原排列的长度 n。
 vector<int> inv_cantor(int rank, int n) {
     // 变量：fact=阶乘表 fact；fact[i]=i!。
     vector<int> fact(n, 1);
-    // 变量：i=当前循环下标 i。
+    // 变量：i=Cantor 排名使用的阶乘表下标 i。
     for (int i = 1; i < n; i++) fact[i] = fact[i-1] * i;
     vector<int> avail; // 可用元素
-    // 变量：i=当前循环下标 i。
+    // 变量：i=逆 Cantor 展开初始化可用值集合的元素值 i。
     for (int i = 0; i < n; i++) avail.push_back(i);
-    // 变量：res=准备返回的结果容器/结果值 res。
+    // 变量：res=逆 Cantor 展开逐位构造的排列 res。
     vector<int> res;
-    // 变量：i=当前循环下标 i。
+    // 变量：i=逆 Cantor 展开中当前确定输出值的排列位置 i。
     for (int i = 0; i < n; i++) {
-        // 变量：idx=当前数组或离散化下标 idx。
+        // 变量：idx=当前访问容器的 0-based 下标 idx。
         int idx = rank / fact[n - 1 - i];
         rank %= fact[n - 1 - i];
         res.push_back(avail[idx]);
@@ -1069,7 +1069,7 @@ getline(cin, s);  // 读一整行（注意前面 cin>>n 后要 cin.ignore()）
 
 // 字符串流（<sstream>）
 stringstream ss("1 2 3");
-// 变量：a=当前输入数组/操作数 a；b=当前输入数组/操作数 b；c=当前字符、容量或第三个操作数 c。
+// 变量：a=字符串解析得到的第一个整数 a；b=字符串解析得到的第二个整数 b；c=字符串解析得到的第三个整数 c。
 int a, b, c;
 ss >> a >> b >> c;  // 按空格分割解析
 \end{lstlisting}
@@ -1086,8 +1086,8 @@ ss >> a >> b >> c;  // 按空格分割解析
 
 \begin{lstlisting}
 // 二分答案的 lambda 写法
-// 接口：check(mid)：供“其他实用工具”当前语句回调；返回值含义见调用处条件。
-// 参数：当前二分/区间中点 mid。
+// 接口：check(mid)：示范二分答案判定接口；调用者必须把函数体替换为题目的 mid 可行性条件。
+// 参数：当前待判定的二分答案 mid。
 auto check = [&](int mid) -> bool {
     // 判断 mid 是否可行
     return true;
@@ -1100,9 +1100,9 @@ struct pair_hash {
         return hash<long long>()(((long long)p.first << 32) | p.second);
     }
 };
-// 变量：mp=当前键值映射 mp。
+// 变量：mp=使用 pair_hash 把整数对键映射到 int 值的哈希表 mp。
 unordered_map<pair<int,int>, int, pair_hash> mp;
-// 变量：st=当前集合或自动机/DP 状态 st。
+// 变量：st=用于按 pair 键去重的无序集合 st。
 unordered_set<pair<int,int>, pair_hash> st;
 
 // 离散化
@@ -1110,18 +1110,18 @@ vector<int> vals(a.begin(), a.end()); // 复制原数组
 sort(vals.begin(), vals.end());
 vals.erase(unique(vals.begin(), vals.end()), vals.end());
 // 映射：原值 -> 离散化后的编号
-// 变量：i=当前循环下标 i。
+// 变量：i=坐标离散化时当前回写压缩编号的数组下标 i。
 for (int i = 0; i < n; i++)
     a[i] = lower_bound(vals.begin(), vals.end(), a[i]) - vals.begin();
 // 反映射：vals[a[i]] 即为原值
 
 // iota 快速填充连续序列
-// 变量：idx=当前数组或离散化下标 idx。
+// 变量：idx=当前访问容器的 0-based 下标 idx。
 vector<int> idx(n);
 iota(idx.begin(), idx.end(), 0); // idx = {0, 1, 2, ..., n-1}
 // 按其他数组的值排序下标（间接排序）
-// 接口：比较器 lambda(i, j)：供“其他实用工具”当前语句回调；返回值含义见调用处条件。
-// 参数：当前 0/1-based 位置 i（见接口区间约定）；比较器收到的另一个 0-based 下标 j。
+// 接口：比较器 lambda(i, j)：按 a[i]、a[j] 的值升序排列下标。
+// 参数：第一个候选下标 i；第二个候选下标 j。
 sort(idx.begin(), idx.end(), [&](int i, int j) {
     return a[i] < a[j];
 });
@@ -1130,7 +1130,7 @@ sort(idx.begin(), idx.end(), [&](int i, int j) {
 merge(a.begin(), a.end(), b.begin(), b.end(), c.begin());
 
 // set_intersection / set_union / set_difference（要求有序）
-// 变量：res=准备返回的结果容器/结果值 res。
+// 变量：res=当前筛选操作收集的整数结果 res。
 vector<int> res;
 set_intersection(a.begin(), a.end(), b.begin(), b.end(), back_inserter(res));
 // 类似地：set_union, set_difference, set_symmetric_difference
@@ -1211,8 +1211,8 @@ $$k \oplus (k+1) \oplus (k+2) \oplus (k+3) = 0.$$
 
 \begin{lstlisting}
 // 1 ^ 2 ^ ... ^ m，O(1)
-// 接口：xor_n(m)：返回题目定义范围内的异或前缀值；返回类型 int。
-// 参数：数量或模数 m（见本节公式）。
+// 接口：xor_n(m)：返回整数闭区间 [1,m] 的异或和；返回类型 int。
+// 参数：异或前缀的右端点 m。
 int xor_n(int m) {
     switch (m & 3) {        // m & 3 等价于 m % 4
         case 0: return m;
@@ -1367,9 +1367,9 @@ $\text{popcount}(x)$ 表示 $x$ 二进制中 1 的个数。常用性质：
 暴力枚举子集是 $O(3^n)$，SOS DP 可以做到 $O(n \cdot 2^n)$：
 \begin{lstlisting}
 // 数值域：0<=n<31，且每个子集和都必须可由 f 的元素类型表示；否则把 f 改为 __int128。
-// 变量：i=当前循环下标 i。
+// 变量：i=SOS DP 当前向所有掩码传播贡献的二进制位 i。
 for (int i = 0; i < n; i++)
-    // 变量：mask=当前子集/博弈状态的二进制掩码 mask。
+    // 变量：mask=用二进制位编码的当前状态 mask。
     for (int mask = 0; mask < (1 << n); mask++)
         if (mask >> i & 1)
             f[mask] += f[mask ^ (1 << i)];
@@ -1390,12 +1390,12 @@ for (int i = 0; i < n; i++)
 \begin{lstlisting}
 // lowbit：取出最低位的 1
 // 接口：lowbit(x)：返回 x 的二进制最低位 1 所代表的权值 x&-x；返回类型 int。
-// 参数：待处理值或点/状态 x。
+// 参数：要求最低位 1 权值的整数 x。
 int lowbit(int x) { return x & (-x); }
 
 // 判断是否是 2 的幂
-// 接口：is_pow2(x)：判断正整数 x 是否恰好是 2 的幂；返回 true 表示本节条件成立/操作成功。
-// 参数：待处理值或点/状态 x。
+// 接口：is_pow2(x)：判断正整数 x 是否恰好是 2 的幂；x>0 且二进制中仅有一个 1 时返回 true。
+// 参数：待判定是否为 2 的幂的正整数 x。
 bool is_pow2(int x) { return x > 0 && (x & (x - 1)) == 0; }
 
 // 枚举子集（枚举 mask 的所有非空子集）
@@ -1405,13 +1405,13 @@ for (int sub = mask; sub; sub = (sub - 1) & mask) {
 }
 
 // 枚举大小为 k 的子集（从 n 个元素中选 k 个）
-// 变量：s=当前枚举的起点/源点 s。
+// 变量：s=从前 k 个二进制位全为 1 开始枚举的子集掩码 s。
 int s = (1 << k) - 1;
 while (s < (1 << n)) {
     // 处理 s
-    // 变量：lb=当前最低位 1 的权值/下界 lb。
+    // 变量：lb=Gosper 枚举中当前掩码 s 的最低位 1 对应权值 lb。
     int lb = s & (-s);
-    // 变量：r=当前区间右端点 r。
+    // 变量：r=Gosper 枚举中大于 s 的下一个同 popcount 掩码构造量 r。
     int r = s + lb;
     s = (((r ^ s) >> 2) / lb) | r;
 }
@@ -1564,23 +1564,23 @@ mt19937 rng; // 梅森旋转随机数引擎
 
 // 生成 [lo, hi] 范围内的随机整数
 // 接口：randint(lo, hi)：返回闭区间 [l,r] 内均匀随机整数；返回类型 int。
-// 参数：随机/取值闭区间下界 lo；随机/取值闭区间上界 hi。
+// 参数：均匀随机整数闭区间下界 lo；均匀随机整数闭区间上界 hi。
 int randint(int lo, int hi) {
     return uniform_int_distribution<int>(lo, hi)(rng);
 }
 
 // 生成 [lo, hi] 范围内的随机 long long
 // 接口：randll(lo, hi)：返回闭区间 [l,r] 内均匀随机 long long；返回类型 long long。
-// 参数：随机/取值闭区间下界 lo；随机/取值闭区间上界 hi。
+// 参数：均匀随机 long long 闭区间下界 lo；均匀随机 long long 闭区间上界 hi。
 long long randll(long long lo, long long hi) {
     return uniform_int_distribution<long long>(lo, hi)(rng);
 }
 
 // 生成长度为 len 的随机小写字母字符串
-// 接口：randstr(len)：生成长度 n、字符来自 alphabet 的随机串；返回类型 string。
+// 接口：randstr(len)：生成并返回长度为 len 的均匀随机小写字母字符串；返回类型 string。
 // 参数：目标字符串长度 len。
 string randstr(int len) {
-    // 变量：s=当前输入字符串/源点 s。
+    // 变量：s=正在逐字符构造并由 randstr 返回的随机小写字符串 s。
     string s(len, ' ');
     for (char& c : s) c = 'a' + randint(0, 25);
     return s;
@@ -1589,11 +1589,11 @@ string randstr(int len) {
 // 生成 n 个节点的随机树（输出 n-1 条边）
 // 方法：每个新节点随机连接到已有节点
 // 接口：rand_tree(n)：生成 n 个点的随机树边集；返回类型 vector<pair<int,int>>。
-// 参数：规模/上界 n。
+// 参数：随机树的顶点数 n。
 vector<pair<int,int>> rand_tree(int n) {
-    // 变量：edges=输入或生成的边集合 edges。
+    // 变量：edges=当前随机树已经生成的无向边集合 edges。
     vector<pair<int,int>> edges;
-    // 变量：i=当前循环下标 i。
+    // 变量：i=随机树生成中当前新加入的顶点编号 i。
     for (int i = 2; i <= n; i++) {
         // 变量：fa=当前节点的父节点 fa。
         int fa = randint(1, i - 1);
@@ -1608,14 +1608,14 @@ vector<pair<int,int>> rand_tree(int n) {
 
 // 生成 n 个节点 m 条边的随机简单图（无重边无自环）
 // 接口：rand_graph(n, m)：生成 n 点 m 边随机简单图；返回类型 vector<pair<int,int>>。
-// 参数：规模/上界 n；数量或模数 m（见本节公式）。
+// 参数：随机图的顶点数 n；随机图的边数 m。
 vector<pair<int,int>> rand_graph(int n, int m) {
-    // 变量：used=是否已使用/选择的标记集合 used。
+    // 变量：used=记录每个对象是否已被使用的标记 used。
     set<pair<int,int>> used;
-    // 变量：edges=输入或生成的边集合 edges。
+    // 变量：edges=当前随机简单图已经生成的无向边集合 edges。
     vector<pair<int,int>> edges;
     while ((int)edges.size() < m) {
-        // 变量：u=当前顶点/状态编号 u；v=当前相邻顶点/下一状态 v。
+        // 变量：u=随机简单图候选边的第一个端点 u；v=随机简单图候选边的第二个端点 v。
         int u = randint(1, n), v = randint(1, n);
         if (u == v) continue;
         if (u > v) swap(u, v);
@@ -1631,14 +1631,14 @@ vector<pair<int,int>> rand_graph(int n, int m) {
 
 // 生成 n 个不重复的随机整数（值域 [lo, hi]）
 // 接口：rand_distinct(n, lo, hi)：生成范围内互不相同的随机整数；返回类型 vector<int>。
-// 参数：规模/上界 n；随机/取值闭区间下界 lo；随机/取值闭区间上界 hi。
+// 参数：需要生成的整数个数 n；随机取值闭区间下界 lo；随机取值闭区间上界 hi。
 vector<int> rand_distinct(int n, int lo, int hi) {
-    // 变量：used=是否已使用/选择的标记集合 used。
+    // 变量：used=记录每个对象是否已被使用的标记 used。
     set<int> used;
-    // 变量：res=准备返回的结果容器/结果值 res。
+    // 变量：res=尚未重复采样得到的随机整数结果 res。
     vector<int> res;
     while ((int)res.size() < n) {
-        // 变量：x=当前输入值/查询值/坐标 x。
+        // 变量：x=当前采样并检查去重的随机整数 x。
         int x = randint(lo, hi);
         if (!used.count(x)) {
             used.insert(x);
@@ -1650,16 +1650,16 @@ vector<int> rand_distinct(int n, int lo, int hi) {
 
 // 生成随机排列 [1, 2, ..., n]
 // 接口：rand_perm(n)：生成 1..n 的随机排列；返回类型 vector<int>。
-// 参数：规模/上界 n。
+// 参数：随机排列的长度 n。
 vector<int> rand_perm(int n) {
-    // 变量：p=当前质数、节点编号或指针 p；具体角色见所在公式。
+    // 变量：p=待随机打乱为 1..n 排列的数组 p。
     vector<int> p(n);
     iota(p.begin(), p.end(), 1);
     shuffle(p.begin(), p.end(), rng);
     return p;
 }
 
-// 接口：main(argc, argv)：程序入口，负责 I/O 初始化并调用本节核心逻辑；入口函数；每组测试前按注释清空全局状态。
+// 接口：main(argc, argv)：用 argv[1] 初始化随机种子，生成并输出一组小规模随机数组；入口函数；每组测试前按注释清空全局状态。
 // 参数：命令行参数个数 argc；命令行参数数组 argv。
 int main(int argc, char* argv[]) {
     // 用命令行参数做种子
@@ -1668,7 +1668,7 @@ int main(int argc, char* argv[]) {
     // ===== 根据题目修改以下内容 =====
     int n = randint(1, 10); // 对拍时用小范围
     cout << n << "\n";
-    // 变量：i=当前循环下标 i。
+    // 变量：i=随机数据生成器当前输出的数组位置 i。
     for (int i = 0; i < n; i++) {
         cout << randint(1, 100);
         if (i + 1 < n) cout << " ";
@@ -1700,23 +1700,23 @@ using namespace std;
 #define int long long
 #define endl '\n'
 
-// 接口：solve()：完成本节给出的单组测试/递归区间；入口函数；每组测试前按注释清空全局状态。
+// 接口：solve()：读取一个整数数组，暴力枚举全部子数组并输出满足题目条件的计数；无返回值。
 void solve() {
-    // 变量：n=当前元素/顶点/状态数量 n。
+    // 变量：n=输入数组的元素个数 n。
     int n;
     cin >> n;
-    // 变量：a=当前输入数组/操作数 a。
+    // 变量：a=暴力解法读入的长度为 n 的整数数组 a。
     vector<int> a(n);
-    // 变量：i=当前处理的二进制位/倍增层 i。
+    // 变量：i=当前从输入读取数组元素的下标 i。
     for (int i = 0; i < n; i++) cin >> a[i];
 
     // ===== 暴力做法（保证正确，不管复杂度）=====
     // 例：暴力枚举所有子集 / 全排列 / O(n^2) 枚举
-    // 变量：ans=当前累计答案 ans。
+    // 变量：ans=暴力枚举中累计满足题目条件的方案数 ans。
     int ans = 0;
-    // 变量：i=当前循环下标 i。
+    // 变量：i=暴力枚举子数组的起点 i。
     for (int i = 0; i < n; i++)
-        // 变量：j=内层循环下标 j。
+        // 变量：j=暴力枚举中从起点 i 向右扩展的子数组终点 j。
         for (int j = i; j < n; j++) {
             // ...
         }
@@ -1724,11 +1724,11 @@ void solve() {
     cout << ans << endl;
 }
 
-// 接口：main()：程序入口，负责 I/O 初始化并调用本节核心逻辑；入口函数；每组测试前按注释清空全局状态。
+// 接口：main()：开启快速 I/O，并按测试数 t 调用暴力解 solve；入口函数；每组测试前按注释清空全局状态。
 signed main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    // 变量：t=测试用例数量或当前临时值 t。
+    // 变量：t=当前程序要执行的测试用例数量 t。
     int t = 1;
     // cin >> t; // 根据题目决定是否多测
     while (t--) solve();
@@ -1750,7 +1750,7 @@ signed main() {
 #include <bits/stdc++.h>
 using namespace std;
 
-// 接口：main()：程序入口，负责 I/O 初始化并调用本节核心逻辑；入口函数；每组测试前按注释清空全局状态。
+// 接口：main()：生成隐藏答案，读取选手猜测并回复比较结果，直至猜中或超过询问上限；入口函数；每组测试前按注释清空全局状态。
 int main() {
     mt19937 rng(42);
     // 生成隐藏数据

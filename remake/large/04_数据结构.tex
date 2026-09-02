@@ -24,13 +24,13 @@
 \passthrough{\lstinline!multiset::erase(iterator)!} 与 \passthrough{\lstinline!erase(value)!} 的差别也要注意。
 
 \begin{lstlisting}[language={C++}]
-// 变量：a=当前输入数组/操作数 a。
+// 变量：a=输入数组 input 的工作副本 a。
 vector<int> a = input;
 sort(a.begin(), a.end());
 a.erase(unique(a.begin(), a.end()), a.end());
 // 变量：pq=当前优先队列 pq；堆顶含义见比较器。
 priority_queue<pair<int, int>> pq;
-// 变量：i=当前循环下标 i。
+// 变量：i=在线中位数初始化时加入优先队列的数组位置 i。
 for (int i = 0; i < n; ++i) pq.push({value[i], i});
 while (!pq.empty()) {
     auto [value, id] = pq.top(); pq.pop();
@@ -48,13 +48,13 @@ while (!pq.empty()) {
 struct DSU {
     vector<int> p, sz; // p[x]=父节点；sz[root]=该集合大小；点编号 1..n。
   // 接口：DSU(n)：构造管理点 1..n 的并查集，每个点初始自成集合；构造并初始化对象；每组测试建议重新构造。
-  // 参数：规模/上界 n。
+  // 参数：并查集管理的元素编号上界 n。
     DSU(int n): p(n + 1), sz(n + 1, 1) { iota(p.begin(), p.end(), 0); }
     // 接口：find(x)：返回 x 当前所在并查集的代表元；返回类型 int。
-    // 参数：待处理值或点/状态 x。
+    // 参数：待查询代表元的元素编号 x。
     int find(int x) { return p[x] == x ? x : p[x] = find(p[x]); }
-    // 接口：unite(a, b)：合并两个元素所在集合；原本同集合时返回 false；返回 true 表示本节条件成立/操作成功。
-    // 参数：输入值/数组 a（见本节定义）；输入值/数组 b（见本节定义）。
+    // 接口：unite(a, b)：合并两个元素所在集合；原本同集合时返回 false；实际合并两个集合时返回 true。
+    // 参数：第一个待合并元素编号 a；第二个待合并元素编号 b。
     bool unite(int a, int b) {
         a = find(a); b = find(b); if (a == b) return false;
         if (sz[a] < sz[b]) swap(a, b);
@@ -74,14 +74,14 @@ struct BIT {
     int n;                 // 可访问下标为 1..n；禁止用 0 调 add。
     vector<long long> t;   // Fenwick 内部树状数组，不是原数组值。
   // 接口：BIT(n)：构造管理 1..n 下标的空树状数组；构造并初始化对象；每组测试建议重新构造。
-  // 参数：规模/上界 n。
+  // 参数：树状数组管理的最大下标 n。
     BIT(int n): n(n), t(n + 1) {}
-    // 接口：add(x, v)：执行本节定义的单点/区间增加或加入操作；会修改当前结构；多测时重新构造或显式清空成员。
-    // 参数：待处理值或点/状态 x；顶点/状态编号 v。
+    // 接口：add(x, v)：把增量 v 加到树状数组的 1-based 位置 x；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：树状数组的 1-based 修改位置 x；位置 x 的点增加量 v。
     void add(int x, long long v) { for (; x <= n; x += x & -x) t[x] += v; }
-    // 接口：sum(x)：返回闭前缀 [1,x] 的累计和/频次；返回类型 long long。
-    // 参数：待处理值或点/状态 x。
-    // 变量：r=树状数组前缀查询当前累计和 r。
+    // 接口：sum(x)：返回树状数组闭前缀 [1,x] 内已存数值的总和；返回类型 long long。
+    // 参数：树状数组前缀查询的 1-based 右端点 x。
+    // 变量：r=树状数组前缀 [1,x] 的累计和 r。
     long long sum(int x) const { long long r = 0; for (; x; x -= x & -x) r += t[x]; return r; }
     // 接口：range(l, r)：返回 1-based 闭区间 [l,r] 的元素和；返回类型 long long。
     // 参数：闭区间左端点 l；闭区间右端点 r。
@@ -119,38 +119,38 @@ struct SegTree {
     vector<long long> sum;    // sum[p]=节点 p 所管区间的元素和。
     vector<long long> lazy;   // lazy[p]=尚未下传的“区间每项增加量”。
   // 接口：SegTree(n)：构造管理 1..n 闭区间的空线段树；构造并初始化对象；每组测试建议重新构造。
-  // 参数：规模/上界 n。
+  // 参数：线段树管理的 1-based 数组长度及最大下标 n。
     SegTree(int n): n(n), sum(4 * n + 4), lazy(4 * n + 4) {}
     // 接口：apply(p, l, r, v)：把本次懒操作直接作用于节点 p，并同步节点值与标记；会修改当前结构；多测时重新构造或显式清空成员。
-    // 参数：当前节点/模数 p（见本节定义）；闭区间左端点 l；闭区间右端点 r；顶点/状态编号 v。
+    // 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r；目标区间内每个元素的统一增加量 v。
     void apply(int p, int l, int r, long long v) {
         sum[p] += v * (r - l + 1); lazy[p] += v;
     }
-    // 接口：push(p, l, r)：把节点 p/x 的待下传标记传给孩子并清除本节点标记；会修改当前结构；多测时重新构造或显式清空成员。
-    // 参数：当前节点/模数 p（见本节定义）；闭区间左端点 l；闭区间右端点 r。
+    // 接口：push(p, l, r)：把线段树节点 p 的懒标记下传到左右孩子并清空本节点标记；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r。
     void push(int p, int l, int r) {
         if (!lazy[p] || l == r) return;
-        // 变量：m=当前边数、操作数或第二维规模 m。
+        // 变量：m=当前递归区间 [l,r] 的中点 m。
         int m = (l + r) / 2;
         apply(p * 2, l, m, lazy[p]);
         apply(p * 2 + 1, m + 1, r, lazy[p]);
         lazy[p] = 0;
     }
-    // 接口：add(p, l, r, ql, qr, v)：执行本节定义的单点/区间增加或加入操作；会修改当前结构；多测时重新构造或显式清空成员。
-    // 参数：当前节点/模数 p（见本节定义）；闭区间左端点 l；闭区间右端点 r；查询/修改闭区间左端 ql；查询/修改闭区间右端 qr；顶点/状态编号 v。
+    // 接口：add(p, l, r, ql, qr, v)：把目标闭区间 [ql,qr] 的元素统一增加 v；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r；目标闭区间左端 ql；目标闭区间右端 qr；目标区间内每个元素的统一增加量 v。
     void add(int p, int l, int r, int ql, int qr, long long v) {
         if (ql <= l && r <= qr) return apply(p, l, r, v);
-        // 变量：m=当前边数、操作数或第二维规模 m。
+        // 变量：m=当前递归区间 [l,r] 的中点 m。
         push(p, l, r); int m = (l + r) / 2;
         if (ql <= m) add(p * 2, l, m, ql, qr, v);
         if (qr > m) add(p * 2 + 1, m + 1, r, ql, qr, v);
         sum[p] = sum[p * 2] + sum[p * 2 + 1];
     }
-    // 接口：query(p, l, r, ql, qr)：返回本节数据结构在给定位置/区间上的查询结果；返回类型 long long。
-    // 参数：当前节点/模数 p（见本节定义）；闭区间左端点 l；闭区间右端点 r；查询/修改闭区间左端 ql；查询/修改闭区间右端 qr。
+    // 接口：query(p, l, r, ql, qr)：返回目标闭区间 [ql,qr] 的元素和；返回类型 long long。
+    // 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r；目标闭区间左端 ql；目标闭区间右端 qr。
     long long query(int p, int l, int r, int ql, int qr) {
         if (ql <= l && r <= qr) return sum[p];
-        // 变量：m=当前边数、操作数或第二维规模 m；ans=当前累计答案 ans。
+        // 变量：m=当前递归区间 [l,r] 的中点 m；ans=线段树查询目标区间时从左右子树累加的区间和 ans。
         push(p, l, r); int m = (l + r) / 2; long long ans = 0;
         if (ql <= m) ans += query(p * 2, l, m, ql, qr);
         if (qr > m) ans += query(p * 2 + 1, m + 1, r, ql, qr);
@@ -165,11 +165,11 @@ struct SegTree {
 
 \begin{lstlisting}[language={C++}]
 // 接口：first_at_least(p, l, r, x)：返回查询范围内第一个值至少为 x 的位置，不存在返回 -1；返回类型 int。
-// 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r；待处理值或点/状态 x。
+// 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r；查询要求达到的值下界 x。
 int first_at_least(int p, int l, int r, long long x) {
     if (tree[p] < x) return -1;
     if (l == r) return l;
-    // 变量：m=当前边数、操作数或第二维规模 m。
+    // 变量：m=当前递归区间 [l,r] 的中点 m。
     int m = (l + r) / 2;
     if (tree[p * 2] >= x) return first_at_least(p * 2, l, m, x);
     return first_at_least(p * 2 + 1, m + 1, r, x);
@@ -192,7 +192,7 @@ struct SparseTable {
 
     // 接口：SparseTable(a)：用非空数组 a 构建区间最小值 ST 表；预处理 O(n log n)。
     explicit SparseTable(const vector<int>& a) {
-        // 变量：n=输入数组 a 的长度。
+        // 变量：n=容器 a 的元素数量 n。
         int n = a.size();
         lg.assign(n + 1, 0);
         // 变量：i=当前计算二进制对数的区间长度。
@@ -203,7 +203,7 @@ struct SparseTable {
         st[0] = a;
         // 变量：k=当前预处理区间长度的二进制指数。
         for (int k = 1; k < (int)st.size(); ++k)
-            // 变量：i=当前长度为 2^k 的区间左端点。
+            // 变量：i=稀疏表第 k 层当前预处理区间的 0-based 左端点 i。
             for (int i = 0; i + (1 << k) <= n; ++i)
                 st[k][i] = min(st[k - 1][i],
                                st[k - 1][i + (1 << (k - 1))]);
@@ -226,10 +226,10 @@ struct SparseTable {
 
 \begin{lstlisting}[language={C++}]
 priority_queue<int> low; // 小的一半，堆顶是最大值
-// 变量：high=当前查询范围高端/最高位 high。
+// 变量：high=双堆中保存较大一半元素的小根堆 high。
 priority_queue<int, vector<int>, greater<int>> high;
-// 接口：add_number(x)：把一个数加入当前可持久/可撤销统计结构；无返回值；结果写入引用参数或当前结构状态。
-// 参数：待处理值或点/状态 x。
+// 接口：add_number(x)：把整数 x 加入双堆中位数结构并重新平衡两堆大小；不返回值。
+// 参数：待加入统计结构的整数 x。
 void add_number(int x) {
     if (low.empty() || x <= low.top()) low.push(x); else high.push(x);
     if (low.size() > high.size() + 1) high.push(low.top()), low.pop();
@@ -291,27 +291,27 @@ struct BinaryTrie {
     int ch[200000][2]{}; // ch[u][bit]=下一节点编号；0 表示不存在。
     int cnt[200000]{};   // cnt[u]=经过节点 u 的已插入数字个数。
     int nodes = 1;       // 已分配节点数；根节点固定为 0。
-    // 接口：insert(x)：把参数表示的数/字符串/版本插入当前结构；会修改当前结构；多测时重新构造或显式清空成员。
-    // 参数：待处理值或点/状态 x。
+    // 接口：insert(x)：把整数 x 的各二进制位插入 Trie；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：待按二进制位插入 Trie 的非负整数 x。
     void insert(int x) {
-        // 变量：u=当前顶点/状态编号 u。
+        // 变量：u=二进制 Trie 根节点编号 u。
         int u = 1; ++cnt[u];
-        // 变量：b=当前输入数组/操作数 b。
+        // 变量：b=二进制 Trie 当前处理的位编号 b。
         for (int b = 30; b >= 0; --b) {
-            // 变量：bit=当前处理的二进制位/倍增层 bit。
+            // 变量：bit=二进制 Trie 插入时从高到低处理的位编号 bit。
             int bit = (x >> b) & 1;
             if (!ch[u][bit]) ch[u][bit] = ++nodes;
             u = ch[u][bit]; ++cnt[u];
         }
     }
-    // 接口：max_xor(x)：返回把 x 与当前集合/线性基元素组合后能得到的最大异或值；返回类型 int。
-    // 参数：待处理值或点/状态 x。
+    // 接口：max_xor(x)：沿二进制 Trie 贪心返回与 x 的最大异或值；返回类型 int。
+    // 参数：求最大异或值时使用的初始值 x。
     int max_xor(int x) {
-        // 变量：u=当前顶点/状态编号 u；ans=当前累计答案 ans。
+        // 变量：u=二进制 Trie 根节点编号 u；ans=二进制 Trie 贪心过程中已经确定的最大异或值 ans。
         int u = 1, ans = 0;
-        // 变量：b=当前输入数组/操作数 b。
+        // 变量：b=二进制 Trie 当前处理的位编号 b。
         for (int b = 30; b >= 0; --b) {
-            // 变量：bit=当前处理的二进制位/倍增层 bit。
+            // 变量：bit=二进制 Trie 最大异或查询中从高到低处理的位编号 bit。
             int bit = (x >> b) & 1;
             if (ch[u][bit ^ 1] && cnt[ch[u][bit ^ 1]])
                 ans |= 1 << b, u = ch[u][bit ^ 1];
@@ -328,28 +328,28 @@ struct BinaryTrie {
 
 \begin{lstlisting}[language={C++}]
 struct Node { int l = 0, r = 0, sum = 0; } tr[4000000]; // 左右儿子编号及该值域节点计数。
-// 变量：tot=当前已创建节点总数/累计数量 tot。
+// 变量：tot=当前已经创建的数据结构节点数量 tot。
 int tot = 0;
-// 接口：update(old, l, r, pos)：基于旧版本复制修改路径并返回/写入新版本根；会修改当前结构；多测时重新构造或显式清空成员。
-// 参数：旧版本根节点编号 old；闭区间左端点 l；闭区间右端点 r；当前 0-based/DP 位置 pos。
+// 接口：update(old, l, r, pos)：从旧版本根 old 复制到 pos 的路径、把该值域计数加一并返回新版本根；返回类型 int。
+// 参数：旧版本根节点编号 old；闭区间左端点 l；闭区间右端点 r；持久化线段树中要修改的 0-based 位置 pos。
 int update(int old, int l, int r, int pos) {
-    // 变量：now=“可持久化数据结构”这段代码中的临时量 now；值由本行初始化式确定。
+    // 变量：now=本次路径复制新建的持久化权值线段树节点编号 now。
     int now = ++tot; tr[now] = tr[old]; ++tr[now].sum;
     if (l != r) {
-        // 变量：m=当前边数、操作数或第二维规模 m。
+        // 变量：m=当前递归区间 [l,r] 的中点 m。
         int m = (l + r) / 2;
         if (pos <= m) tr[now].l = update(tr[old].l, l, m, pos);
         else tr[now].r = update(tr[old].r, m + 1, r, pos);
     }
     return now;
 }
-// 接口：kth(u, v, l, r, k)：返回当前数据结构中的第 k 小值/位置；返回类型 int。
-// 参数：顶点/状态编号 u；顶点/状态编号 v；闭区间左端点 l；闭区间右端点 r；排名/选取数量 k。
+// 接口：kth(u, v, l, r, k)：返回前缀版本差 v-u 所表示区间内第 k 小元素的离散值下标；返回类型 int。
+// 参数：左端前缀版本根 u；右端前缀版本根 v；闭区间左端点 l；闭区间右端点 r；查询的 1-based 排名 k。
 int kth(int u, int v, int l, int r, int k) {
     if (l == r) return l;
     // 变量：left_count=当前节点左子树中的元素数量 left_count。
     int left_count = tr[tr[v].l].sum - tr[tr[u].l].sum;
-    // 变量：m=当前边数、操作数或第二维规模 m。
+    // 变量：m=当前递归区间 [l,r] 的中点 m。
     int m = (l + r) / 2;
     if (k <= left_count) return kth(tr[u].l, tr[v].l, l, m, k);
     return kth(tr[u].r, tr[v].r, m + 1, r, k - left_count);
@@ -363,22 +363,22 @@ int kth(int u, int v, int l, int r, int k) {
 把数组分成 \passthrough{\lstinline!√n!} 块，块内暴力、块间整块处理；区间加/区间和约 \passthrough{\lstinline!O(√n)!}。适合操作复杂、难以线段树维护的信息。
 
 \begin{lstlisting}[language={C++}]
-// 变量：B=“块状数组”这段代码中的临时量 B；值由本行初始化式确定。
+// 变量：B=块状数组采用的块长 B。
 int B = max(1, (int)sqrt(n));
-// 变量：a=当前输入数组/操作数 a；tag=当前时间戳/懒标记 tag。
+// 变量：a=块状数组逐点保存的原始元素数组 a；tag=当前节点保存的懒标记 tag。
 vector<long long> a(n), tag((n + B - 1) / B);
-// 接口：add(l, r, v)：执行本节定义的单点/区间增加或加入操作；会修改当前结构；多测时重新构造或显式清空成员。
-// 参数：闭区间左端点 l；闭区间右端点 r；顶点/状态编号 v。
+// 接口：add(l, r, v)：用分块懒标记把闭区间 [l,r] 的元素统一增加 v；会修改当前结构；多测时重新构造或显式清空成员。
+// 参数：闭区间左端点 l；闭区间右端点 r；闭区间 [l,r] 内每个元素的统一增加量 v。
 void add(int l, int r, long long v) {
     // 变量：bl=当前块左端编号 bl；br=当前块右端编号 br。
     int bl = l / B, br = r / B;
-    // 变量：i=当前循环下标 i。
+    // 变量：i=分块区间修改中直接更新的数组位置 i。
     if (bl == br) { for (int i = l; i <= r; ++i) a[i] += v; return; }
-    // 变量：i=当前循环下标 i。
+    // 变量：i=分块修改左侧不完整块中直接更新的数组位置 i。
     for (int i = l; i < (bl + 1) * B; ++i) a[i] += v;
-    // 变量：b=当前输入数组/操作数 b。
+    // 变量：b=块状数组当前整块更新的块编号 b。
     for (int b = bl + 1; b < br; ++b) tag[b] += v;
-    // 变量：i=当前循环下标 i。
+    // 变量：i=分块修改右侧不完整块中直接更新的数组位置 i。
     for (int i = br * B; i <= r; ++i) a[i] += v;
 }
 \end{lstlisting}
@@ -388,25 +388,25 @@ void add(int l, int r, long long v) {
 离线排序询问的左右端点，维护当前区间并增删元素；移动总复杂度约 \passthrough{\lstinline!O((n+q)√n)!}。需要可逆的 \passthrough{\lstinline!add/remove!}，如频次、不同数个数、答案贡献。带修改莫队多一个时间维，块大小约 \passthrough{\lstinline!n\^(2/3)!}。
 
 \begin{lstlisting}[language={C++}]
-// 变量：block=莫队/分块算法使用的块长 block。
+// 变量：block=普通莫队按查询左端点分块时使用的块长 block。
 int block;
 struct Query { int l, r, id; }; // 1-based 闭区间 [l,r] 与原始询问编号 id。
-// 接口：比较器 lambda(x, y)：供“莫队”当前语句回调；返回值含义见调用处条件。
-// 参数：待处理值或点/状态 x；待处理值或点/状态 y。
+// 接口：比较器 lambda(x, y)：按莫队左端块排序，并在同块内按奇偶交替排列右端点。
+// 参数：第一个莫队查询 x；第二个莫队查询 y。
 sort(qs.begin(), qs.end(), [&](const Query& x, const Query& y) {
     // 变量：bx=查询 x 所在块编号 bx；by=查询 y 所在块编号 by。
     int bx = x.l / block, by = y.l / block;
     if (bx != by) return bx < by;
     return (bx & 1) ? x.r > y.r : x.r < y.r;
 });
-// 变量：L=当前左边界/左半部分 L；R=当前右边界/右半部分 R；distinct=当前窗口内不同值的数量 distinct。
+// 变量：L=普通莫队当前 1-based 窗口的左端点 L；R=普通莫队当前 1-based 窗口的右端点 R；空窗口时 R=0；distinct=当前窗口内不同值的数量 distinct。
 int L = 1, R = 0, distinct = 0; // 1-based 空窗口 [1,0]。
-// 接口：add(p)：供“莫队”当前语句回调；返回值含义见调用处条件。
-// 参数：当前节点/模数 p（见本节定义）。
-// 变量：add=当前增加量/仿射常数项 add。
+// 接口：add(p)：把位置 p 加入莫队窗口，并在该值首次出现时增加 distinct。
+// 参数：要加入窗口的数组位置 p。
+// 变量：add=把数组位置加入当前莫队窗口的局部 lambda add。
 auto add = [&](int p) { if (++cnt[a[p]] == 1) ++distinct; };
-// 接口：remove(p)：供“莫队”当前语句回调；返回值含义见调用处条件。
-// 参数：当前节点/模数 p（见本节定义）。
+// 接口：remove(p)：把位置 p 移出莫队窗口，并在该值不再出现时减少 distinct。
+// 参数：要移出窗口的数组位置 p。
 // 变量：remove=把位置移出当前窗口的局部 lambda remove。
 auto remove = [&](int p) { if (--cnt[a[p]] == 0) --distinct; };
 // 变量：qu=当前离线查询 qu。
@@ -423,24 +423,24 @@ for (auto qu : qs) {
 
 \begin{lstlisting}[language={C++}]
 struct Node { int l, r, key, pri, sz; } tr[MAXN]; // 儿子、键、随机优先级、子树大小。
-// 变量：root=当前树/版本的根节点编号 root；tot=当前已创建节点总数/累计数量 tot。
+// 变量：root=当前树结构的根节点编号 root；tot=当前已经创建的数据结构节点数量 tot。
 int root, tot;
 // 接口：size(u)：返回节点 u 所代表子树的节点数，空节点 0 的大小为 0；返回类型 int。
-// 参数：顶点/状态编号 u。
+// 参数：待统计大小的 Treap 子树根 u。
 int size(int u) { return u ? tr[u].sz : 0; }
-// 接口：pull(u)：由孩子信息重新计算节点 p/u 的聚合信息；会修改当前结构；多测时重新构造或显式清空成员。
-// 参数：顶点/状态编号 u。
+// 接口：pull(u)：由左右孩子重算 Treap 节点 u 的子树大小；会修改当前结构；多测时重新构造或显式清空成员。
+// 参数：待重算大小的 Treap 节点 u。
 void pull(int u) { tr[u].sz = size(tr[u].l) + size(tr[u].r) + 1; }
-// 接口：split(u, key, x, y)：按 key/路径把当前结构拆成两部分，结果写入输出参数；无返回值；结果写入引用参数或当前结构状态。
-// 参数：顶点/状态编号 u；拆分键 key；待处理值或点/状态 x；待处理值或点/状态 y。
+// 接口：split(u, key, x, y)：按键值 key 把 Treap u 拆成键值不大于 key 的左树 x 与其余右树 y；不返回值。
+// 参数：待拆分的 Treap 根 u；拆分键 key；接收拆分后左 Treap 根的引用 x；接收拆分后右 Treap 根的引用 y。
 void split(int u, int key, int &x, int &y) {
     if (!u) return x = y = 0, void();
     if (tr[u].key <= key) split(tr[u].r, key, tr[u].r, y), x = u;
     else split(tr[u].l, key, x, tr[u].l), y = u;
     pull(u);
 }
-// 接口：merge(x, y)：合并两个兼容对象/同余式；返回值表示成功或新根；返回类型 int。
-// 参数：待处理值或点/状态 x；待处理值或点/状态 y。
+// 接口：merge(x, y)：按优先级合并键值有序的左右 Treap，并返回新根；返回类型 int。
+// 参数：待合并的左 Treap 根 x；待合并的右 Treap 根 y。
 int merge(int x, int y) {
     if (!x || !y) return x ? x : y;
     if (tr[x].pri > tr[y].pri) return tr[x].r = merge(tr[x].r, y), pull(x), x;
@@ -457,15 +457,15 @@ struct RollbackDSU {
     vector<int> p, sz; // p[x]=父节点；sz[root]=集合大小；不做路径压缩。
     vector<pair<int, int>> hist; // 每次成功合并的撤销记录；长度就是快照。
   // 接口：RollbackDSU(n)：构造支持快照和回滚、且不做路径压缩的并查集；构造并初始化对象；每组测试建议重新构造。
-  // 参数：规模/上界 n。
+  // 参数：可回滚并查集管理的元素编号上界 n。
     RollbackDSU(int n): p(n + 1), sz(n + 1, 1) { iota(p.begin(), p.end(), 0); }
     // 接口：find(x)：返回 x 当前所在并查集的代表元；返回类型 int。
-    // 参数：待处理值或点/状态 x。
+    // 参数：待查询代表元的元素编号 x。
     int find(int x) { while (x != p[x]) x = p[x]; return x; }
     // 接口：snapshot()：返回当前撤销栈长度，供 rollback 恢复；返回类型 int。
     int snapshot() { return hist.size(); }
-    // 接口：unite(a, b)：合并两个元素所在集合；原本同集合时返回 false；返回 true 表示本节条件成立/操作成功。
-    // 参数：输入值/数组 a（见本节定义）；输入值/数组 b（见本节定义）。
+    // 接口：unite(a, b)：合并两个元素所在集合；原本同集合时返回 false；实际合并两个集合时返回 true。
+    // 参数：第一个待合并元素编号 a；第二个待合并元素编号 b。
     bool unite(int a, int b) {
         a = find(a); b = find(b); if (a == b) return false;
         if (sz[a] < sz[b]) swap(a, b);
@@ -491,7 +491,7 @@ struct LiChao {
     using ll = long long;
     struct Line {
         // 这份代码维护最小值；显式 empty 标记不会与任何合法直线值冲突。
-        // 变量：k=当前排名、选取数量或循环层数 k；b=当前几何点/向量/圆 b。
+        // 变量：k=空李超树节点使用的直线斜率 k；b=空李超树节点使用的直线截距 b。
         ll k = 0, b = 0;
         bool empty = true; // 当前节点是否尚未保存真实直线。
         // 接口：Line()：构造一条空直线；构造并初始化对象。
@@ -499,8 +499,8 @@ struct LiChao {
         // 接口：Line(k, b)：构造斜率 k、截距 b 的真实直线；构造并初始化对象。
         // 参数：直线斜率 k；直线截距 b。
         Line(ll k, ll b): k(k), b(b), empty(false) {}
-        // 接口：get(x)：在 __int128 中返回直线在横坐标 x 处的精确值；空直线返回宽整数正无穷。
-        // 参数：待处理值或点/状态 x。
+        // 接口：get(x)：返回直线在横坐标 x 处的函数值；返回类型 __int128。
+        // 参数：计算直线函数值的横坐标 x。
         __int128 get(ll x) const {
             return empty ? ((__int128)1 << 126) : (__int128)k * x + b;
         }
@@ -517,11 +517,11 @@ struct LiChao {
   // 参数：闭区间左端点 L；闭区间右端点 R。
     LiChao(int L, int R): L(L), R(R), tr(storage_size(L, R)) {}
 
-    // 接口：add_line(nw, p, l, r)：把一条候选直线插入当前李超树/单调凸包并删除失效候选；会修改当前结构；多测时重新构造或显式清空成员。
-    // 参数：待插入的新直线 nw；当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r。
+    // 接口：add_line(nw, p, l, r)：把候选直线 nw 插入整数横坐标闭区间 [l,r] 的李超树节点 p；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：待插入李超树的直线 nw；当前节点 u 的父节点 p；闭区间左端点 l；闭区间右端点 r。
     void add_line(Line nw, int p, int l, int r) {
         // 先比较新线和当前线在端点/中点的优劣。
-        // 变量：m=当前边数、操作数或第二维规模 m。
+        // 变量：m=当前递归区间 [l,r] 的中点 m。
         int m = l + (int)(((long long)r - l) / 2);
         // 变量：lef=新直线在区间左端是否更优 lef。
         bool lef = nw.get(l) < tr[p].get(l);
@@ -537,25 +537,25 @@ struct LiChao {
         else add_line(nw, p * 2 + 1, m + 1, r);
     }
     // 对外接口：只需要传入斜率 k 和截距 b，不要手动传根节点参数。
-    // 接口：add_line(k, b)：把一条候选直线插入当前李超树/单调凸包并删除失效候选；会修改当前结构；多测时重新构造或显式清空成员。
-    // 参数：排名/选取数量 k；输入点/向量 b。
+    // 接口：add_line(k, b)：把斜率 k、截距 b 组成的直线插入李超树；会修改当前结构；多测时重新构造或显式清空成员。
+    // 参数：待插入直线的斜率 k；待插入直线的截距 b。
     void add_line(ll k, ll b) { add_line({k, b}, 1, L, R); }
 
-    // 接口：query(x, p, l, r)：返回本节数据结构在给定位置/区间上的精确查询结果；返回类型 __int128。
-    // 参数：待处理值或点/状态 x；当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r。
+    // 接口：query(x, p, l, r)：返回横坐标 x 处沿李超树查询路径得到的最优直线函数值；返回类型 __int128。
+    // 参数：计算候选直线最优值的横坐标 x；当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r。
     __int128 query(ll x, int p, int l, int r) const {
         // x 所在路径上的每个节点都可能保存一条更优直线，必须全部比较。
-        // 变量：ans=当前累计答案 ans。
+        // 变量：ans=李超树当前节点及递归路径在横坐标 x 处的最优函数值 ans。
         __int128 ans = tr[p].get(x);
         if (l == r) return ans;
-        // 变量：m=当前边数、操作数或第二维规模 m。
+        // 变量：m=当前递归区间 [l,r] 的中点 m。
         int m = l + (int)(((long long)r - l) / 2);
         if (x <= m) return min(ans, query(x, p * 2, l, m));
         return min(ans, query(x, p * 2 + 1, m + 1, r));
     }
     // x 必须落在构造时给出的 [L,R] 内；大坐标范围应改用动态开点版本。
-    // 接口：query(x)：返回本节数据结构在给定位置/区间上的精确查询结果；返回类型 __int128。
-    // 参数：待处理值或点/状态 x。
+    // 接口：query(x)：返回李超树中全部候选直线在横坐标 x 处的最优函数值；返回类型 __int128。
+    // 参数：计算候选直线最优值的横坐标 x。
     __int128 query(ll x) const { return query(x, 1, L, R); }
 };
 \end{lstlisting}
@@ -577,12 +577,12 @@ struct SegBeats {
     vector<__int128> second_mx; // 严格小于最大值的次大值；宽类型使哨兵不与 ll 合法值冲突。
     vector<int> cnt_mx;   // 最大值出现次数。
   // 接口：SegBeats(a)：由 1-based 数组 a 构造区间 chmin + 区间和线段树；构造并初始化对象；每组测试建议重新构造。
-  // 参数：输入点/向量 a。
+  // 参数：用于构造线段树的 1-based 初始数组 a。
     SegBeats(const vector<ll>& a): n((int)a.size() - 1),
         sum(4 * n + 4), mx(4 * n + 4), second_mx(4 * n + 4),
         cnt_mx(4 * n + 4) { build(1, 1, n, a); }
 
-    // 接口：pull(p)：由孩子信息重新计算节点 p/u 的聚合信息；会修改当前结构；多测时重新构造或显式清空成员。
+    // 接口：pull(p)：由两个孩子重算线段树节点 p 的聚合信息；会修改当前结构；多测时重新构造或显式清空成员。
     // 参数：当前线段树节点编号 p（根通常为 1）。
     void pull(int p) {
         // 父节点只保存“最大值这一类”和“次大值这一类”，
@@ -592,27 +592,27 @@ struct SegBeats {
             mx[p] = mx[p * 2]; cnt_mx[p] = cnt_mx[p * 2] + cnt_mx[p * 2 + 1];
             second_mx[p] = max(second_mx[p * 2], second_mx[p * 2 + 1]);
         } else {
-            // 变量：x=当前输入值/查询值/坐标 x；y=当前输入值/查询值/坐标 y。
+            // 变量：x=线段树节点 p 的左儿子编号 x；y=线段树节点 p 的右儿子编号 y。
             int x = p * 2, y = p * 2 + 1;
             if (mx[x] < mx[y]) swap(x, y);
             mx[p] = mx[x]; cnt_mx[p] = cnt_mx[x];
             second_mx[p] = max(second_mx[x], (__int128)mx[y]);
         }
     }
-    // 接口：build(p, l, r, a)：由当前输入/成员状态完成数据结构预处理；完成初始化；多测时每组重新调用。
-    // 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r；输入点/向量 a。
+    // 接口：build(p, l, r, a)：由 1-based 数组 a 建立区间 chmin 与区间和线段树；完成初始化；多测时每组重新调用。
+    // 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r；用于构造当前数据结构的初始数组 a。
     void build(int p, int l, int r, const vector<ll>& a) {
         if (l == r) {
             // 叶子只有一个最大值，次大值设为负无穷。
             sum[p] = mx[p] = a[l]; second_mx[p] = NEG; cnt_mx[p] = 1;
             return;
         }
-        // 变量：m=当前边数、操作数或第二维规模 m。
+        // 变量：m=当前递归区间 [l,r] 的中点 m。
         int m = (l + r) / 2;
         build(p * 2, l, m, a); build(p * 2 + 1, m + 1, r, a); pull(p);
     }
-    // 接口：apply_chmin(p, x)：给当前线段树节点应用 chmin 标记；无返回值；结果写入引用参数或当前结构状态。
-    // 参数：当前线段树节点编号 p（根通常为 1）；待处理值或点/状态 x。
+    // 接口：apply_chmin(p, x)：给当前线段树节点应用 chmin 标记；不返回值。
+    // 参数：当前线段树节点编号 p（根通常为 1）；节点最大值要压低到的上界 x。
     void apply_chmin(int p, ll x) {
         // 调用者保证 second_mx[p] < x < mx[p]，
         // 因而只有 cnt_mx 个最大值会下降，sum 可以 O(1) 更新。
@@ -620,7 +620,7 @@ struct SegBeats {
         sum[p] -= ((__int128)mx[p] - x) * cnt_mx[p];
         mx[p] = x;
     }
-    // 接口：push(p)：把节点 p/x 的待下传标记传给孩子并清除本节点标记；会修改当前结构；多测时重新构造或显式清空成员。
+    // 接口：push(p)：把 Segment Tree Beats 节点 p 的最大值上界约束下传给两个孩子；会修改当前结构；多测时重新构造或显式清空成员。
     // 参数：当前线段树节点编号 p（根通常为 1）。
     void push(int p) {
         // 父节点的 mx 变小后，儿子的最大值可能仍比父亲大，
@@ -628,31 +628,31 @@ struct SegBeats {
         if (mx[p * 2] > mx[p]) apply_chmin(p * 2, mx[p]);
         if (mx[p * 2 + 1] > mx[p]) apply_chmin(p * 2 + 1, mx[p]);
     }
-    // 接口：chmin(p, l, r, ql, qr, x)：把目标闭区间内每个值更新为 min(原值,x)；无返回值；结果写入引用参数或当前结构状态。
-    // 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r；查询/修改闭区间左端 ql；查询/修改闭区间右端 qr；待处理值或点/状态 x。
+    // 接口：chmin(p, l, r, ql, qr, x)：把目标闭区间内每个值更新为 min(原值,x)；不返回值。
+    // 参数：当前节点 u 的父节点 p；闭区间左端点 l；闭区间右端点 r；目标闭区间左端 ql；目标闭区间右端 qr；目标区间元素要压低到的上界 x。
     void chmin(int p, int l, int r, int ql, int qr, ll x) {
         // 无交集或当前最大值已经不超过 x 时，操作没有影响。
         if (qr < l || r < ql || x >= mx[p]) return;
         // x 大于次大值时只有最大值受影响，触发势能线段树的核心优化。
         if (ql <= l && r <= qr && x > second_mx[p]) return apply_chmin(p, x);
         // 否则必须下传并继续递归；删掉这个条件会退化甚至超时。
-        // 变量：m=当前边数、操作数或第二维规模 m。
+        // 变量：m=当前递归区间 [l,r] 的中点 m。
         push(p); int m = (l + r) / 2;
         chmin(p * 2, l, m, ql, qr, x);
         chmin(p * 2 + 1, m + 1, r, ql, qr, x); pull(p);
     }
-    // 接口：query_sum(p, l, r, ql, qr)：返回闭区间查询的精确元素和；返回类型 __int128。
-    // 参数：当前线段树节点编号 p（根通常为 1）；闭区间左端点 l；闭区间右端点 r；查询/修改闭区间左端 ql；查询/修改闭区间右端 qr。
+    // 接口：query_sum(p, l, r, ql, qr)：返回闭区间查询的元素和；返回类型 __int128。
+    // 参数：当前节点 u 的父节点 p；闭区间左端点 l；闭区间右端点 r；目标闭区间左端 ql；目标闭区间右端 qr。
     __int128 query_sum(int p, int l, int r, int ql, int qr) {
         if (qr < l || r < ql) return 0;
         if (ql <= l && r <= qr) return sum[p];
-        // 变量：m=当前边数、操作数或第二维规模 m。
+        // 变量：m=当前递归区间 [l,r] 的中点 m。
         push(p); int m = (l + r) / 2;
         return query_sum(p * 2, l, m, ql, qr)
              + query_sum(p * 2 + 1, m + 1, r, ql, qr);
     }
-    // 接口：chmin(l, r, x)：把目标闭区间内每个值更新为 min(原值,x)；无返回值；结果写入引用参数或当前结构状态。
-    // 参数：闭区间左端点 l；闭区间右端点 r；待处理值或点/状态 x。
+    // 接口：chmin(l, r, x)：把目标闭区间内每个值更新为 min(原值,x)；不返回值。
+    // 参数：闭区间左端点 l；闭区间右端点 r；目标区间元素要压低到的上界 x。
     void chmin(int l, int r, ll x) { chmin(1, 1, n, l, r, x); }
     // 接口：query_sum(l, r)：返回闭区间查询的精确元素和；返回类型 __int128。
     // 参数：闭区间左端点 l；闭区间右端点 r。

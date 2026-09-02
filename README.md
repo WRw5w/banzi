@@ -48,7 +48,7 @@ python tools/audit_large_interfaces.py
 python tools/audit_large_variables.py
 python tools/audit_listing_coverage.py
 python tools/run_framework_checks.py
-python -m unittest tests.test_listing_coverage tests.test_framework_checks tests.test_snippet_picker
+python -m unittest tests.test_listing_coverage tests.test_framework_checks tests.test_snippet_picker tests.test_comment_semantics
 python tools/run_contract_tests.py
 python tools/run_differential_tests.py
 python tools/run_refactored_tests.py

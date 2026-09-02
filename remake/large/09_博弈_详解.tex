@@ -16,7 +16,7 @@ win(u)=\text{true}\quad\Longleftrightarrow\quad
 \begin{lstlisting}[language={C++}]
 // g[u]：从状态 u 可以一步走到的所有状态。
 // 这里假设状态图是 DAG；如果有环，不能直接用这份递归模板。
-// 变量：g=图/树的邻接表 g。
+// 变量：g=当前有向图的邻接表 g。
 vector<vector<int>> g;
 
 // win[u] 的三种取值：
@@ -27,7 +27,7 @@ vector<vector<int>> g;
 vector<int8_t> win;
 
 // 接口：solve_win(u)：返回 DAG 状态 u：1 必胜，-1 必败；返回类型 int。
-// 参数：顶点/状态编号 u。
+// 参数：顶点编号 u。
 int solve_win(int u) {
     // 记忆化：同一个状态可能从很多地方到达，不能重复搜索。
     if (win[u] != 0) return win[u];
@@ -87,13 +87,13 @@ Win
 // 参数：要求 mex 的非负整数集合 values；mex 时间戳数组 seen；当前 mex 时间戳引用 tag。
 int mex_by_stamp(const vector<int>& values, vector<int>& seen, int& tag) {
     ++tag; // 开启一次全新的标记批次。
-    // 变量：x=当前输入值/查询值/坐标 x。
+    // 变量：x=参与 mex 计算的候选非负整数 x。
     for (int x : values) {
         // SG 值一定非负；超出 seen 范围的值不会影响较小 mex。
         if (0 <= x && x < (int)seen.size()) seen[x] = tag;
     }
 
-    // 变量：g=图/树的邻接表 g。
+    // 变量：g=当前有向图的邻接表 g。
     int g = 0;
     // 从 0 开始找第一个没有被本批次标记的数。
     while (g < (int)seen.size() && seen[g] == tag) ++g;
@@ -108,8 +108,8 @@ vector<char> vis;     // 是否已经完成记忆化搜索。
 vector<int> mark;     // mex 的时间戳数组，大小要覆盖可能的 SG 值。
 int mark_tag = 0;     // 当前 mex 查询的时间戳；每次查询前自增。
 
-// 接口：grundy(u)：返回状态 x/u 的 Sprague-Grundy 值；返回类型 int。
-// 参数：顶点/状态编号 u。
+// 接口：grundy(u)：返回状态参数对应的 Sprague-Grundy 值并记忆化；返回类型 int。
+// 参数：顶点编号 u。
 int grundy(int u) {
     // DAG 中递归一定会走向更靠后的状态；vis 防止重复计算。
     if (vis[u]) return sg[u];
@@ -174,22 +174,22 @@ int grundy(int u) {
 \begin{lstlisting}[language={C++}]
 // 返回要操作的堆下标和操作后的大小；无必胜操作返回 {-1,-1}
 // 接口：nim_move(a)：返回一个必胜 Nim 操作 (堆下标, 操作后石子数)，无则 (-1,0)；返回类型 pair<int, unsigned long long>。
-// 参数：输入值/数组 a（见本节定义）。
+// 参数：标准 Nim 各堆石子数 a。
 pair<int, unsigned long long>
 nim_move(const vector<unsigned long long>& a) {
     // all 是整个 Nim 局面的 SG 值，也就是所有堆大小的异或和。
-    // 变量：all=所有候选/事件的汇总容器 all。
+    // 变量：all=标准 Nim 当前局面所有堆石子数的异或和 all。
     unsigned long long all = 0;
-    // 变量：x=当前输入值/查询值/坐标 x。
+    // 变量：x=从 a 枚举的元素值 x。
     for (auto x : a) all ^= x;
 
     // 异或和为 0 的局面是必败态，不存在一步必胜操作。
     if (all == 0) return {-1, 0};
 
-    // 变量：i=当前循环下标 i。
+    // 变量：i=Nim 当前尝试执行必胜移动的石子堆下标 i。
     for (int i = 0; i < (int)a.size(); ++i) {
         // 只改变第 i 堆后，希望新异或和变成 0，目标大小必须是 a[i]^all。
-        // 变量：target=当前希望达到的异或值/目标状态 target。
+        // 变量：target=使操作后 Nim 异或和为 0 时第 i 堆应剩余的石子数 target。
         unsigned long long target = a[i] ^ all;
 
         // 合法操作要求只能减少石子；这个判断同时保证目标确实更小。
@@ -233,8 +233,8 @@ nim_move(const vector<unsigned long long>& a) {
 \textbf{Bash 游戏。} 单堆有 \passthrough{\lstinline!n!} 个石子，每次取 \passthrough{\lstinline!1..k!} 个，必败态是 \passthrough{\lstinline!n \% (k+1) == 0!}。原因是长度为 \passthrough{\lstinline!k+1!} 的每一轮，后手可以补到 \passthrough{\lstinline!k+1!}。
 
 \begin{lstlisting}[language={C++}]
-// 接口：bash_win(n, k)：判断每次可取 1..k 个时 n 个石子的局面是否先手胜；返回 true 表示本节条件成立/操作成功。
-// 参数：规模/上界 n；排名/选取数量 k。
+// 接口：bash_win(n, k)：判断每次可取 1..k 个时 n 个石子的局面是否先手胜；n 不是 k+1 的倍数时返回 true。
+// 参数：Bash 游戏当前石子数 n；每步最多取走的石子数 k。
 bool bash_win(long long n, long long k) {
     return n % (k + 1) != 0;
 }
@@ -243,15 +243,15 @@ bool bash_win(long long n, long long k) {
 \textbf{反常 Nim。} 最后一步的人输。若所有非空堆都为 \passthrough{\lstinline!1!}，轮流拿走一堆，堆数为偶数时先手胜；只要存在大于 \passthrough{\lstinline!1!} 的堆，结论仍然看普通 Nim 的异或和。
 
 \begin{lstlisting}[language={C++}]
-// 接口：misere_nim_win(a)：判断反常 Nim（取走最后石子者输）是否先手胜；返回 true 表示本节条件成立/操作成功。
-// 参数：输入值/数组 a（见本节定义）。
+// 接口：misere_nim_win(a)：判断反常 Nim（取走最后石子者输）是否先手胜；全为 1 时堆数为偶数，否则总异或非 0 时返回 true。
+// 参数：反常 Nim 各堆石子数 a。
 bool misere_nim_win(const vector<int>& a) {
     // 反常 Nim 只有在“所有非空堆大小都是 1”时与普通 Nim 不同。
     // 变量：all_one=所有堆是否都只有 1 个石子的标记 all_one。
     bool all_one = true;
     int x = 0;       // 普通 Nim 的异或和。
     int cnt = 0;     // 非空堆数量。
-    // 变量：v=当前相邻顶点/下一状态 v。
+    // 变量：v=从 a 枚举的元素值 v。
     for (int v : a) {
         if (v != 1) all_one = false;
         if (v) ++cnt;
@@ -270,12 +270,12 @@ bool misere_nim_win(const vector<int>& a) {
 \textbf{阶梯 Nim 的约定。} 位置 \passthrough{\lstinline!0!} 是地面，石子在 \passthrough{\lstinline!i>=1!} 的台阶上；每次从台阶 \passthrough{\lstinline!i!} 向 \passthrough{\lstinline!i-1!} 移任意正数，移到地面的石子不再参与游戏。此时只异或奇数编号台阶：
 
 \begin{lstlisting}[language={C++}]
-// 接口：staircase_nim_win(a)：判断阶梯 Nim 局面是否先手胜；返回 true 表示本节条件成立/操作成功。
-// 参数：输入值/数组 a（见本节定义）。
+// 接口：staircase_nim_win(a)：判断阶梯 Nim 局面是否先手胜；奇数层石子数的异或和非 0 时返回 true。
+// 参数：阶梯 Nim 每层石子数 a。
 bool staircase_nim_win(const vector<long long>& a) {
     long long x = 0; // 阶梯 Nim 化成的等价 Nim 异或和。
     // 按“0 是地面、石子从 i 移到 i-1”的约定，只异或奇数层。
-    // 变量：i=当前循环下标 i。
+    // 变量：i=Nim 当前尝试执行必胜移动的石子堆下标 i。
     for (int i = 1; i < (int)a.size(); i += 2) x ^= a[i];
     return x != 0;
 }
@@ -337,18 +337,18 @@ Win
 
 \begin{lstlisting}[language={C++}]
 // 接口：subtraction_sg(N, moves)：返回减法游戏 0..N 的 SG 数组；返回类型 vector<int>。
-// 参数：最大状态或答案上界 N；每步允许取走的石子数集合 moves。
+// 参数：要预处理的最大单堆石子数 N；每步允许取走的石子数集合 moves。
 vector<int> subtraction_sg(int N, const vector<int>& moves) {
     // sg[x]：还剩 x 个石子时的 SG 值；sg[0] = 0（不能操作）。
     // 变量：sg=Sprague-Grundy 值数组 sg。
     vector<int> sg(N + 1);
     // 一次状态最多有 moves.size() 个后继，所以 mex 不会大于 moves.size()。
-    // 变量：seen=“Sprague--Grundy 函数打表、周期与大范围取石子”这段代码中的临时量 seen；值由本行初始化式确定。
+    // 变量：seen=为当前减法游戏状态标记后继 SG 值的时间戳数组 seen。
     vector<int> seen(moves.size() + 5);
-    // 变量：x=当前输入值/查询值/坐标 x。
+    // 变量：x=当前计算 SG 值的石子数 x。
     for (int x = 1; x <= N; ++x) {
         // 用 x 作为时间戳：本轮标记只写 seen，不需要清空数组。
-        // 变量：tag=当前时间戳/懒标记 tag。
+        // 变量：tag=复用 seen 数组时标记当前石子数 x 这一轮的时间戳 tag。
         int tag = x;
         // 变量：take=当前尝试取走的石子数量 take。
         for (int take : moves) {
@@ -357,7 +357,7 @@ vector<int> subtraction_sg(int N, const vector<int>& moves) {
                 seen[sg[x - take]] = tag;
         }
 
-        // 变量：g=图/树的邻接表 g。
+        // 变量：g=当前状态 x 的后继 SG 集合中最小未出现的非负整数 g。
         int g = 0;
         while (g < (int)seen.size() && seen[g] == tag) ++g;
         sg[x] = g;
@@ -373,20 +373,20 @@ vector<int> subtraction_sg(int N, const vector<int>& moves) {
 // 参数：已计算的 SG 数列 sg；允许作为周期起点的最小下标 min_start；除两段完整周期外还要验证的最少位置数 min_len。
 int find_period(const vector<int>& sg, int min_start = 0,
                 int min_len = 10) {
-    // 变量：n=当前元素/顶点/状态数量 n。
+    // 变量：n=容器 sg 的元素数量 n。
     int n = (int)sg.size();
 
     // p 是候选周期。至少需要两段长度为 p 的数据进行比较。
-    // 变量：p=当前质数、节点编号或指针 p；具体角色见所在公式。
+    // 变量：p=当前验证的候选周期长度 p。
     for (int p = 1; p * 2 <= n; ++p) {
         // st 是周期开始位置；不要默认周期从 0 开始，很多题有前导非周期段。
-        // 变量：st=当前集合或自动机/DP 状态 st。
+        // 变量：st=当前候选周期开始的 0-based 位置 st。
         for (int st = min_start; st + 2 * p + min_len <= n; ++st) {
             // 变量：ok=当前条件是否仍成立 ok。
             bool ok = true;
 
             // 检查从 st+p 开始的所有位置是否与 p 前的位置相同。
-            // 变量：i=当前循环下标 i。
+            // 变量：i=SG 周期验证中与位置 st 对应的后续位置 i。
             for (int i = st + p; i < n; ++i)
                 if (sg[i] != sg[i - p]) { ok = false; break; }
             if (ok) return p;
@@ -421,21 +421,21 @@ find_period(sg) = 3
 当 \passthrough{\lstinline!n <= 20!}，状态压缩通常是 \passthrough{\lstinline!mask!}：位为 \passthrough{\lstinline!1!} 表示未用/仍在场，转移枚举一个合法位置并清位。
 
 \begin{lstlisting}[language={C++}]
-// 变量：n=当前元素/顶点/状态数量 n。
+// 变量：n=当前测试用例读入的元素个数 n。
 int n;
 // 变量：memo=记忆化缓存 memo；哨兵值表示尚未计算。
 unordered_map<int, char> memo;
 
-// 接口：dfs_mask(mask)：返回状压状态 mask 是否为先手必胜态并记忆化；返回 true 表示本节条件成立/操作成功。
+// 接口：dfs_mask(mask)：返回状压状态 mask 是否为先手必胜态并记忆化；存在一个必败后继时返回 true。
 // 参数：当前状压状态 mask。
 bool dfs_mask(int mask) {
     // mask 的每一位代表一个“仍然可用”的对象。
     // 如果状态还有 last、资源数等信息，必须一并编码进 key。
-    // 变量：it=当前容器迭代器/当前弧位置 it。
+    // 变量：it=容器 memo 中当前查找结果的迭代器 it。
     auto it = memo.find(mask);
     if (it != memo.end()) return it->second;
 
-    // 变量：i=当前循环下标 i。
+    // 变量：i=状压博弈状态 mask 中当前尝试选择的对象位 i。
     for (int i = 0; i < n; ++i) {
         // 第 i 位为 0，说明对象 i 已经被使用，不能再次选择。
         if (!(mask >> i & 1)) continue;
@@ -479,7 +479,7 @@ Minimax 适用于：双方目标相反、操作可能不同、不能拆成独立
 
 \begin{lstlisting}[language={C++}]
 // 接口：alpha_beta(s, depth, alpha, beta, maxing)：返回带 alpha-beta 剪枝的极大极小估值；返回类型 int。
-// 参数：源点编号或输入字符串 s（见本节类型）；剩余搜索深度 depth；当前已知下界 alpha；当前已知上界 beta；当前层是否轮到极大化一方 maxing。
+// 参数：当前搜索状态 s；剩余搜索深度 depth；当前已知下界 alpha；当前已知上界 beta；当前层是否轮到极大化一方 maxing。
 int alpha_beta(State& s, int depth, int alpha, int beta, bool maxing) {
     // State：完整局面；depth：还允许搜索多少层；
     // alpha：极大方当前至少能保证的分数；
@@ -490,7 +490,7 @@ int alpha_beta(State& s, int depth, int alpha, int beta, bool maxing) {
     // 好着法优先搜索会更早提高 alpha / 降低 beta，剪枝效果更好。
     auto moves = ordered_moves(s); // 吃子、将军等好着法先搜
     if (maxing) {
-        // 变量：value=当前元素/局面评估值 value。
+        // 变量：value=极大化层当前已搜索着法中的最大局面估值 value。
         int value = INT_MIN;
         for (Move mv : moves) {
             // apply 和 undo 必须严格成对；否则后续分支会读到被污染的棋盘。
@@ -507,7 +507,7 @@ int alpha_beta(State& s, int depth, int alpha, int beta, bool maxing) {
         }
         return value;
     }
-    // 变量：value=当前元素/局面评估值 value。
+    // 变量：value=极小化层当前已搜索着法中的最小局面估值 value。
     int value = INT_MAX;
     for (Move mv : moves) {
         apply(s, mv);
@@ -538,9 +538,9 @@ int alpha_beta(State& s, int depth, int alpha, int beta, bool maxing) {
 struct StateHash {
     // 接口：operator()：返回键值的 size_t 哈希值，供 unordered_map/unordered_set 去重；返回类型 size_t。
     size_t operator()(const State& s) const {
-        // 变量：h=“状态去重、哈希与有环博弈”这段代码中的临时量 h；值由本行初始化式确定。
+        // 变量：h=状态哈希的累计值 h。
         size_t h = 0;
-        // 变量：x=当前输入值/查询值/坐标 x。
+        // 变量：x=从 s.board 枚举的元素值 x。
         for (int x : s.board)
             h = h * 1000003ULL + (unsigned)x + 1;
         h = h * 2 + s.turn;
@@ -557,4 +557,3 @@ unordered_map<State, int, StateHash> table;
 \begin{quote}
 调用测试说明：\passthrough{\lstinline!StateHash!} 的样例必须和具体 \passthrough{\lstinline!State!} 一起写。至少构造两个``棋盘内容相同但轮到不同玩家''的状态，确认哈希表键不同；再用两个不同走法到达的同一规范局面，确认查表命中同一个状态。不能只打印哈希值判断正确，因为哈希相等不是状态相等。
 \end{quote}
-
