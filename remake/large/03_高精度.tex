@@ -1,8 +1,12 @@
-\section{任意精度整数（纯 C++17）}
+\section{高精度整数（BigInteger，纯 C++17）}
 
 当整数可能超过 \passthrough{\lstinline!__int128!}，且评测环境没有 Boost 时，使用下面的
-有符号十进制高精度模板。内部以 \(10^9\) 为一位，支持输入输出、比较、正负数加减乘除、
+有符号十进制任意精度模板。内部以 \(10^9\) 为一位，支持输入输出、比较、正负数加减乘除、
 取模、最大公约数和模快速幂，不依赖第三方库。
+
+常用入口为 \passthrough{\lstinline!BigInteger(string)!}、四则运算与取模运算符、
+\passthrough{\lstinline!gcd_big!} 和 \passthrough{\lstinline!pow_mod_big!}；需要在板子中搜索时，
+可使用“高精度”“任意精度”或“BigInteger”三个关键词。
 
 Python 3.11 及以上默认限制十进制字符串与大整数互转的位数；需要处理超长整数时，
 可在程序开头关闭该限制：
